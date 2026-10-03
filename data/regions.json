@@ -1,0 +1,558 @@
+[
+ {
+  "idx": 1,
+  "name": "新野",
+  "county": "南阳郡",
+  "faction": "新野",
+  "route": "起点",
+  "difficulty": "序章",
+  "enemy_count": 6,
+  "total_hp": 60,
+  "stamina": 0,
+  "power": 0,
+  "city": "新野",
+  "slots": 1,
+  "chapter": "序章 · 新野",
+  "unlocks": [
+   2,
+   3
+  ],
+  "is_start": true,
+  "lon": 112.36,
+  "lat": 32.52,
+  "mx": 0.4378,
+  "my": 0.0664,
+  "unlocked_by": []
+ },
+ {
+  "idx": 2,
+  "name": "樊城",
+  "county": "襄阳郡",
+  "faction": "魏",
+  "route": "魏线",
+  "difficulty": "★",
+  "enemy_count": 3,
+  "total_hp": 111,
+  "stamina": 30,
+  "power": 1,
+  "city": "樊城",
+  "slots": 1,
+  "chapter": "第一章 · 襄阳",
+  "unlocks": [
+   4
+  ],
+  "is_start": false,
+  "lon": 112.13,
+  "lat": 32.06,
+  "mx": 0.3867,
+  "my": 0.1275,
+  "unlocked_by": [
+   1
+  ]
+ },
+ {
+  "idx": 3,
+  "name": "中庐",
+  "county": "南阳郡",
+  "faction": "魏",
+  "route": "魏线",
+  "difficulty": "★",
+  "enemy_count": 4,
+  "total_hp": 205,
+  "stamina": 32,
+  "power": 2,
+  "city": "中庐",
+  "slots": 1,
+  "chapter": "第一章 · 襄阳",
+  "unlocks": [
+   5
+  ],
+  "is_start": false,
+  "lon": 111.9,
+  "lat": 31.88,
+  "mx": 0.3356,
+  "my": 0.1514,
+  "unlocked_by": [
+   1
+  ]
+ },
+ {
+  "idx": 4,
+  "name": "宜城",
+  "county": "襄阳郡",
+  "faction": "魏",
+  "route": "魏线",
+  "difficulty": "★★",
+  "enemy_count": 5,
+  "total_hp": 380,
+  "stamina": 34,
+  "power": 3,
+  "city": "宜城",
+  "slots": 2,
+  "chapter": "第一章 · 襄阳",
+  "unlocks": [
+   6
+  ],
+  "is_start": false,
+  "lon": 112.26,
+  "lat": 31.72,
+  "mx": 0.4156,
+  "my": 0.1726,
+  "unlocked_by": [
+   2
+  ]
+ },
+ {
+  "idx": 5,
+  "name": "宛城",
+  "county": "南阳郡",
+  "faction": "魏",
+  "route": "魏线",
+  "difficulty": "★★",
+  "enemy_count": 6,
+  "total_hp": 703,
+  "stamina": 36,
+  "power": 4,
+  "city": "宛城",
+  "slots": 2,
+  "chapter": "第二章 · 南阳",
+  "unlocks": [
+   6
+  ],
+  "is_start": false,
+  "lon": 112.53,
+  "lat": 33.02,
+  "mx": 0.4756,
+  "my": 0.0,
+  "unlocked_by": [
+   3
+  ]
+ },
+ {
+  "idx": 6,
+  "name": "襄阳",
+  "county": "襄阳郡",
+  "faction": "魏",
+  "route": "魏线",
+  "difficulty": "★★★",
+  "enemy_count": 7,
+  "total_hp": 1300,
+  "stamina": 40,
+  "power": 6,
+  "city": "襄阳",
+  "slots": 3,
+  "chapter": "第一章 · 襄阳",
+  "unlocks": [
+   7,
+   8
+  ],
+  "is_start": false,
+  "lon": 112.14,
+  "lat": 32.02,
+  "mx": 0.3889,
+  "my": 0.1328,
+  "unlocked_by": [
+   4,
+   5
+  ]
+ },
+ {
+  "idx": 7,
+  "name": "当阳",
+  "county": "南郡",
+  "faction": "蜀",
+  "route": "蜀线",
+  "difficulty": "★★★",
+  "enemy_count": 8,
+  "total_hp": 2410,
+  "stamina": 42,
+  "power": 9,
+  "city": "当阳",
+  "slots": 3,
+  "chapter": "终章 · 南郡",
+  "unlocks": [
+   9,
+   21
+  ],
+  "is_start": false,
+  "lon": 111.79,
+  "lat": 30.82,
+  "mx": 0.3111,
+  "my": 0.2922,
+  "unlocked_by": [
+   6
+  ]
+ },
+ {
+  "idx": 8,
+  "name": "夏口",
+  "county": "江夏郡",
+  "faction": "吴",
+  "route": "吴线",
+  "difficulty": "★★★★",
+  "enemy_count": 8,
+  "total_hp": 4450,
+  "stamina": 45,
+  "power": 14,
+  "city": "夏口",
+  "slots": 4,
+  "chapter": "第三章 · 江夏",
+  "unlocks": [
+   10,
+   11
+  ],
+  "is_start": false,
+  "lon": 114.3,
+  "lat": 30.62,
+  "mx": 0.8689,
+  "my": 0.3187,
+  "unlocked_by": [
+   6
+  ]
+ },
+ {
+  "idx": 9,
+  "name": "夷陵",
+  "county": "南郡",
+  "faction": "蜀",
+  "route": "蜀线",
+  "difficulty": "★★★★",
+  "enemy_count": 9,
+  "total_hp": 8230,
+  "stamina": 46,
+  "power": 22,
+  "city": "夷陵",
+  "slots": 4,
+  "chapter": "终章 · 南郡",
+  "unlocks": [
+   21,
+   12
+  ],
+  "is_start": false,
+  "lon": 111.29,
+  "lat": 30.7,
+  "mx": 0.2,
+  "my": 0.3081,
+  "unlocked_by": [
+   7
+  ]
+ },
+ {
+  "idx": 10,
+  "name": "武昌",
+  "county": "江夏郡",
+  "faction": "吴",
+  "route": "吴线",
+  "difficulty": "★★★★",
+  "enemy_count": 9,
+  "total_hp": 15200,
+  "stamina": 48,
+  "power": 34,
+  "city": "武昌",
+  "slots": 4,
+  "chapter": "第三章 · 江夏",
+  "unlocks": [
+   13
+  ],
+  "is_start": false,
+  "lon": 114.89,
+  "lat": 30.4,
+  "mx": 1.0,
+  "my": 0.3479,
+  "unlocked_by": [
+   8
+  ]
+ },
+ {
+  "idx": 11,
+  "name": "沅陵",
+  "county": "武陵郡",
+  "faction": "群雄",
+  "route": "群雄线",
+  "difficulty": "★★★★★",
+  "enemy_count": 10,
+  "total_hp": 28200,
+  "stamina": 50,
+  "power": 54,
+  "city": "沅陵",
+  "slots": 5,
+  "chapter": "第四章 · 武陵",
+  "unlocks": [
+   14
+  ],
+  "is_start": false,
+  "lon": 110.39,
+  "lat": 28.46,
+  "mx": 0.0,
+  "my": 0.6056,
+  "unlocked_by": [
+   8
+  ]
+ },
+ {
+  "idx": 12,
+  "name": "公安",
+  "county": "南郡",
+  "faction": "蜀",
+  "route": "蜀线",
+  "difficulty": "★★★★★",
+  "enemy_count": 10,
+  "total_hp": 52100,
+  "stamina": 52,
+  "power": 85,
+  "city": "公安",
+  "slots": 5,
+  "chapter": "终章 · 南郡",
+  "unlocks": [
+   21
+  ],
+  "is_start": false,
+  "lon": 112.23,
+  "lat": 30.06,
+  "mx": 0.4089,
+  "my": 0.3931,
+  "unlocked_by": [
+   9
+  ]
+ },
+ {
+  "idx": 13,
+  "name": "汉寿",
+  "county": "长沙郡",
+  "faction": "吴",
+  "route": "吴线",
+  "difficulty": "★★★★★",
+  "enemy_count": 11,
+  "total_hp": 96400,
+  "stamina": 54,
+  "power": 133,
+  "city": "汉寿",
+  "slots": 5,
+  "chapter": "第五章 · 长沙",
+  "unlocks": [
+   16,
+   15
+  ],
+  "is_start": false,
+  "lon": 111.97,
+  "lat": 28.9,
+  "mx": 0.3511,
+  "my": 0.5471,
+  "unlocked_by": [
+   10
+  ]
+ },
+ {
+  "idx": 14,
+  "name": "临沅",
+  "county": "武陵郡",
+  "faction": "群雄",
+  "route": "群雄线",
+  "difficulty": "★★★★★",
+  "enemy_count": 11,
+  "total_hp": 178000,
+  "stamina": 55,
+  "power": 215,
+  "city": "临沅",
+  "slots": 5,
+  "chapter": "第四章 · 武陵",
+  "unlocks": [
+   16
+  ],
+  "is_start": false,
+  "lon": 111.7,
+  "lat": 29.03,
+  "mx": 0.2911,
+  "my": 0.5299,
+  "unlocked_by": [
+   11
+  ]
+ },
+ {
+  "idx": 15,
+  "name": "攸县",
+  "county": "长沙郡",
+  "faction": "吴",
+  "route": "吴线",
+  "difficulty": "★★★★★",
+  "enemy_count": 12,
+  "total_hp": 330000,
+  "stamina": 56,
+  "power": 345,
+  "city": "攸县",
+  "slots": 5,
+  "chapter": "第五章 · 长沙",
+  "unlocks": [
+   17,
+   20
+  ],
+  "is_start": false,
+  "lon": 113.35,
+  "lat": 27.0,
+  "mx": 0.6578,
+  "my": 0.7995,
+  "unlocked_by": [
+   13
+  ]
+ },
+ {
+  "idx": 16,
+  "name": "临湘",
+  "county": "长沙郡",
+  "faction": "吴",
+  "route": "吴线",
+  "difficulty": "★★★★★★",
+  "enemy_count": 12,
+  "total_hp": 611000,
+  "stamina": 58,
+  "power": 545,
+  "city": "临湘",
+  "slots": 6,
+  "chapter": "第五章 · 长沙",
+  "unlocks": [
+   18
+  ],
+  "is_start": false,
+  "lon": 112.94,
+  "lat": 28.23,
+  "mx": 0.5667,
+  "my": 0.6361,
+  "unlocked_by": [
+   13,
+   14
+  ]
+ },
+ {
+  "idx": 17,
+  "name": "耒阳",
+  "county": "桂阳郡",
+  "faction": "群雄",
+  "route": "群雄线",
+  "difficulty": "★★★★★★",
+  "enemy_count": 13,
+  "total_hp": 1130000,
+  "stamina": 60,
+  "power": 862,
+  "city": "耒阳",
+  "slots": 6,
+  "chapter": "第六章 · 桂阳",
+  "unlocks": [
+   18
+  ],
+  "is_start": false,
+  "lon": 112.86,
+  "lat": 26.42,
+  "mx": 0.5489,
+  "my": 0.8765,
+  "unlocked_by": [
+   15
+  ]
+ },
+ {
+  "idx": 18,
+  "name": "郴县",
+  "county": "桂阳郡",
+  "faction": "群雄",
+  "route": "群雄线",
+  "difficulty": "★★★★★★",
+  "enemy_count": 13,
+  "total_hp": 2090000,
+  "stamina": 62,
+  "power": 1365,
+  "city": "郴县",
+  "slots": 6,
+  "chapter": "第六章 · 桂阳",
+  "unlocks": [
+   19
+  ],
+  "is_start": false,
+  "lon": 113.02,
+  "lat": 25.78,
+  "mx": 0.5844,
+  "my": 0.9615,
+  "unlocked_by": [
+   16,
+   17
+  ]
+ },
+ {
+  "idx": 19,
+  "name": "观阳",
+  "county": "零陵郡",
+  "faction": "群雄",
+  "route": "群雄线",
+  "difficulty": "★★★★★★",
+  "enemy_count": 14,
+  "total_hp": 3870000,
+  "stamina": 64,
+  "power": 2164,
+  "city": "观阳",
+  "slots": 6,
+  "chapter": "第七章 · 零陵",
+  "unlocks": [
+   20
+  ],
+  "is_start": false,
+  "lon": 111.16,
+  "lat": 25.49,
+  "mx": 0.1711,
+  "my": 1.0,
+  "unlocked_by": [
+   18
+  ]
+ },
+ {
+  "idx": 20,
+  "name": "泉陵",
+  "county": "零陵郡",
+  "faction": "群雄",
+  "route": "群雄线",
+  "difficulty": "★★★★★★",
+  "enemy_count": 14,
+  "total_hp": 7150000,
+  "stamina": 66,
+  "power": 3435,
+  "city": "泉陵",
+  "slots": 6,
+  "chapter": "第七章 · 零陵",
+  "unlocks": [
+   21
+  ],
+  "is_start": false,
+  "lon": 111.62,
+  "lat": 26.22,
+  "mx": 0.2733,
+  "my": 0.9031,
+  "unlocked_by": [
+   15,
+   19
+  ]
+ },
+ {
+  "idx": 21,
+  "name": "江陵",
+  "county": "南郡",
+  "faction": "蜀",
+  "route": "蜀线",
+  "difficulty": "终局",
+  "enemy_count": 15,
+  "total_hp": 15700000,
+  "stamina": 70,
+  "power": 7949,
+  "city": "江陵",
+  "slots": 8,
+  "chapter": "终章 · 南郡",
+  "unlocks": [],
+  "is_start": false,
+  "lon": 112.19,
+  "lat": 30.35,
+  "mx": 0.4,
+  "my": 0.3546,
+  "unlocked_by": [
+   7,
+   9,
+   12,
+   20
+  ]
+ }
+]

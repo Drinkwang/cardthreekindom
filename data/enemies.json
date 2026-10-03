@@ -1,0 +1,1044 @@
+{
+ "1": [
+  {
+   "card_id": "C01",
+   "hp": 18,
+   "boss": true
+  },
+  {
+   "card_id": "S04",
+   "hp": 8,
+   "boss": false
+  },
+  {
+   "card_id": "S05",
+   "hp": 8,
+   "boss": false
+  },
+  {
+   "card_id": "S05",
+   "hp": 8,
+   "boss": false
+  },
+  {
+   "card_id": "S03",
+   "hp": 8,
+   "boss": false
+  },
+  {
+   "card_id": "S05",
+   "hp": 10,
+   "boss": false
+  }
+ ],
+ "2": [
+  {
+   "card_id": "C02",
+   "hp": 33,
+   "boss": true
+  },
+  {
+   "card_id": "S09",
+   "hp": 49,
+   "boss": false
+  },
+  {
+   "card_id": "S05",
+   "hp": 29,
+   "boss": false
+  }
+ ],
+ "3": [
+  {
+   "card_id": "C03",
+   "hp": 62,
+   "boss": true
+  },
+  {
+   "card_id": "G03",
+   "hp": 64,
+   "boss": false
+  },
+  {
+   "card_id": "S09",
+   "hp": 16,
+   "boss": false
+  },
+  {
+   "card_id": "G38",
+   "hp": 63,
+   "boss": false
+  }
+ ],
+ "4": [
+  {
+   "card_id": "C04",
+   "hp": 114,
+   "boss": true
+  },
+  {
+   "card_id": "S04",
+   "hp": 28,
+   "boss": false
+  },
+  {
+   "card_id": "S04",
+   "hp": 28,
+   "boss": false
+  },
+  {
+   "card_id": "G04",
+   "hp": 183,
+   "boss": false
+  },
+  {
+   "card_id": "S04",
+   "hp": 27,
+   "boss": false
+  }
+ ],
+ "5": [
+  {
+   "card_id": "C05",
+   "hp": 211,
+   "boss": true
+  },
+  {
+   "card_id": "G10",
+   "hp": 147,
+   "boss": false
+  },
+  {
+   "card_id": "S05",
+   "hp": 10,
+   "boss": false
+  },
+  {
+   "card_id": "S21",
+   "hp": 42,
+   "boss": false
+  },
+  {
+   "card_id": "G12",
+   "hp": 147,
+   "boss": false
+  },
+  {
+   "card_id": "G10",
+   "hp": 146,
+   "boss": false
+  }
+ ],
+ "6": [
+  {
+   "card_id": "C06",
+   "hp": 390,
+   "boss": true
+  },
+  {
+   "card_id": "S05",
+   "hp": 24,
+   "boss": false
+  },
+  {
+   "card_id": "S09",
+   "hp": 40,
+   "boss": false
+  },
+  {
+   "card_id": "G56",
+   "hp": 362,
+   "boss": false
+  },
+  {
+   "card_id": "G01",
+   "hp": 161,
+   "boss": false
+  },
+  {
+   "card_id": "G02",
+   "hp": 161,
+   "boss": false
+  },
+  {
+   "card_id": "G02",
+   "hp": 162,
+   "boss": false
+  }
+ ],
+ "7": [
+  {
+   "card_id": "C07",
+   "hp": 723,
+   "boss": true
+  },
+  {
+   "card_id": "S10",
+   "hp": 162,
+   "boss": false
+  },
+  {
+   "card_id": "S04",
+   "hp": 97,
+   "boss": false
+  },
+  {
+   "card_id": "G17",
+   "hp": 324,
+   "boss": false
+  },
+  {
+   "card_id": "S19",
+   "hp": 260,
+   "boss": false
+  },
+  {
+   "card_id": "S04",
+   "hp": 97,
+   "boss": false
+  },
+  {
+   "card_id": "G17",
+   "hp": 324,
+   "boss": false
+  },
+  {
+   "card_id": "S23",
+   "hp": 423,
+   "boss": false
+  }
+ ],
+ "8": [
+  {
+   "card_id": "C08",
+   "hp": 1335,
+   "boss": true
+  },
+  {
+   "card_id": "G54",
+   "hp": 206,
+   "boss": false
+  },
+  {
+   "card_id": "G49",
+   "hp": 928,
+   "boss": false
+  },
+  {
+   "card_id": "S05",
+   "hp": 62,
+   "boss": false
+  },
+  {
+   "card_id": "G45",
+   "hp": 619,
+   "boss": false
+  },
+  {
+   "card_id": "G43",
+   "hp": 619,
+   "boss": false
+  },
+  {
+   "card_id": "S05",
+   "hp": 62,
+   "boss": false
+  },
+  {
+   "card_id": "G45",
+   "hp": 619,
+   "boss": false
+  }
+ ],
+ "9": [
+  {
+   "card_id": "C09",
+   "hp": 2469,
+   "boss": true
+  },
+  {
+   "card_id": "G27",
+   "hp": 2121,
+   "boss": false
+  },
+  {
+   "card_id": "G17",
+   "hp": 353,
+   "boss": false
+  },
+  {
+   "card_id": "S22",
+   "hp": 459,
+   "boss": false
+  },
+  {
+   "card_id": "G24",
+   "hp": 1060,
+   "boss": false
+  },
+  {
+   "card_id": "G17",
+   "hp": 353,
+   "boss": false
+  },
+  {
+   "card_id": "G20",
+   "hp": 707,
+   "boss": false
+  },
+  {
+   "card_id": "G18",
+   "hp": 353,
+   "boss": false
+  },
+  {
+   "card_id": "G17",
+   "hp": 355,
+   "boss": false
+  }
+ ],
+ "10": [
+  {
+   "card_id": "C10",
+   "hp": 4560,
+   "boss": true
+  },
+  {
+   "card_id": "S05",
+   "hp": 253,
+   "boss": false
+  },
+  {
+   "card_id": "G42",
+   "hp": 2533,
+   "boss": false
+  },
+  {
+   "card_id": "G41",
+   "hp": 2533,
+   "boss": false
+  },
+  {
+   "card_id": "S15",
+   "hp": 676,
+   "boss": false
+  },
+  {
+   "card_id": "G53",
+   "hp": 844,
+   "boss": false
+  },
+  {
+   "card_id": "G35",
+   "hp": 1689,
+   "boss": false
+  },
+  {
+   "card_id": "G35",
+   "hp": 1689,
+   "boss": false
+  },
+  {
+   "card_id": "S07",
+   "hp": 423,
+   "boss": false
+  }
+ ],
+ "11": [
+  {
+   "card_id": "C11",
+   "hp": 8460,
+   "boss": true
+  },
+  {
+   "card_id": "S04",
+   "hp": 414,
+   "boss": false
+  },
+  {
+   "card_id": "S18",
+   "hp": 1104,
+   "boss": false
+  },
+  {
+   "card_id": "S17",
+   "hp": 1104,
+   "boss": false
+  },
+  {
+   "card_id": "G50",
+   "hp": 6212,
+   "boss": false
+  },
+  {
+   "card_id": "G50",
+   "hp": 6212,
+   "boss": false
+  },
+  {
+   "card_id": "S18",
+   "hp": 1104,
+   "boss": false
+  },
+  {
+   "card_id": "G39",
+   "hp": 2761,
+   "boss": false
+  },
+  {
+   "card_id": "S04",
+   "hp": 414,
+   "boss": false
+  },
+  {
+   "card_id": "S05",
+   "hp": 415,
+   "boss": false
+  }
+ ],
+ "12": [
+  {
+   "card_id": "C12",
+   "hp": 15630,
+   "boss": true
+  },
+  {
+   "card_id": "S04",
+   "hp": 1128,
+   "boss": false
+  },
+  {
+   "card_id": "S10",
+   "hp": 1880,
+   "boss": false
+  },
+  {
+   "card_id": "G22",
+   "hp": 7520,
+   "boss": false
+  },
+  {
+   "card_id": "S23",
+   "hp": 4888,
+   "boss": false
+  },
+  {
+   "card_id": "S19",
+   "hp": 3008,
+   "boss": false
+  },
+  {
+   "card_id": "S10",
+   "hp": 1880,
+   "boss": false
+  },
+  {
+   "card_id": "G20",
+   "hp": 7520,
+   "boss": false
+  },
+  {
+   "card_id": "G21",
+   "hp": 7520,
+   "boss": false
+  },
+  {
+   "card_id": "S05",
+   "hp": 1126,
+   "boss": false
+  }
+ ],
+ "13": [
+  {
+   "card_id": "C13",
+   "hp": 28920,
+   "boss": true
+  },
+  {
+   "card_id": "G55",
+   "hp": 10711,
+   "boss": false
+  },
+  {
+   "card_id": "S04",
+   "hp": 3213,
+   "boss": false
+  },
+  {
+   "card_id": "S06",
+   "hp": 5356,
+   "boss": false
+  },
+  {
+   "card_id": "G55",
+   "hp": 10711,
+   "boss": false
+  },
+  {
+   "card_id": "S16",
+   "hp": 8569,
+   "boss": false
+  },
+  {
+   "card_id": "S16",
+   "hp": 8569,
+   "boss": false
+  },
+  {
+   "card_id": "S06",
+   "hp": 5356,
+   "boss": false
+  },
+  {
+   "card_id": "S05",
+   "hp": 3213,
+   "boss": false
+  },
+  {
+   "card_id": "S16",
+   "hp": 8569,
+   "boss": false
+  },
+  {
+   "card_id": "S04",
+   "hp": 3213,
+   "boss": false
+  }
+ ],
+ "14": [
+  {
+   "card_id": "C14",
+   "hp": 53400,
+   "boss": true
+  },
+  {
+   "card_id": "S04",
+   "hp": 6029,
+   "boss": false
+  },
+  {
+   "card_id": "S17",
+   "hp": 16077,
+   "boss": false
+  },
+  {
+   "card_id": "G39",
+   "hp": 40194,
+   "boss": false
+  },
+  {
+   "card_id": "S18",
+   "hp": 16077,
+   "boss": false
+  },
+  {
+   "card_id": "S05",
+   "hp": 6029,
+   "boss": false
+  },
+  {
+   "card_id": "S04",
+   "hp": 6029,
+   "boss": false
+  },
+  {
+   "card_id": "S17",
+   "hp": 16077,
+   "boss": false
+  },
+  {
+   "card_id": "S04",
+   "hp": 6029,
+   "boss": false
+  },
+  {
+   "card_id": "S05",
+   "hp": 6029,
+   "boss": false
+  },
+  {
+   "card_id": "S04",
+   "hp": 6030,
+   "boss": false
+  }
+ ],
+ "15": [
+  {
+   "card_id": "C15",
+   "hp": 99000,
+   "boss": true
+  },
+  {
+   "card_id": "S16",
+   "hp": 26400,
+   "boss": false
+  },
+  {
+   "card_id": "S06",
+   "hp": 16500,
+   "boss": false
+  },
+  {
+   "card_id": "S05",
+   "hp": 9900,
+   "boss": false
+  },
+  {
+   "card_id": "S06",
+   "hp": 16500,
+   "boss": false
+  },
+  {
+   "card_id": "G55",
+   "hp": 33000,
+   "boss": false
+  },
+  {
+   "card_id": "G55",
+   "hp": 33000,
+   "boss": false
+  },
+  {
+   "card_id": "S04",
+   "hp": 9900,
+   "boss": false
+  },
+  {
+   "card_id": "S16",
+   "hp": 26400,
+   "boss": false
+  },
+  {
+   "card_id": "S04",
+   "hp": 9900,
+   "boss": false
+  },
+  {
+   "card_id": "G29",
+   "hp": 33000,
+   "boss": false
+  },
+  {
+   "card_id": "S06",
+   "hp": 16500,
+   "boss": false
+  }
+ ],
+ "16": [
+  {
+   "card_id": "C16",
+   "hp": 183300,
+   "boss": true
+  },
+  {
+   "card_id": "S05",
+   "hp": 14417,
+   "boss": false
+  },
+  {
+   "card_id": "G37",
+   "hp": 96112,
+   "boss": false
+  },
+  {
+   "card_id": "G55",
+   "hp": 48056,
+   "boss": false
+  },
+  {
+   "card_id": "S04",
+   "hp": 14417,
+   "boss": false
+  },
+  {
+   "card_id": "G37",
+   "hp": 96112,
+   "boss": false
+  },
+  {
+   "card_id": "S05",
+   "hp": 14417,
+   "boss": false
+  },
+  {
+   "card_id": "S16",
+   "hp": 38445,
+   "boss": false
+  },
+  {
+   "card_id": "S04",
+   "hp": 14417,
+   "boss": false
+  },
+  {
+   "card_id": "S24",
+   "hp": 62473,
+   "boss": false
+  },
+  {
+   "card_id": "S04",
+   "hp": 14417,
+   "boss": false
+  },
+  {
+   "card_id": "S04",
+   "hp": 14417,
+   "boss": false
+  }
+ ],
+ "17": [
+  {
+   "card_id": "C17",
+   "hp": 339000,
+   "boss": true
+  },
+  {
+   "card_id": "S05",
+   "hp": 27276,
+   "boss": false
+  },
+  {
+   "card_id": "G33",
+   "hp": 181839,
+   "boss": false
+  },
+  {
+   "card_id": "S04",
+   "hp": 27276,
+   "boss": false
+  },
+  {
+   "card_id": "S05",
+   "hp": 27276,
+   "boss": false
+  },
+  {
+   "card_id": "S05",
+   "hp": 27276,
+   "boss": false
+  },
+  {
+   "card_id": "S05",
+   "hp": 27276,
+   "boss": false
+  },
+  {
+   "card_id": "S04",
+   "hp": 27276,
+   "boss": false
+  },
+  {
+   "card_id": "S04",
+   "hp": 27276,
+   "boss": false
+  },
+  {
+   "card_id": "G33",
+   "hp": 181839,
+   "boss": false
+  },
+  {
+   "card_id": "S04",
+   "hp": 27276,
+   "boss": false
+  },
+  {
+   "card_id": "S04",
+   "hp": 27276,
+   "boss": false
+  },
+  {
+   "card_id": "G33",
+   "hp": 181838,
+   "boss": false
+  }
+ ],
+ "18": [
+  {
+   "card_id": "C18",
+   "hp": 627000,
+   "boss": true
+  },
+  {
+   "card_id": "S05",
+   "hp": 82811,
+   "boss": false
+  },
+  {
+   "card_id": "S04",
+   "hp": 82811,
+   "boss": false
+  },
+  {
+   "card_id": "S04",
+   "hp": 82811,
+   "boss": false
+  },
+  {
+   "card_id": "S04",
+   "hp": 82811,
+   "boss": false
+  },
+  {
+   "card_id": "S04",
+   "hp": 82811,
+   "boss": false
+  },
+  {
+   "card_id": "S04",
+   "hp": 82811,
+   "boss": false
+  },
+  {
+   "card_id": "S04",
+   "hp": 82811,
+   "boss": false
+  },
+  {
+   "card_id": "S04",
+   "hp": 82811,
+   "boss": false
+  },
+  {
+   "card_id": "S05",
+   "hp": 82811,
+   "boss": false
+  },
+  {
+   "card_id": "S04",
+   "hp": 82811,
+   "boss": false
+  },
+  {
+   "card_id": "G33",
+   "hp": 552075,
+   "boss": false
+  },
+  {
+   "card_id": "S05",
+   "hp": 82815,
+   "boss": false
+  }
+ ],
+ "19": [
+  {
+   "card_id": "C19",
+   "hp": 1161000,
+   "boss": true
+  },
+  {
+   "card_id": "S05",
+   "hp": 90300,
+   "boss": false
+  },
+  {
+   "card_id": "S05",
+   "hp": 90300,
+   "boss": false
+  },
+  {
+   "card_id": "S05",
+   "hp": 90300,
+   "boss": false
+  },
+  {
+   "card_id": "G32",
+   "hp": 602000,
+   "boss": false
+  },
+  {
+   "card_id": "G34",
+   "hp": 602000,
+   "boss": false
+  },
+  {
+   "card_id": "G34",
+   "hp": 602000,
+   "boss": false
+  },
+  {
+   "card_id": "S05",
+   "hp": 90300,
+   "boss": false
+  },
+  {
+   "card_id": "S05",
+   "hp": 90300,
+   "boss": false
+  },
+  {
+   "card_id": "S05",
+   "hp": 90300,
+   "boss": false
+  },
+  {
+   "card_id": "S05",
+   "hp": 90300,
+   "boss": false
+  },
+  {
+   "card_id": "S05",
+   "hp": 90300,
+   "boss": false
+  },
+  {
+   "card_id": "S05",
+   "hp": 90300,
+   "boss": false
+  },
+  {
+   "card_id": "S04",
+   "hp": 90300,
+   "boss": false
+  }
+ ],
+ "20": [
+  {
+   "card_id": "C20",
+   "hp": 2145000,
+   "boss": true
+  },
+  {
+   "card_id": "G34",
+   "hp": 1371233,
+   "boss": false
+  },
+  {
+   "card_id": "S04",
+   "hp": 205685,
+   "boss": false
+  },
+  {
+   "card_id": "S05",
+   "hp": 205685,
+   "boss": false
+  },
+  {
+   "card_id": "S04",
+   "hp": 205685,
+   "boss": false
+  },
+  {
+   "card_id": "S04",
+   "hp": 205685,
+   "boss": false
+  },
+  {
+   "card_id": "S04",
+   "hp": 205685,
+   "boss": false
+  },
+  {
+   "card_id": "S04",
+   "hp": 205685,
+   "boss": false
+  },
+  {
+   "card_id": "S04",
+   "hp": 205685,
+   "boss": false
+  },
+  {
+   "card_id": "S05",
+   "hp": 205685,
+   "boss": false
+  },
+  {
+   "card_id": "S04",
+   "hp": 205685,
+   "boss": false
+  },
+  {
+   "card_id": "S05",
+   "hp": 205685,
+   "boss": false
+  },
+  {
+   "card_id": "S05",
+   "hp": 205685,
+   "boss": false
+  },
+  {
+   "card_id": "G34",
+   "hp": 1371232,
+   "boss": false
+  }
+ ],
+ "21": [
+  {
+   "card_id": "C21",
+   "hp": 4710000,
+   "boss": true
+  },
+  {
+   "card_id": "S04",
+   "hp": 199818,
+   "boss": false
+  },
+  {
+   "card_id": "G21",
+   "hp": 1332121,
+   "boss": false
+  },
+  {
+   "card_id": "S10",
+   "hp": 333030,
+   "boss": false
+  },
+  {
+   "card_id": "S23",
+   "hp": 865879,
+   "boss": false
+  },
+  {
+   "card_id": "G18",
+   "hp": 666061,
+   "boss": false
+  },
+  {
+   "card_id": "S19",
+   "hp": 532848,
+   "boss": false
+  },
+  {
+   "card_id": "G17",
+   "hp": 666061,
+   "boss": false
+  },
+  {
+   "card_id": "G22",
+   "hp": 1332121,
+   "boss": false
+  },
+  {
+   "card_id": "S22",
+   "hp": 865879,
+   "boss": false
+  },
+  {
+   "card_id": "G22",
+   "hp": 1332121,
+   "boss": false
+  },
+  {
+   "card_id": "S05",
+   "hp": 199818,
+   "boss": false
+  },
+  {
+   "card_id": "G21",
+   "hp": 1332121,
+   "boss": false
+  },
+  {
+   "card_id": "G18",
+   "hp": 666061,
+   "boss": false
+  },
+  {
+   "card_id": "G18",
+   "hp": 666061,
+   "boss": false
+  }
+ ]
+}

@@ -1,0 +1,16 @@
+# 文本文件统一按 LF 检出，避免跨平台换行符污染 diff
+* text=auto eol=lf
+
+# 明确标为二进制，防止 git 误做换行符转换损坏资源
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.webp binary
+*.ogg  binary
+*.mp3  binary
+*.wav  binary
+*.ttf  binary
+*.otf  binary
+*.xlsx binary
+# .res 是二进制资源；.tres 是文本资源，故意不标 binary，保留可 diff
+*.res  binary

@@ -1,0 +1,101 @@
+[
+ {
+  "name": "通用基础包",
+  "unlock": "开局可用",
+  "scope": "全境 · 通用",
+  "faction": "全势力（低星为主）",
+  "price": 50,
+  "pity": "每 10 包保底 ★★★",
+  "cards": 5,
+  "min_star": 1,
+  "max_star": 3
+ },
+ {
+  "name": "宛城卡包",
+  "unlock": "克服宛城",
+  "scope": "南阳郡 · 魏线",
+  "faction": "魏",
+  "price": 200,
+  "pity": "每 8 包保底 ★★★",
+  "cards": 5,
+  "min_star": 1,
+  "max_star": 5
+ },
+ {
+  "name": "襄阳卡包",
+  "unlock": "克服襄阳",
+  "scope": "襄阳郡 · 魏线",
+  "faction": "魏",
+  "price": 1000,
+  "pity": "每 8 包保底 ★★★★",
+  "cards": 5,
+  "min_star": 1,
+  "max_star": 4
+ },
+ {
+  "name": "南郡卡包",
+  "unlock": "克服当阳 / 夷陵 / 公安 任一",
+  "scope": "南郡 · 蜀线",
+  "faction": "蜀",
+  "price": 5000,
+  "pity": "每 8 包保底 ★★★★",
+  "cards": 5,
+  "min_star": 1,
+  "max_star": 4
+ },
+ {
+  "name": "江夏卡包",
+  "unlock": "克服夏口 / 武昌 任一",
+  "scope": "江夏郡 · 吴线",
+  "faction": "吴",
+  "price": 2500,
+  "pity": "每 8 包保底 ★★★★",
+  "cards": 5,
+  "min_star": 1,
+  "max_star": 4
+ },
+ {
+  "name": "长沙卡包",
+  "unlock": "克服汉寿 / 攸县 / 临湘 任一",
+  "scope": "长沙郡 · 吴线",
+  "faction": "吴",
+  "price": 20000,
+  "pity": "每 8 包保底 ★★★★★",
+  "cards": 5,
+  "min_star": 1,
+  "max_star": 4
+ },
+ {
+  "name": "武陵卡包",
+  "unlock": "克服沅陵 / 临沅 任一",
+  "scope": "武陵郡 · 群雄线",
+  "faction": "群雄",
+  "price": 8000,
+  "pity": "每 8 包保底 ★★★★",
+  "cards": 5,
+  "min_star": 1,
+  "max_star": 4
+ },
+ {
+  "name": "桂阳卡包",
+  "unlock": "克服耒阳 / 郴县 任一",
+  "scope": "桂阳郡 · 群雄线",
+  "faction": "群雄",
+  "price": 60000,
+  "pity": "每 8 包保底 ★★★★★",
+  "cards": 5,
+  "min_star": 1,
+  "max_star": 4
+ },
+ {
+  "name": "零陵卡包",
+  "unlock": "克服观阳 / 泉陵 任一",
+  "scope": "零陵郡 · 群雄线",
+  "faction": "群雄",
+  "price": 180000,
+  "pity": "每 8 包保底 ★★★★★★",
+  "cards": 5,
+  "min_star": 1,
+  "max_star": 4
+ }
+]
