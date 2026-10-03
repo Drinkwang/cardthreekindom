@@ -1,6 +1,6 @@
 # 《拍案三国》Godot 工程
 
-**引擎：Godot 4.7.2**　**状态：v0.9 可玩骨架（武将练级 + 被动 / 装备五部位 / 全屏城建；代码占位美术）**
+**引擎：Godot 4.7.2**　**状态：v1.1 可玩骨架（每将独立装备巢 + 技能树 3 层 / 武将带兵；代码占位美术）**
 
 三国题材**增量拍卡 + Roguelite 多局刷 + 放置挂机**游戏。
 **主界面就是一张桌子**：敌人牌正面朝上、歪着散开，你用鼠标去拍。
@@ -29,11 +29,30 @@
 纸上的墨字。做法是**混合管线**：不透明大图交给 AI 出图，凡是要 alpha 的（卡框、纸面板、按钮、卡背圆角）
 一律**程序化生成**。见第四节之二。风格基准与取舍见上级目录 `美术重制清单.md`。
 
-策划案见上级目录 `策划案.md`（v0.9），卡池见 `卡池表.xlsx`。
+策划案见 `策划案.md`（v1.1），卡池见 `卡池表.xlsx` —— ⚠️ 两者都**不在本仓库**，见上方「关于本仓库」。
+
+---
+
+> ### 📦 关于本仓库
+>
+> 本仓库 **`Drinkwang/cardthreekindom`** 就是下面这个 `game/` 目录的内容（**git 根 = 工程根**），
+> clone 下来直接就能用 Godot 打开，没有多余层级。
+>
+> 以下内容**不在本仓库里**，需要另找 `threekindom-pre/` 工作区：
+> `策划案.md`（设计文档）· `卡池表.xlsx` / `卡牌图鉴.md`（卡池）· `美术重制清单.md` ·
+> `v10改造方案.md` · **`tools/`（生成 `data/*.json` 的脚本 —— 单一数据源的上游）** ·
+> `docs/art` 与 `docs/shots`（AI 风格对照图 / 武将配图 / 实机截图，见 `.gitignore`）。
+>
+> ⚠️ **改动 `data/*.json` 前请务必要到 `tools/` 去改生成脚本再重跑**，直接手改 JSON 会在下次生成时被覆盖。
 
 ---
 
 ## 一、跑起来
+
+> ⚠️ **从 git clone 来的工程，第一次必须先 `--import`**（见下方说明）。
+> `.godot/` 引擎缓存不入库，缺了它 Godot 打不开工程。
+
+以下命令都在**工程根目录**（也就是有 `project.godot` 的那一层）执行。
 
 本机 Godot 4.7.2 在 `~/Downloads/Godot.app`（另有 `/Applications/Godot.app` 是 4.3，别用错）。
 
@@ -47,29 +66,31 @@ open -a "$HOME/Downloads/Godot.app" --args --path "$PWD"
 **直接玩（有窗口）**
 
 ```bash
-"$HOME/Downloads/Godot.app/Contents/MacOS/Godot" --path game
+"$HOME/Downloads/Godot.app/Contents/MacOS/Godot" --path .
 ```
 
 **无头自检（不开窗口，验证核心循环 + 桌面输入管线 + 舆图/翻牌 + v0.8 局外养成 + v0.9 三套养成 + v1.0 底部上阵条 + v1.1 装备巢/技能树/带兵，257 项断言）**
 
 ```bash
-cd game
 "$HOME/Downloads/Godot.app/Contents/MacOS/Godot" --headless --path . tests/SelfTest.tscn
 ```
 
-> ⚠️ 新增了 `class_name` 脚本（PaanMapView / PaanReveal / PaanHome / PaanCity）后，第一次跑之前先 `--import` 一次，
-> 让 Godot 重建全局类缓存；否则会报 "Could not find type"。
-> ⚠️ 实测：**改过 `.gd` 之后跑截图前也建议先 `--import`** —— 2026-09-26 再次遇到没加新类也报
-> "Could not find type PaanHome"。反正 `--import` 只要几秒，写进固定流程最省事。
+> ✅ **固定流程：跑自检 / 截图前，一律先 `--import`，不要赌"这次没改什么"。**
+> 实测能触发类缓存失效的动作比想象中宽：新增或编辑任何 `.gd`（**哪怕没加新 `class_name`**）、
+> 动过 `assets/`、**在工程目录里增删任何文件**、隔一段时间再跑、或**编辑器开着**——
+> 都会报出一片 `Could not find type "PaanHome"` / `Parse Error: Identifier "PaanMapView" not declared`。
+> （2026-09-26 / 09-27 / 10-03 共踩三次。）
 >
 > ⚠️⚠️ **重跑了 `tools/gen_s5_print.py` / `prepare_s5_assets.py` 之后也必须先 `--import`。**
 > 普通运行（`--path .`）**不会重新导入改动过的 PNG**，它继续吃 `.godot/imported` 里的旧贴图 ——
 > 于是你会对着旧画面反复改代码，怎么改都不动（2026-09-26 在这上面浪费了一轮）。
-> 改完素材的固定流程：`--import` → 再截图。
 >
 > ```bash
-> "$HOME/Downloads/Godot.app/Contents/MacOS/Godot" --headless --path . --import
+> "$HOME/Downloads/Godot.app/Contents/MacOS/Godot" --headless --path . --import   # 10 秒
 > ```
+>
+> 🔁 **反向教训：自检报出"一片 Could not find type"时，先别改代码** ——
+> 先 `--import` 重跑一遍，大概率是缓存而不是代码坏了。**这个误判最浪费时间。**
 
 **渲染截图（开窗口跑完自动退出，把画面存成 PNG）**
 
@@ -161,9 +182,11 @@ G="$HOME/Downloads/Godot.app/Contents/MacOS/Godot"
 ## 三、目录结构
 
 ```
-game/
+game/                           ← 本仓库的根目录
 ├── project.godot              工程配置（autoload: GameData / GameState）
-├── data/                      由 tools/export_game_data.py 导出的运行时数据
+├── .gitignore                 ⚠️ 排除 .godot/（72MB 缓存）、docs/art、docs/shots
+├── .gitattributes             文本统一 LF；PNG/音频/字体标 binary
+├── data/                      由 tools/export_game_data.py 导出的运行时数据（⚠️ 勿手改，改生成脚本）
 │   ├── cards.json             169 张卡（含 power / equip_pct / subtype / effect 字段）
 │   ├── regions.json           21 区域（含 unlocks / unlocked_by + lon/lat/mx/my 舆图坐标）
 │   ├── enemies.json           每区域的具体敌人与血量（合计 == 区域总血量）
@@ -182,12 +205,13 @@ game/
 │   └── autoload/
 │       ├── game_data.gd       只读数据层
 │       └── game_state.gd      核心状态机（拍击 / 铺桌 / 技能树 SKILL_TREE / 上阵 / 武将练级 / **每将装备巢 hero_equip** / **兵位 hero_troops** / 城建 / 存档）
-├── docs/shots/                画面留档（v08_* / v09_s5_* / v10_* 等）
+├── docs/shots/                画面留档（⚠️ **不入 git**，见 .gitignore）
+├── docs/art/                  AI 风格对照图 / 卡框纸纹 kit / 武将配图（⚠️ **不入 git**）
 ├── assets/                    S5 印刷美术（bg 底图 / tex 纸纹理 / ui 九宫格 / cards 卡背）
 └── tests/
     ├── SelfTest.tscn / selftest.gd   257 项无头断言（桌面输入管线 + 舆图 + 翻牌 + v0.8 局外养成 + v0.9 三套养成 + v1.0 上阵条拖拽 + v1.1 装备巢/技能树/带兵）
     ├── Screenshot.tscn / screenshot.gd  渲染截图工具（区域 / 拖拽 / 舆图 / 大本营 / 城建 / 开包 / 高星特写 / 主菜单 / 卡池 / 真实拖拽上阵 / --table 桌面+上阵条）
-    └── last_selftest_report.txt      最近一次自检结果
+    └── last_selftest_report.txt      最近一次自检结果的快照（随提交更新，非运行时生成）
 ```
 
 ---
