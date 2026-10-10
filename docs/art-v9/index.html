@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>拍案三国 · 升级页美术与实装</title>
+<style>
+:root{color-scheme:light;--paper:#f2e6ca;--ink:#2b211a;--red:#9d3d2e;--rule:#b8a078}
+*{box-sizing:border-box}body{margin:0;background:#e2d0ae;color:var(--ink);font-family:"Microsoft YaHei",sans-serif;line-height:1.7}
+main{max-width:1200px;margin:28px auto;padding:28px;background:var(--paper);border:1px solid var(--rule)}
+header{border-bottom:2px solid var(--red);padding-bottom:18px}h1,h2{font-family:KaiTi,serif;font-weight:normal}h1{font-size:38px;margin:0}h2{font-size:29px;margin:30px 0 12px}
+p{margin:10px 0}a{color:var(--red)}nav{display:flex;flex-wrap:wrap;gap:16px;font-size:14px}.tag{color:var(--red);letter-spacing:2px;font-size:13px}
+figure{margin:18px 0}figure img{display:block;width:100%;border:1px solid var(--rule)}figcaption{font-size:14px;color:#74654f;margin-top:7px}
+.assets{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.assets figure{margin:0}.assets figcaption strong{display:block;color:var(--ink);font-size:18px}
+.results{display:flex;gap:20px;flex-wrap:wrap;padding:16px;border:1px solid var(--rule);background:#f8f0dc}
+details{margin:20px 0}summary{cursor:pointer;color:var(--red)}footer{margin-top:32px;border-top:1px solid var(--rule);padding-top:14px;font-size:13px;color:#74654f}
+@media(max-width:760px){main{margin:0;padding:18px}.assets{grid-template-columns:1fr}h1{font-size:30px}}
+</style><main>
+<header><div class="tag">拍案三国 · v2.1 · 2026.10.09</div><h1>练好这一掌，下一轮赚得更多</h1>
+<p>升级页美术已实装。拍力、拍速和时长以三张古代插画呈现，提升前后数值、真实费用与解锁条件在同一页查看。</p>
+<nav><a href="#core">核心升级</a><a href="#advanced">进阶修炼</a><a href="#art">原始插画</a><a href="实施说明.md">实施与验证说明</a><a href="../../assets/art_v9/generation.json">完整生成提示词</a></nav></header>
+<section id="core"><h2>核心三项 · 首屏可买</h2><p>一掌更强、同样时间拍得更多、延长下一轮。数值预览包含当前牌组的武将、装备和建筑修饰。</p>
+<figure><img src="upgrade.png" alt="1280×800实机升级页，展示拍力、拍速、时长与再来一轮"><figcaption>实际限时轮结束后进入升级页；金币按钮执行真实购买。</figcaption></figure>
+<details><summary>查看 1280×720 窗口</summary><figure><img src="upgrade-720.png" loading="lazy" alt="720高度升级页"><figcaption>较小窗口仍保留三个核心购买按钮与战后再来一轮入口。</figcaption></figure></details>
+<details><summary>查看迭代前的文字技能树</summary><figure><img src="../incremental-v2/upgrade.png" loading="lazy" alt="迭代前升级页"><figcaption>v2.0 原版升级树，供前后对照。</figcaption></figure></details></section>
+<section id="advanced"><h2>进阶修炼 · 按用途分组</h2><p>自动经营、武将协力、翻牌收成共九项。尚未解锁时显示缺少的技能或新野桌次；金币不足时显示还差多少。</p>
+<figure><img src="upgrade-advanced.png" loading="lazy" alt="进阶自动经营组的实际升级状态"><figcaption>中期测试档展示自动经营与武将协力；全部项目延用实际后端门禁。</figcaption></figure>
+<details><summary>查看底部武将与收成升级</summary><figure><img src="upgrade-bottom.png" loading="lazy" alt="进阶修炼最下方，武将带兵、暴击与财路"><figcaption>滚动到底可到达最后一项，战果和下一轮入口持续可见。</figcaption></figure></details></section>
+<section id="art"><h2>古代题材 · 三张独立插画</h2><div class="assets">
+<figure><a href="../../assets/art_v9/upgrade_power.png"><img src="../../assets/art_v9/upgrade_power.png" loading="lazy" alt="掌风翻牌"></a><figcaption><strong>拍力 · 朱红掌风</strong>单拍更强，厚牌更快翻。</figcaption></figure>
+<figure><a href="../../assets/art_v9/upgrade_speed.png"><img src="../../assets/art_v9/upgrade_speed.png" loading="lazy" alt="青绿连拍动势"></a><figcaption><strong>拍速 · 青绿连拍</strong>同样时间，多拍几次。</figcaption></figure>
+<figure><a href="../../assets/art_v9/upgrade_duration.png"><img src="../../assets/art_v9/upgrade_duration.png" loading="lazy" alt="古代水漏计时"></a><figcaption><strong>时长 · 青铜水漏</strong>下一轮留出更多赚钱时间。</figcaption></figure>
+</div></section>
+<h2>已完成验证</h2><div class="results"><span>升级专项 <strong>125 / 125</strong></span><span>限时循环 <strong>444 / 444</strong></span><span>卡牌美术布局 <strong>5551 / 5551</strong></span><span>实机 <strong>800 / 720</strong> 高度</span></div>
+<footer>插画由 Codex 内置 ImageGen 生成，提示词与文件映射见 generation.json。Godot 4.7.1 实机渲染；测试与截图使用独立存档。</footer>
+</main></html>

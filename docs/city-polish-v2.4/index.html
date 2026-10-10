@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>拍案三国 · v2.4 城池表现强化</title>
+<style>
+:root{color-scheme:light;--paper:#f2e6cb;--light:#fff7e6;--ink:#30251b;--dim:#78684f;--red:#a3432e;--rule:#b9a177;--teal:#22685d}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:#dfccaa;color:var(--ink);font-family:"Microsoft YaHei",sans-serif;line-height:1.75}main{max-width:1440px;margin:24px auto;padding:28px;background:var(--paper);border:1px solid var(--rule)}header{border-bottom:2px solid var(--red);padding-bottom:18px}h1,h2{font-family:KaiTi,serif;font-weight:normal}h1{font-size:40px;margin:4px 0 10px}h2{font-size:28px;margin:28px 0 10px}p{margin:10px 0}a{color:var(--red)}.tag{font-size:13px;letter-spacing:2px;color:var(--red)}nav,.switches,.points{display:flex;gap:10px 18px;flex-wrap:wrap}nav{font-size:14px;margin-top:12px}.points{padding:14px 18px;border:1px solid var(--rule);background:var(--light)}.points span{flex:1 1 240px}.switches{margin-top:18px;gap:8px}button{cursor:pointer;font:inherit;font-size:14px;padding:9px 16px;color:var(--red);background:var(--light);border:1px solid var(--red)}button[aria-pressed="true"]{background:var(--red);color:var(--light)}button:focus-visible{outline:3px solid var(--teal);outline-offset:3px}figure{margin:14px 0}img{display:block;width:100%;height:auto;border:1px solid var(--rule)}figcaption,.small{font-size:14px;color:var(--dim)}figcaption{margin-top:8px}.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;background:var(--light);font-size:14px}th,td{text-align:left;padding:12px;vertical-align:top;border:1px solid var(--rule)}th{color:var(--red)}details{margin:14px 0}summary{cursor:pointer;color:var(--red)}footer{border-top:1px solid var(--rule);margin-top:28px;padding-top:12px;color:var(--dim);font-size:13px}kbd{font:inherit;border:1px solid var(--rule);background:var(--light);padding:1px 5px}
+@media(max-width:760px){main{margin:0;padding:16px}h1{font-size:30px}h2{font-size:25px}button{padding:8px 10px}.points{gap:8px}.points span{flex-basis:100%}}@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}@media print{main{max-width:none;margin:0;border:0;padding:0}nav,.switches{display:none}figure,table{break-inside:avoid}}
+</style>
+</head>
+<body><main>
+<header>
+<div class="tag">拍案三国 · v2.4 · 2026.10.10</div>
+<h1>石街、纸牌与落掌的分量</h1>
+<p>根据已确认的城池效果图强化实机表现：铺石街巷与庭院更有层次，卡牌更清楚，落掌与赚钱有可见反馈。顶部与上阵栏收紧，让更多城池留在画面中。</p>
+<nav><a href="#compare">实机前后对比</a><a href="#changes">表现改动</a><a href="#art">生成城图</a><a href="#checks">验证记录</a><a href="实施说明.md">实施说明</a></nav>
+</header>
+<section id="compare">
+<h2>全宽查看 · 实机前后对比</h2>
+<div class="switches" role="group" aria-label="切换实机截图">
+<button type="button" data-shot="after" aria-pressed="true">本轮实机</button>
+<button type="button" data-shot="before" aria-pressed="false">上一版实机</button>
+<button type="button" data-shot="hit" aria-pressed="false">落掌与收入</button>
+<button type="button" data-shot="compact" aria-pressed="false">1280 × 720</button>
+<button type="button" data-shot="folded" aria-pressed="false">小地图收起</button>
+</div>
+<figure><a id="shot-link" href="play.png"><img id="shot" src="play.png" alt="v2.4新野实机，石街与庭院有层次，卡牌分散，上下HUD更紧凑"></a><figcaption id="shot-caption" aria-live="polite">本轮实机，1280×800：石路、土院与建筑阴影形成层次；卡牌有独立纸边和投影，右上角小地图沿用真实牌点与视野框。</figcaption></figure>
+<p class="small">以上均为 Godot 实机截图。切换按钮比较同类视野，点图查看原尺寸；生成的概念图另列在下方。</p>
+</section>
+<section id="changes">
+<h2>这轮强化了什么</h2>
+<div class="points"><span><strong>城池更有深浅</strong><br>灰米色石路、赭色土院与外围建筑形成街区，墨线和屋檐阴影更清楚。</span><span><strong>纸牌落在地上</strong><br>卡面字与血条更易读，独立纸边和阴影让牌从背景中凸显。</span><span><strong>落掌与收入相连</strong><br>掌风、纸屑与铜钱提供短促反馈；收入浮字保持屏幕尺寸，避开目标牌。</span></div>
+<div class="table-wrap"><table>
+<thead><tr><th>部位</th><th>本轮变化</th></tr></thead><tbody>
+<tr><td>城内布局</td><td>在安全间距内加入轻微错落，保留纸牌之间的空隙，弱化整齐网格感。</td></tr>
+<tr><td>上下界面</td><td>顶栏约76px，上阵栏约112px。小肖像保留名字与状态；操作提示与进度放在右侧，多携带位可横向查看。</td></tr>
+<tr><td>瞄准反馈</td><td>范围圆圈和命中计数保留；计数避开目标牌边界，避免压住血条。</td></tr>
+<tr><td>小地图</td><td>仍在右上角，增加双层纸框与城名题签；<kbd>M</kbd>、标题与按钮可收起、展开，点击或拖动定位。</td></tr>
+<tr><td>拍击规则</td><td>继续使用圆圈单击、共享冷却与金币即时入账；本轮沿用原有升级与经济参数。</td></tr>
+</tbody></table></div>
+</section>
+<section id="art">
+<h2>新生成城图 · 已接入主场地与小地图</h2>
+<figure><a href="../../assets/art_v12/city_world.png"><img src="../../assets/art_v12/city_world.png" loading="lazy" alt="内置ImageGen生成的新野城图，灰米色石路、土色庭院、墨线屋檐、园林与河道"></a><figcaption>以原城图为编辑目标、已确认效果图为风格参考，由内置 ImageGen 生成。建筑仍沿外围布置，中央保留可摆牌的连续空地。</figcaption></figure>
+<p>卡牌、光标、牌点、视野框与拍击反馈由游戏实时绘制。<a href="../../assets/art_v12/generation.json">完整提示词、参考图与素材路径</a>已保存。</p>
+<details><summary>查看参考画面</summary><p><a href="../ui-concepts/city-exploration-v2/01-normal.png">已确认的城池概念图</a> · <a href="../city-exploration-v2.3/index.html">v2.3实机与地图方案</a></p></details>
+</section>
+<section id="checks">
+<h2>回归与实机验证</h2>
+<div class="table-wrap"><table><thead><tr><th>检查</th><th>已通过</th></tr></thead><tbody><tr><td>城池探索</td><td>208 / 208</td></tr><tr><td>城池范围</td><td>230 / 230</td></tr><tr><td>赚钱循环</td><td>438 / 438</td></tr><tr><td>升级页</td><td>160 / 160</td></tr><tr><td>卡牌美术</td><td>5569 / 5569</td></tr></tbody></table></div>
+<p class="small">五组回归检查全部通过，共6605项，错误数为0。覆盖分散布局、镜头与地图、范围命中、收入和升级；21张新野开局与180张布局压力检查均保留安全间距。</p>
+<p id="final-check-status" class="small">最终范围230项再次通过；小地图实际GUI六项检查通过，涵盖M键、标题与按钮收放、点击定位、地图区域滚动输入。最终800与720高度实机已目视复核，渲染日志无错误。</p>
+</section>
+<footer>Godot 4.7.1 · 2026-10-10 · 实机截图与测试使用独立存档 · 本轮强化表现，沿用原有玩法与存档。</footer>
+</main>
+<script>
+const shots={
+after:{src:'play.png',alt:'v2.4新野实机，石街与庭院有层次，卡牌分散，上下HUD更紧凑',caption:'本轮实机，1280×800：石路、土院与建筑阴影形成层次；卡牌有独立纸边和投影，右上角小地图沿用真实牌点与视野框。'},
+before:{src:'../city-exploration-v2.3/play-expanded.png',alt:'v2.3新野实机，较均匀的土色地面和较高的上阵栏',caption:'上一版实机，1280×800：同类默认镜头。可对比地面层次、卡牌布局与上下栏占用的高度。'},
+hit:{src:'hit.png',alt:'v2.4实机拍击一张牌，显示即时收入与伤害浮字',caption:'真实单击拍中一张牌：造成1.9伤害，即时获得0.855金币；收入浮字显示为+0.9金，保持屏幕尺寸。'},
+compact:{src:'play-720.png',alt:'v2.4在1280×720窗口中的实机布局',caption:'1280×720实机：紧凑顶栏和上阵栏为城池腾出高度，肖像名字、状态与右上角地图保留。'},
+folded:{src:'folded.png',alt:'v2.4实机镜头移到城池中部，小地图收起，右上角保留地图M入口',caption:'实际GUI操作后移到城池中部并收起小地图：右上角保留地图M入口，滚轮缩放与鼠标靠边巡城继续可用。此图用于展示收起状态，与默认视野的位置不同。'}
+};
+const buttons=[...document.querySelectorAll('[data-shot]')],picture=document.querySelector('#shot'),caption=document.querySelector('#shot-caption'),link=document.querySelector('#shot-link');
+function choose(key){const item=shots[key];if(!item)return;buttons.forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.shot===key)));picture.src=item.src;picture.alt=item.alt;caption.textContent=item.caption;link.href=item.src;}
+buttons.forEach(button=>button.addEventListener('click',()=>choose(button.dataset.shot)));
+</script>
+</body></html>

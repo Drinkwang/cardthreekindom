@@ -12,6 +12,7 @@ var route_by_name: Dictionary = {}
 var packs: Array = []
 var buildings: Array = []
 var building_by_id: Dictionary = {}
+var _effect_display_cache: Dictionary = {}
 
 
 func _ready() -> void:
@@ -20,6 +21,9 @@ func _ready() -> void:
 	routes = _load_array("routes")
 	packs = _load_array("packs")
 	buildings = _load_array("buildings")
+	preload("res://scripts/building_traits.gd").apply(buildings, cards)
+	preload("res://scripts/progression_rules.gd").apply(cards, regions)
+	preload("res://scripts/ancient_setting.gd").apply(cards, buildings)
 	enemies_by_region = _load_dict("enemies")
 
 	for c in cards:
@@ -71,6 +75,29 @@ func card(id: String) -> Dictionary:
 func card_name(id: String) -> String:
 	var c: Dictionary = card_by_id.get(id, {})
 	return c.get("name", id)
+
+
+func effect_text(data: Dictionary) -> String:
+	# 解析仍读原词条；页面显示它在限时轮中实际提供的时长。
+	var original := str(data.get("effect", ""))
+	if _effect_display_cache.has(original): return _effect_display_cache[original]
+	var result := original
+	var pattern := RegEx.new()
+	pattern.compile("(?:体力|耐力)上限 \\+([0-9]+(?:\\.[0-9]+)?)(%)?")
+	var matches := pattern.search_all(result)
+	for i in range(matches.size() - 1, -1, -1):
+		var found: RegExMatch = matches[i]
+		var value := float(found.get_string(1))
+		var replacement := "每轮时长 +%s%%" % found.get_string(1) if found.get_string(2) == "%" else "每轮时长 +%s秒" % str(value * 2.0).trim_suffix(".0")
+		result = result.substr(0, found.get_start()) + replacement + result.substr(found.get_end())
+	pattern.compile("每关额外 ([0-9]+) 次点击")
+	matches = pattern.search_all(result)
+	for i in range(matches.size() - 1, -1, -1):
+		var found: RegExMatch = matches[i]
+		var replacement := "每轮时长 +%d秒" % (int(found.get_string(1)) * 2)
+		result = result.substr(0, found.get_start()) + replacement + result.substr(found.get_end())
+	_effect_display_cache[original] = result
+	return result
 
 
 func region(idx: int) -> Dictionary:

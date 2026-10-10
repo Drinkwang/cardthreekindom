@@ -1,24 +1,30 @@
-extends PanelContainer
+extends Control
 class_name PaanHome
+const Art = preload("res://scripts/ui/print_art.gd")
+const UISkin = preload("res://scripts/ui/ui_skin.gd")
+const DeckView = preload("res://scripts/deck_view.gd")
+const UpgradeView = preload("res://scripts/upgrade_view.gd")
 ## 《拍案三国》大本营 —— 全屏覆盖层。
 ##
-## 这是「局与局之间」的落脚点：耐力耗尽 -> 强制结算 -> 回到这里。
-##   左栏：技能树（v1.1 分三层 + 浅前置）—— 耐力 / 拍力 / 携带位 / 暴击 / 财路 /
-##        挂机效率 / 装备槽 / **武将带兵**；金币的主去处
-##   中栏：出征（上一次结算战报 + 推荐目标 + 出战 / 打开舆图）
-##   右栏：上阵（携带位 + 逐个武将升级 + **每个武将各自的装备巢与兵位**）/ 城建入口
+## 这是「轮与轮之间」的落脚点：限时拍击 -> 金币入账 -> 升级再来一轮。
+##   首页：商店 / 构筑 / 升级 / 基建四块插画入口。
+##   构筑与升级在内部子页整备；商店与基建交由主界面打开对应整页。
+##   战果独立保留在底栏，不随购买、换装或返回营地而丢失。
 ##
-## 主界面永远是一张桌子；大本营只是盖在它上面的另一层，不替代拍卡。
+## 主界面是一座城的牌堆；大本营盖在牌场之上，供轮与轮之间整备。
 
 signal deploy(idx: int)          # 出战某个区域
 signal request_map()             # 打开荆州舆图
 signal request_city()            # 打开全屏城建
+signal request_shop()            # 打开全屏商店
+signal request_journal()         # 回看军中札记
+signal practice_requested(idx: int) # 练习已掌握的城池牌堆
 signal closed()                  # 收起大本营
 
-# ── S5「90 年代怀旧印刷」纸面配色 ────────────────────────────────
+# ── 传统套色印刷纸面配色 ────────────────────────────────
 # 深色主题是给屏幕的，这套是给纸的：所有文字都是「纸上的墨」。
 # 底色与 ui/panel.png 的主色对齐 —— 拿不到纹理时回退成纯色也不会跳色。
-const BG_DIR := "res://assets/bg/"
+const BG_DIR := "res://assets/art_v2/backgrounds/"
 const UI_DIR := "res://assets/ui/"
 const PANEL_MARGIN := 14.0                       # ui/panel.png（源 112×112，边框 14px）
 const PAPER := Color(0.933, 0.894, 0.796)        # 中性新闻纸（= ui/panel.png 主色）
@@ -39,7 +45,6 @@ const ROUTE_COLOR := {
 	"群雄线": Color(0.52, 0.36, 0.06),
 	"通用": Color(0.42, 0.40, 0.36),
 	"起点": Color(0.42, 0.40, 0.36),
-	"现实线": Color(0.37, 0.21, 0.47),
 }
 
 var _title: Label
@@ -48,13 +53,34 @@ var _up_box: VBoxContainer
 var _mid_box: VBoxContainer
 var _right_box: VBoxContainer
 var _foot: Label
+var _section := "hub"
+var _hub_tiles: Dictionary = {}
+var _primary_action: Button
+var _secondary_action: Button
+var _hub_page: GridContainer
+var _section_page: VBoxContainer
+var _section_tools: HBoxContainer
+var _section_content: VBoxContainer
+var _outcome_box: HBoxContainer
+var _back_button: Button
+var _build_tab := "上阵"
+var _camp_atlas: Texture2D
+var _deck_page: Control
+var _upgrade_page: Control
+var _outcome_signature := ""
+var _progression_panel: PanelContainer
+var _progression_goal: Label
+var _practice_note: Label
+var _practice_button: Button
+var _automation_toggle: CheckButton
 
 
 func _ready() -> void:
+	theme = Art.theme()
 	set_anchors_preset(Control.PRESET_FULL_RECT)
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	add_theme_stylebox_override("panel", StyleBoxEmpty.new())
-	add_child(_bg_rect("home.png"))   # 旧屋书桌：大本营 = 把一堆摊开的纸铺在桌上
+	add_child(_bg_rect("table.png"))
 	_build()
 
 
@@ -63,8 +89,33 @@ func _ready() -> void:
 func open_home() -> void:
 	_fit_to_parent()
 	visible = true
-	refresh()
+	return_to_hub()
 	_fit_to_parent()
+
+
+func open_section(section: String) -> void:
+	var aliases := {"商店": "shop", "构筑": "deck", "build": "deck", "升级": "upgrade", "基建": "base", "city": "base"}
+	var key := str(aliases.get(section, section))
+	if key == "shop":
+		request_shop.emit()
+		return
+	if key == "base":
+		request_city.emit()
+		return
+	if key not in ["deck", "upgrade"]:
+		return_to_hub()
+		return
+	_section = key
+	if is_node_ready():
+		_fit_to_parent()
+		visible = true
+		refresh()
+
+
+func return_to_hub() -> void:
+	_section = "hub"
+	if is_node_ready():
+		refresh()
 
 
 func _fit_to_parent() -> void:
@@ -83,129 +134,489 @@ func _fit_to_parent() -> void:
 # 静态骨架
 # =====================================================================
 func _build() -> void:
-	# 四周留缝：底图要能从纸边透出来，「摊在桌上」才成立
 	var outer := MarginContainer.new()
-	outer.add_theme_constant_override("margin_left", 12)
-	outer.add_theme_constant_override("margin_right", 12)
-	outer.add_theme_constant_override("margin_top", 12)
-	outer.add_theme_constant_override("margin_bottom", 12)
+	outer.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	for side in ["left", "right", "top", "bottom"]:
+		outer.add_theme_constant_override("margin_" + side, 22 if side in ["left", "right"] else 20)
 	add_child(outer)
-
-	var vb := VBoxContainer.new()
-	vb.add_theme_constant_override("separation", 8)
-	outer.add_child(vb)
-	vb.add_child(_build_top())
-
-	var mid := HBoxContainer.new()
-	mid.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	mid.add_theme_constant_override("separation", 0)
-	vb.add_child(mid)
-
-	# 左：升级树
-	var lp := PanelContainer.new()
-	lp.custom_minimum_size = Vector2(392, 0)
-	lp.add_theme_stylebox_override("panel", _paper_panel())
-	var lscroll := ScrollContainer.new()
-	lscroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	lp.add_child(lscroll)
-	_up_box = VBoxContainer.new()
-	_up_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_up_box.add_theme_constant_override("separation", 6)
-	lscroll.add_child(_up_box)
-	mid.add_child(lp)
-
-	# 中：出征
-	var mp := PanelContainer.new()
-	mp.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	mp.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	mp.add_theme_stylebox_override("panel", _paper_panel())
-	var mscroll := ScrollContainer.new()
-	mscroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	mp.add_child(mscroll)
-	_mid_box = VBoxContainer.new()
-	_mid_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_mid_box.add_theme_constant_override("separation", 6)
-	mscroll.add_child(_mid_box)
-	mid.add_child(mp)
-
-	# 右：上阵 / 装备 / 城建
-	var rp := PanelContainer.new()
-	rp.custom_minimum_size = Vector2(380, 0)
-	rp.add_theme_stylebox_override("panel", _paper_panel())
-	var rscroll := ScrollContainer.new()
-	rscroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	rp.add_child(rscroll)
-	_right_box = VBoxContainer.new()
-	_right_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_right_box.add_theme_constant_override("separation", 5)
-	rscroll.add_child(_right_box)
-	mid.add_child(rp)
-
-	# 底：提示
-	var bot := PanelContainer.new()
-	bot.custom_minimum_size = Vector2(0, 46)
-	bot.add_theme_stylebox_override("panel", _paper_panel())
-	_foot = _mk_label("", 13, INK2)
-	bot.add_child(_foot)
-	vb.add_child(bot)
+	var paper_frame := PanelContainer.new()
+	paper_frame.add_theme_stylebox_override("panel", UISkin.panel(Art.PAPER, 12, Art.INK, 1))
+	UISkin.chrome(paper_frame, "paper")
+	outer.add_child(paper_frame)
+	var page := VBoxContainer.new()
+	page.add_theme_constant_override("separation", 14)
+	paper_frame.add_child(page)
+	page.add_child(_build_top())
+	page.add_child(_build_progression_strip())
+	var body := Control.new()
+	body.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	page.add_child(body)
+	_hub_page = GridContainer.new()
+	_hub_page.name = "CampHub"
+	_hub_page.columns = 2
+	_hub_page.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_hub_page.add_theme_constant_override("h_separation", 18)
+	_hub_page.add_theme_constant_override("v_separation", 18)
+	body.add_child(_hub_page)
+	var entries := [
+		["shop", "商店", "买卡包", "壹", "shop"],
+		["deck", "构筑", "配将牌", "贰", "cards"],
+		["upgrade", "升级", "练掌扩圈", "叁", "stamina"],
+		["base", "基建", "经营城池", "肆", "city"],
+	]
+	for i in range(entries.size()):
+		var entry: Array = entries[i]
+		var tile := _build_hub_tile(str(entry[0]), str(entry[1]), str(entry[2]), str(entry[3]), str(entry[4]), i)
+		_hub_tiles[str(entry[0])] = tile
+		_hub_page.add_child(tile)
+	_section_page = VBoxContainer.new()
+	_section_page.name = "CampSection"
+	_section_page.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_section_page.add_theme_constant_override("separation", 12)
+	body.add_child(_section_page)
+	_section_tools = HBoxContainer.new()
+	_section_tools.add_theme_constant_override("separation", 12)
+	_section_page.add_child(_section_tools)
+	var sheet := PanelContainer.new()
+	sheet.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	sheet.add_theme_stylebox_override("panel", UISkin.panel(Art.PAPER, 18, Art.RULE, 1))
+	UISkin.chrome(sheet, "paper")
+	_section_page.add_child(sheet)
+	var scroll := ScrollContainer.new()
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	sheet.add_child(scroll)
+	_section_content = VBoxContainer.new()
+	_section_content.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_section_content.add_theme_constant_override("separation", 12)
+	scroll.add_child(_section_content)
+	_up_box = _section_content
+	_mid_box = _section_content
+	_right_box = _section_content
+	_deck_page = DeckView.new()
+	_deck_page.name = "DeckSection"
+	_deck_page.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	body.add_child(_deck_page)
+	_upgrade_page = UpgradeView.new()
+	_upgrade_page.name = "UpgradeSection"
+	_upgrade_page.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	body.add_child(_upgrade_page)
+	var outcome := PanelContainer.new()
+	outcome.name = "CampOutcome"
+	outcome.custom_minimum_size.y = 108
+	outcome.add_theme_stylebox_override("panel", UISkin.panel(Art.PAPER_LIGHT, 20, Art.GOLD, 1))
+	UISkin.chrome(outcome, "footer")
+	page.add_child(outcome)
+	_outcome_box = HBoxContainer.new()
+	_outcome_box.add_theme_constant_override("separation", 20)
+	outcome.add_child(_outcome_box)
+	refresh()
 
 
 func _build_top() -> Control:
 	var top := PanelContainer.new()
-	top.custom_minimum_size = Vector2(0, 58)
+	top.custom_minimum_size = Vector2(0, 80)
 	top.add_theme_stylebox_override("panel", _paper_panel())
+	UISkin.chrome(top, "header")
 	var th := HBoxContainer.new()
 	th.add_theme_constant_override("separation", 16)
 	top.add_child(th)
-
-	_title = _mk_label("大本营", 22, ACCENT)
+	th.add_child(Art.stamp("营", Vector2(45, 46)))
+	_title = _mk_label("大本营", 42, INK)
 	th.add_child(_title)
-	_stats = _mk_label("", 14, INK2)
+	var space := Control.new()
+	space.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	th.add_child(space)
+	_stats = _mk_label("", 15, INK2)
 	th.add_child(_stats)
-
-	var sp := Control.new()
-	sp.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	th.add_child(sp)
-
-	var bmap := Button.new()
-	bmap.text = "荆州舆图"
-	bmap.pressed.connect(func(): request_map.emit())
-	th.add_child(bmap)
-
-	var bcity := Button.new()
-	bcity.text = "城建"
-	bcity.pressed.connect(func(): request_city.emit())
-	th.add_child(bcity)
-
+	var journal := Button.new()
+	journal.name = "CampJournal"
+	journal.text = "札记"
+	journal.custom_minimum_size = Vector2(70, 40)
+	UISkin.button(journal, false, true)
+	journal.add_theme_font_size_override("font_size", 15)
+	journal.tooltip_text = "回看军中札记与荆州征途。"
+	journal.pressed.connect(func(): request_journal.emit())
+	th.add_child(journal)
+	_back_button = Button.new()
+	_back_button.name = "ReturnToCamp"
+	_back_button.text = "返回大本营"
+	_back_button.custom_minimum_size = Vector2(138, 46)
+	UISkin.button(_back_button)
+	_back_button.pressed.connect(return_to_hub)
+	th.add_child(_back_button)
 	var bc := Button.new()
-	bc.text = "✕  收起"
+	bc.name = "ReturnToMain"
+	bc.text = "← 返回主界面"
+	bc.custom_minimum_size = Vector2(175, 46)
+	UISkin.button(bc)
+	bc.add_theme_font_size_override("font_size", 17)
 	bc.pressed.connect(func(): closed.emit())
 	th.add_child(bc)
 	return top
+
+
+func _build_progression_strip() -> Control:
+	_progression_panel = PanelContainer.new()
+	_progression_panel.name = "CampProgression"
+	_progression_panel.add_theme_stylebox_override("panel", Art.panel(Art.PAPER_LIGHT, 8, Art.RULE, 1))
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 12)
+	_progression_panel.add_child(row)
+	row.add_child(Art.stamp("练", Vector2(29, 34)))
+	var words := VBoxContainer.new()
+	words.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	words.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	words.add_theme_constant_override("separation", 3)
+	row.add_child(words)
+	_progression_goal = _mk_label("", 15, INK)
+	_progression_goal.name = "CampNextGoal"
+	_progression_goal.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	words.add_child(_progression_goal)
+	_practice_note = _mk_label("", 12, DIM)
+	_practice_note.name = "CampPracticeIncome"
+	_practice_note.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	words.add_child(_practice_note)
+	_practice_button = Button.new()
+	_practice_button.name = "CampPractice"
+	_practice_button.custom_minimum_size = Vector2(116, 38)
+	_practice_button.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	UISkin.button(_practice_button, true, true)
+	_practice_button.pressed.connect(_on_practice)
+	row.add_child(_practice_button)
+	_automation_toggle = CheckButton.new()
+	_automation_toggle.name = "CampAutomation"
+	_automation_toggle.text = "自动赚钱"
+	_automation_toggle.custom_minimum_size.y = 38
+	_automation_toggle.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	_automation_toggle.toggled.connect(_on_automation)
+	row.add_child(_automation_toggle)
+	return _progression_panel
+
+
+func _refresh_progression() -> void:
+	if _progression_panel == null:
+		return
+	_progression_panel.visible = _section not in ["deck", "upgrade"]
+	_progression_goal.text = GameState.progression_hint()
+	_progression_goal.tooltip_text = _progression_goal.text
+	var unlocked := GameState.practice_unlocked()
+	var idx := GameState.practice_region if GameState.practice_region > 0 else 1
+	var name := str(GameData.region(idx).get("name", "新野"))
+	_practice_button.text = "再拍" + name
+	_practice_button.disabled = not unlocked or GameState.in_battle
+	_practice_button.tooltip_text = "再拍一轮已掌握的城池牌堆，首次奖励只领取一次。" if unlocked else "先清完新野牌堆第 1 段，开放反复赚钱。"
+	_automation_toggle.disabled = not GameState.auto_unlocked()
+	_automation_toggle.set_pressed_no_signal(GameState.automation_enabled)
+	_automation_toggle.tooltip_text = "自动拍击已掌握的城池牌堆，赚取金币供下一次升级。" if GameState.auto_unlocked() else "清完新野牌堆第 2 段，在升级页学会自动拍。"
+	if unlocked and GameState.auto_unlocked():
+		_practice_note.text = "自动基础 ≥ %s 金币 / 分（联动另计）　·　%s" % [_pw(GameState.practice_rate()), "自动赚钱中，随时可停" if GameState.automation_enabled else "自动拍只练已掌握牌堆"]
+	elif unlocked:
+		_practice_note.text = "每轮 %.0f 秒 · %.2f 拍 / 秒 · 第 2 段后可学自动拍" % [GameState.round_duration_value(), 1.0 / GameState.slap_interval()]
+	else:
+		_practice_note.text = "每轮 %.0f 秒 · 单击圆圈内卡牌赚钱 · 清堆后自动补牌" % GameState.round_duration_value()
+	_practice_note.tooltip_text = _practice_note.text
 
 
 # =====================================================================
 # 刷新
 # =====================================================================
 func refresh() -> void:
-	if _up_box == null:
+	if _hub_page == null:
 		return
-	_title.text = "大本营"
-	_stats.text = "Lv.%d　·　第 %d 趟　·　金币 %s　·　战力 %.1f　·　耐力 %d" % [
-		GameState.player_level(), GameState.runs, GameState.fmt(GameState.gold),
-		GameState.deck_power(), GameState.stamina_max_value()]
-	_fill_upgrades()
-	_fill_mid()
-	_fill_right()
-	_foot.text = "升级 → 出征 → 耐力耗尽强制结算 → 回大本营。金币是唯一带得出来的东西。" \
-		+ "　·　未克服的区域每次进场都满血重来"
+	_title.text = {"hub": "大本营", "deck": "构筑 · 将牌册", "upgrade": "升级 · 练掌堂"}.get(_section, "大本营")
+	_stats.text = "金币 %s　·　每轮 %.0f 秒\n拍力 %s　·　范围 %s　·　%.2f 拍 / 秒" % [GameState.fmt(GameState.gold), GameState.round_duration_value(), _pw(GameState.click_damage()), _pw(GameState.slap_radius()), 1.0 / GameState.slap_interval()]
+	_hub_page.visible = _section == "hub"
+	_section_page.visible = false
+	_deck_page.visible = _section == "deck"
+	_upgrade_page.visible = _section == "upgrade"
+	_back_button.visible = _section != "hub"
+	_refresh_progression()
+	for key in _hub_tiles:
+		var tile := _hub_tiles[key] as Button
+		var status := tile.get_meta("status_label") as Label
+		match str(key):
+			"shop": status.text = "补充你的三国牌"
+			"deck": status.text = "已上阵 %d / %d" % [GameState.carry.size(), GameState.carry_max()]
+			"upgrade": status.text = "拍力 · 拍速 · 范围 · 时长"
+			"base": status.text = "%s / 小时" % GameState.fmt(GameState.gold_per_hour()) if GameState.city_unlocked() else GameState.city_unlock_text()
+	_clear(_section_tools)
+	if _section == "upgrade":
+		_upgrade_page.refresh()
+	elif _section == "deck":
+		_deck_page.refresh()
+	var outcome_signature := str(GameState.last_outcome) + str(GameState.in_battle) + str(GameState.battle_region) + str(GameState.up)
+	if outcome_signature != _outcome_signature or _outcome_box.get_child_count() == 0:
+		_outcome_signature = outcome_signature
+		_fill_outcome()
+	elif GameState.in_battle and _foot != null:
+		_foot.text = _active_round_note()
+	if _secondary_action != null:
+		_secondary_action.visible = _section != "upgrade"
+
+
+func _build_hub_tile(key: String, title: String, subtitle: String, _mark: String, icon: String, index: int) -> Button:
+	var compact := get_viewport_rect().size.y <= 740.0
+	var tile := Button.new()
+	tile.name = "Camp" + key.capitalize()
+	tile.custom_minimum_size = Vector2(420, 160 if compact else 185)
+	tile.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	tile.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	tile.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	tile.clip_contents = true
+	tile.tooltip_text = "进入" + title
+	tile.set_meta("section", key)
+	for state in ["normal", "hover", "pressed", "focus"]:
+		var shade := Art.PAPER_LIGHT.darkened(0.025 if state == "pressed" else 0.0)
+		tile.add_theme_stylebox_override(state, UISkin.panel(shade, 12, Art.RED, 2 if state in ["hover", "focus"] else 1))
+	var scene := TextureRect.new()
+	scene.texture = _camp_texture(index)
+	scene.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	scene.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+	scene.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	scene.offset_left = 7
+	scene.offset_right = -7
+	scene.offset_top = 7
+	scene.offset_bottom = -7
+	scene.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	tile.add_child(scene)
+	if scene.texture == null:
+		scene.texture = Art.nav_icon(icon)
+		scene.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		scene.anchor_left = 0.44
+	var wash := TextureRect.new()
+	var gradient := Gradient.new()
+	gradient.offsets = PackedFloat32Array([0.0, 0.27, 0.40, 0.55, 1.0])
+	gradient.colors = PackedColorArray([Color("f9edcf"), Color(0.976, 0.929, 0.812, 0.92), Color(0.976, 0.929, 0.812, 0.67), Color(0.976, 0.929, 0.812, 0.0), Color(0.976, 0.929, 0.812, 0.0)])
+	var wash_texture := GradientTexture2D.new()
+	wash_texture.gradient = gradient
+	wash_texture.fill_from = Vector2(0, 0)
+	wash_texture.fill_to = Vector2(1, 0)
+	wash.texture = wash_texture
+	wash.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	wash.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	wash.offset_left = 7
+	wash.offset_right = -7
+	wash.offset_top = 7
+	wash.offset_bottom = -7
+	wash.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	tile.add_child(wash)
+	var margin := MarginContainer.new()
+	margin.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	margin.add_theme_constant_override("margin_left", 28)
+	margin.add_theme_constant_override("margin_right", 20)
+	margin.add_theme_constant_override("margin_top", 14 if compact else 18)
+	margin.add_theme_constant_override("margin_bottom", 14 if compact else 18)
+	margin.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	tile.add_child(margin)
+	var row := HBoxContainer.new()
+	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	margin.add_child(row)
+	var words := VBoxContainer.new()
+	words.custom_minimum_size.x = 176
+	words.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	words.add_theme_constant_override("separation", 6 if compact else 9)
+	words.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	row.add_child(words)
+	var heading := HBoxContainer.new()
+	heading.add_theme_constant_override("separation", 11)
+	heading.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var name_label := _mk_label(title, 52 if compact else 64, Art.RED)
+	name_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	heading.add_child(name_label)
+	words.add_child(heading)
+	var caption := _mk_label(subtitle, 19 if compact else 22, INK2)
+	caption.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	words.add_child(caption)
+	var status := _mk_label("", 13, DIM)
+	status.custom_minimum_size.x = 176
+	status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	status.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	words.add_child(status)
+	tile.set_meta("status_label", status)
+	var space := Control.new()
+	space.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	space.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	row.add_child(space)
+	tile.pressed.connect(open_section.bind(key))
+	return tile
+
+
+func _camp_texture(index: int) -> Texture2D:
+	var path := "res://assets/art_v4/camp_atlas.png"
+	if _camp_atlas == null and ResourceLoader.exists(path):
+		_camp_atlas = load(path) as Texture2D
+	if _camp_atlas == null:
+		return null
+	var cell := _camp_atlas.get_size() / Vector2(2, 2)
+	var portrait := AtlasTexture.new()
+	portrait.atlas = _camp_atlas
+	portrait.region = Rect2(Vector2(index % 2, index / 2) * cell + Vector2(2, 2), cell - Vector2(4, 4))
+	portrait.filter_clip = true
+	return portrait
+
+
+func _build_deck_tabs() -> void:
+	for tab in ["上阵", "装备", "兵种"]:
+		var button := Button.new()
+		button.text = str(tab)
+		button.custom_minimum_size = Vector2(140, 44)
+		button.toggle_mode = true
+		button.button_pressed = _build_tab == tab
+		button.set_meta("deck_tab", tab)
+		if _build_tab == tab:
+			button.add_theme_stylebox_override("normal", Art.panel(Art.PAPER_LIGHT, 12, Art.RED, 2))
+			button.add_theme_stylebox_override("pressed", Art.panel(Art.PAPER_LIGHT, 12, Art.RED, 2))
+			button.add_theme_color_override("font_color", Art.RED)
+		button.pressed.connect(func():
+			_build_tab = str(tab)
+			refresh())
+		_section_tools.add_child(button)
+	var note := _mk_label("上阵后才计入战力；装备与士卒各归一将。", 13, DIM)
+	note.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_section_tools.add_child(note)
+
+
+func _fill_deck_section() -> void:
+	_clear(_right_box)
+	var total := "携带 %d / %d　·　装备部位 %d / 5　·　每将兵位 %d" % [GameState.carry.size(), GameState.carry_max(), GameState.equip_slots(), GameState.troop_slots()]
+	_right_box.add_child(_mk_label(total, 16, INK2))
+	if _build_tab == "上阵":
+		var hero := GameData.card(GameState.HERO_ALWAYS)
+		_right_box.add_child(_mk_label("%s · 主角常驻，不占携带位　·　战力 %s" % [hero.get("name", "?"), _pw(GameState.hero_power())], 15, INK))
+		_right_box.add_child(_mk_carry_menu())
+		var carry_grid := GridContainer.new()
+		carry_grid.columns = 2
+		carry_grid.add_theme_constant_override("h_separation", 14)
+		carry_grid.add_theme_constant_override("v_separation", 14)
+		_right_box.add_child(carry_grid)
+		for id in GameState.carry:
+			var card := _mk_carry_row(str(id), false)
+			card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			carry_grid.add_child(card)
+		if GameState.carry.is_empty():
+			_right_box.add_child(_mk_label("还没有上阵将牌。点击上方‘上阵武将’，挑一张已拥有的卡。", 14, DIM))
+		return
+	var equipment := _build_tab == "装备"
+	if equipment and GameState.equip_slots() <= 0:
+		_right_box.add_child(_mk_label("尚未解锁装备部位：在升级页点亮‘装备槽’。", 15, WARN))
+	elif not equipment and GameState.troop_slots() <= 0:
+		_right_box.add_child(_mk_label("尚未解锁兵位：在升级页点亮‘武将带兵’。", 15, WARN))
+	var grid := GridContainer.new()
+	grid.columns = 2
+	grid.add_theme_constant_override("h_separation", 14)
+	grid.add_theme_constant_override("v_separation", 14)
+	_right_box.add_child(grid)
+	var hero_count := 0
+	for id in GameState.carry:
+		var who := str(id)
+		if not GameState.is_hero(who):
+			continue
+		hero_count += 1
+		var card := PanelContainer.new()
+		card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		card.add_theme_stylebox_override("panel", Art.panel(Art.PAPER_LIGHT, 12, Art.RULE, 1))
+		var column := VBoxContainer.new()
+		column.add_theme_constant_override("separation", 10)
+		card.add_child(column)
+		var heading := HBoxContainer.new()
+		heading.add_theme_constant_override("separation", 12)
+		heading.add_child(Art.image(who, Vector2(64, 64)))
+		heading.add_child(_mk_label(GameData.card_name(who), 23, INK))
+		column.add_child(heading)
+		if equipment:
+			column.add_child(_mk_hero_nest(who, true, false))
+		else:
+			column.add_child(_mk_troop_row(who))
+		grid.add_child(card)
+	if hero_count == 0:
+		_right_box.add_child(_mk_label("先在‘上阵’页带上一位武将，再为他配装备、派士卒。", 14, DIM))
+
+
+func _fill_outcome() -> void:
+	_clear(_outcome_box)
+	_primary_action = null
+	_secondary_action = null
+	var result: Dictionary = {}
+	var outcome: Variant = GameState.get("last_outcome")
+	if outcome is Dictionary:
+		result = outcome
+	var idx := int(result.get("region", 0))
+	var valid := idx > 0 and not GameData.region(idx).is_empty() and str(result.get("result", "")) in ["cleared", "settled"]
+	var headline := "整备好，开始一轮"
+	var detail := ""
+	var mark := "拍"
+	var primary_text := "开始拍击"
+	var primary := Callable()
+	var secondary_text := "去升级"
+	var secondary: Callable = func(): open_section("upgrade")
+	if GameState.in_battle:
+		var region := GameData.region(GameState.battle_region)
+		headline = "%s · 本轮进行中" % region.get("name", "城池牌堆")
+		detail = _active_round_note()
+		primary_text = "继续拍击"
+		primary = func(): closed.emit()
+	elif valid:
+		var region := GameData.region(idx)
+		mark = "财"
+		headline = "%s · 本轮赚得 %s 金币" % [region.get("name", "?"), GameState.fmt(float(result.get("gold", 0.0)))]
+		detail = "%d 次拍击　·　拍翻 %d 张　·　已清 %d 段　·　升级范围，一掌拍更多" % [int(result.get("slaps", 0)), int(result.get("kills", 0)), int(result.get("tables_flipped", 0))]
+		primary_text = "再来一轮"
+		if GameState.region_status(idx) == "cleared":
+			primary = func(): practice_requested.emit(idx)
+		else:
+			primary = _on_deploy.bind(idx)
+	else:
+		idx = recommend_region()
+		if idx <= 0:
+			idx = GameState.practice_region if GameState.practice_region > 0 else 1
+		var region := GameData.region(idx)
+		headline = "%s · 每轮 %.0f 秒" % [region.get("name", "?"), GameState.round_duration_value()]
+		detail = "%.2f 拍 / 秒　·　预计可拍约 %d 次　·　单击圈内卡牌，清堆自动补牌" % [1.0 / GameState.slap_interval(), ceili(GameState.round_duration_value() / GameState.slap_interval())]
+		if GameState.region_status(idx) == "cleared":
+			primary = func(): practice_requested.emit(idx)
+		else:
+			primary = _on_deploy.bind(idx)
+	_outcome_box.add_child(Art.stamp(mark, Vector2(45, 54)))
+	var words := VBoxContainer.new()
+	words.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	words.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	words.add_theme_constant_override("separation", 5)
+	words.add_child(_mk_label(headline, 32, INK))
+	_foot = _mk_label(detail, 14, INK2)
+	_foot.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_foot.custom_minimum_size.x = 300
+	words.add_child(_foot)
+	_outcome_box.add_child(words)
+	_primary_action = Button.new()
+	_primary_action.name = "OutcomePrimaryAction"
+	_primary_action.text = primary_text
+	_primary_action.custom_minimum_size = Vector2(154, 52)
+	_primary_action.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	_style_primary(_primary_action)
+	if primary.is_valid():
+		_primary_action.pressed.connect(primary)
+	_outcome_box.add_child(_primary_action)
+	if secondary.is_valid():
+		_secondary_action = Button.new()
+		_secondary_action.name = "OutcomeSecondaryAction"
+		_secondary_action.text = secondary_text
+		_secondary_action.custom_minimum_size = Vector2(128, 52)
+		_secondary_action.add_theme_font_override("font", Art.title_font())
+		_secondary_action.add_theme_font_size_override("font_size", 22)
+		_secondary_action.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		UISkin.button(_secondary_action)
+		_secondary_action.pressed.connect(secondary)
+		_outcome_box.add_child(_secondary_action)
+
+
+func _active_round_note() -> String:
+	return "剩余 %.1f 秒　·　已赚 %s 金币　·　已拍 %d 次　·　继续本轮拍击" % [GameState.round_seconds_left, GameState.fmt(GameState.run_gold), GameState.round_slaps]
 
 
 func _fill_upgrades() -> void:
 	_clear(_up_box)
-	_up_box.add_child(_mk_label("技能树", 17, ACCENT))
-	_up_box.add_child(_mk_label("金币的主去处。局与局之间，你在这里变强。", 11, DIM))
-	_up_box.add_child(_mk_label("上层先点亮一个，下层才会开。前置只要求「点亮过一次」，不卡等级。", 11, DIM))
+	_up_box.add_child(_section_heading("壹", "练拍手册", "技能成长"))
+	_up_box.add_child(_mk_label("拍力翻厚牌，拍速多连拍，范围让圆圈变大、一次拍更多卡，时长增加本轮赚钱时间。", 12, DIM))
 	# v1.1：从平铺列表改成**分层技能树**（层级 / 前置见 GameState.SKILL_TREE）。
 	for t in GameState.SKILL_TIERS:
 		var nodes: Array = GameState.skills_of_tier(int(t))
@@ -251,38 +662,46 @@ func _mk_upgrade_row(u: Dictionary) -> Control:
 	hb.add_theme_constant_override("separation", 6)
 	p.add_child(hb)
 
-	var nm := _mk_label(str(u["name"]), 15, DIM if locked else INK)
+	var nm := _mk_label(str(u["name"]), 16, DIM if locked else INK)
 	nm.custom_minimum_size = Vector2(72, 0)
 	hb.add_child(nm)
 
 	var lvl := _mk_label("Lv.%d" % lv, 11, DIM)
+	if id in ["auto", "auto_next"]:
+		lvl.text = "已学会" if lv > 0 else "未学会"
 	lvl.custom_minimum_size = Vector2(40, 0)
 	hb.add_child(lvl)
 
 	var vt := "%s → %s" % [_fmtv(cur, u), "满" if maxed else _fmtv(nxt, u)]
-	var val := _mk_label(vt, 13, DIM if (maxed or locked) else (GOOD if afford else WARN))
-	val.custom_minimum_size = Vector2(132, 0)
-	hb.add_child(val)
+	if id == "auto":
+		vt = "自动拍击已开放" if lv > 0 else "解锁自动拍 · 从手动拍力的 25% 起步"
+	elif id == "auto_next":
+		vt = "自动再开一轮已开放" if lv > 0 else "解锁自动下一轮 · 休息后继续赚钱"
+	var val := _mk_label(vt, 14, DIM if (maxed or locked) else (GOOD if afford else WARN))
 
 	var sp := Control.new()
 	sp.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	hb.add_child(sp)
 
 	var b := Button.new()
+	b.set_meta("upgrade_id", id)
 	if maxed:
-		b.text = "已满级"
+		b.text = "已学会" if id in ["auto", "auto_next"] else "已满级"
 		b.disabled = true
 	elif locked:
 		b.text = "未解锁"
 		b.disabled = true
 	else:
-		b.text = "升级 %d" % cost
+		b.text = "%s %d" % ["解锁" if id in ["auto", "auto_next"] else "升级", cost]
 		b.disabled = not afford
 		b.pressed.connect(_on_buy.bind(id))
 	hb.add_child(b)
 
 	wrap.add_child(p)
-	wrap.add_child(_mk_label("　" + str(u["desc"]), 11, DIM))
+	wrap.add_child(val)
+	var description := _mk_label("　" + str(u["desc"]), 11, DIM)
+	description.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	wrap.add_child(description)
 	if locked:
 		wrap.add_child(_mk_label("　※ " + GameState.skill_req_text(id), 11, WARN))
 	return wrap
@@ -290,7 +709,7 @@ func _mk_upgrade_row(u: Dictionary) -> Control:
 
 func _fill_mid() -> void:
 	_clear(_mid_box)
-	_mid_box.add_child(_mk_label("出征", 17, ACCENT))
+	_mid_box.add_child(_section_heading("贰", "下一座城的牌堆", "出征"))
 
 	if GameState.last_settle != "":
 		_mid_box.add_child(_mk_label("上一次结算", 11, DIM))
@@ -310,17 +729,13 @@ func _fill_mid() -> void:
 	var accent: Color = ROUTE_COLOR.get(route, Color.GRAY)
 	var total_hp := float(r.get("total_hp", 0))
 	var dmg := GameState.click_damage()
-	var stamina := GameState.stamina_max_value()
-	var cap := dmg * float(stamina)
+	var available_slaps := ceili(GameState.round_duration_value() / GameState.slap_interval())
+	var cap := dmg * float(available_slaps)
 	var need := GameState.slaps_needed(idx)
 
-	_mid_box.add_child(_mk_label("下一桌（推荐 · 守军最薄的一处）", 11, DIM))
+	_mid_box.add_child(_mk_label("下一城（推荐 · 牌堆最薄的一处）", 11, DIM))
 	var p := PanelContainer.new()
-	var sb := StyleBoxFlat.new()
-	sb.bg_color = accent.lerp(PAPER, 0.86)
-	sb.border_color = accent
-	sb.set_border_width_all(1)
-	sb.set_corner_radius_all(7)
+	var sb := Art.panel(Art.PAPER_LIGHT, 10, Art.RULE, 1)
 	sb.content_margin_left = 10
 	sb.content_margin_right = 10
 	sb.content_margin_top = 8
@@ -329,18 +744,23 @@ func _fill_mid() -> void:
 	var pv := VBoxContainer.new()
 	pv.add_theme_constant_override("separation", 3)
 	p.add_child(pv)
-	pv.add_child(_mk_label("%d. %s" % [idx, r.get("name", "?")], 20, INK))
+	var city_title := HBoxContainer.new()
+	city_title.add_theme_constant_override("separation", 10)
+	city_title.add_child(Art.stamp(Art.faction_label(route), Vector2(34, 34), accent))
+	city_title.add_child(_mk_label("%02d  %s" % [idx, r.get("name", "?")], 25, INK))
+	pv.add_child(city_title)
+	pv.add_child(Art.image(Art.city_id(idx), Vector2(0, 150)))
 	pv.add_child(_mk_label("%s　·　%s　·　%s" % [route, r.get("county", ""), r.get("difficulty", "")], 12,
 		DIM))
 	pv.add_child(_mk_label("守军 %d 张　·　总血量 %s" % [int(r.get("enemy_count", 0)), GameState.fmt(total_hp)],
 		13, INK))
-	pv.add_child(_mk_label("你的伤害 %s / 拍　·　耐力 %d → 最多打出 %s" % [
-		_pw(dmg), stamina, GameState.fmt(cap)], 13, INK))
-	var verdict := "约需 %d 拍 —— 够了，能清" % need
+	pv.add_child(_mk_label("拍力 %s / 拍　·　每轮约 %d 拍 → 预计伤害 %s" % [
+		_pw(dmg), available_slaps, GameState.fmt(cap)], 13, INK))
+	var verdict := "拍力参考约 %d 拍清堆，扩大范围可同时命中更多卡" % need
 	var vcol := GOOD
-	if need > stamina:
-		verdict = "约需 %d 拍 —— 还差 %d 拍，先升级或换一处" % [need, need - stamina]
-		vcol = BAD
+	if need > available_slaps:
+		verdict = "拍力参考约 %d 拍清堆；先赚金币，提升拍力、拍速与范围" % need
+		vcol = WARN
 	pv.add_child(_mk_label(verdict, 14, vcol))
 	if GameState.city_unlocked():
 		pv.add_child(_mk_label("克服后：得城池卡「%s」· 建筑槽位 %d" % [
@@ -351,6 +771,7 @@ func _fill_mid() -> void:
 	var bd := Button.new()
 	bd.text = "出  战  ▶"
 	bd.custom_minimum_size = Vector2(0, 52)
+	_style_primary(bd)
 	bd.pressed.connect(_on_deploy.bind(idx))
 	_mid_box.add_child(bd)
 
@@ -382,8 +803,8 @@ func _fill_right() -> void:
 	_clear(_right_box)
 
 	# ---- 上阵 ----
-	_right_box.add_child(_mk_label("上阵（携带位）", 17, ACCENT))
-	_right_box.add_child(_mk_label("只有上阵的卡才算战力与被动；仓库里堆着的不算。", 11, DIM))
+	_right_box.add_child(_section_heading("叁", "我的将牌", "上阵与整备"))
+	_right_box.add_child(_mk_label("上阵的牌计入战力与被动。", 12, DIM))
 	var hero := GameData.card(GameState.HERO_ALWAYS)
 	_right_box.add_child(_mk_label("● %s　主角 · 常驻不占位　战力 %s" % [
 		hero.get("name", "?"), _pw(GameState.hero_power())], 12, INK))
@@ -404,7 +825,7 @@ func _fill_right() -> void:
 	else:
 		_right_box.add_child(_mk_label("已解锁 %d / 5 部位　·　每个武将各一套（士兵没有装备巢）" % [
 			GameState.equip_slots()], 11, GOOD))
-	_right_box.add_child(_mk_label("装备卡只从卡包开出，不再摆在桌上要你拍。装备巢就在下面每个武将的名字底下。", 11, DIM))
+	_right_box.add_child(_mk_label("装备来自卡包，直接挂到各武将名下。", 12, DIM))
 	if GameState.troop_slots() <= 0:
 		_right_box.add_child(_mk_label("兵位：未解锁 —— 点亮技能树「武将带兵」，士卒就能挂到武将麾下（不占携带位）。", 11, DIM))
 	else:
@@ -413,7 +834,7 @@ func _fill_right() -> void:
 
 	# ---- 城建（全屏） ----
 	_right_box.add_child(_mk_label("", 8))
-	_right_box.add_child(_mk_label("城建（挂机）", 17, ACCENT))
+	_right_box.add_child(_section_heading("肆", "城中生计", "建筑收益"))
 	if not GameState.city_unlocked():
 		_right_box.add_child(_mk_label("尚未解锁　·　%s" % GameState.city_unlock_text(), 12, WARN))
 		_right_box.add_child(_mk_label("克服区域 → 得城池卡（地基）→ 放建筑卡 → 建筑产钱。", 11, DIM))
@@ -430,15 +851,10 @@ func _fill_right() -> void:
 	_right_box.add_child(bc)
 
 
-## 上阵卡的一行：等级 / 被动 / 战力 / 升级 / 卸下
-## 只有「武将」能练级（士兵等是素材，不显示升级按钮，避免点了没反应）。
-func _mk_carry_row(id: String) -> Control:
+## 上阵卡的一行：品质 / 被动 / 战力 / 同名合成 / 卸下。
+func _mk_carry_row(id: String, include_nest: bool = true) -> Control:
 	var c := GameData.card(id)
 	var is_hero := GameState.is_hero(id)
-	var lv := GameState.hero_level(id)
-	var maxed := GameState.hero_lv_maxed(id)
-	var cost := GameState.hero_lv_cost(id)
-	var afford := GameState.gold >= float(cost)
 
 	var p := PanelContainer.new()
 	p.add_theme_stylebox_override("panel",
@@ -449,22 +865,22 @@ func _mk_carry_row(id: String) -> Control:
 
 	var top := HBoxContainer.new()
 	top.add_theme_constant_override("separation", 4)
+	top.add_child(Art.image(id, Vector2(64, 64)))
 	var nm := _mk_label("%s %s" % [str(c.get("name", "?")),
 		GameData.star_text(int(c.get("star", 0)))], 13, INK)
 	nm.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	top.add_child(nm)
 	if is_hero:
-		top.add_child(_mk_label("Lv.%d/%d" % [lv, GameState.hero_lv_max(id)], 11,
-			ACCENT if not maxed else DIM))
+		top.add_child(_mk_label(GameState.hero_quality_name(id), 11, ACCENT))
 	else:
 		top.add_child(_mk_label("素材", 11, DIM))
 	vb.add_child(top)
 
-	var eff := str(c.get("effect", ""))
+	var eff := GameData.effect_text(c)
 	if eff != "" and eff != "-":
 		var el := _mk_label(eff, 11, GOOD if is_hero else DIM)
 		el.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		el.custom_minimum_size = Vector2(330, 0)
+		el.custom_minimum_size = Vector2(288, 0)
 		vb.add_child(el)
 
 	var brow := HBoxContainer.new()
@@ -474,13 +890,10 @@ func _mk_carry_row(id: String) -> Control:
 	brow.add_child(plb)
 	if is_hero:
 		var up := Button.new()
-		if maxed:
-			up.text = "已练满"
-			up.disabled = true
-		else:
-			up.text = "升级 %d" % cost
-			up.disabled = not afford
-			up.pressed.connect(_on_hero_lv.bind(id))
+		up.text = "同名合成 %d / 3" % GameState.hero_fusion_stock(id)
+		up.disabled = not GameState.can_fuse_hero(id)
+		up.tooltip_text = "同名同品质 3 张 → 1 张更高品质；上阵和附着中的卡受到保护。"
+		up.pressed.connect(_on_hero_fuse.bind(id))
 		brow.add_child(up)
 	var rb := Button.new()
 	rb.text = "卸下"
@@ -490,7 +903,7 @@ func _mk_carry_row(id: String) -> Control:
 
 	# ⚠️ v1.1：装备巢 + 兵位**长在每个武将这一行里面**（每将独立，不再是全局 5 格）。
 	# 士兵没有装备巢（用户明确：「士兵没有装备巢」），所以只有武才会展开。
-	if is_hero:
+	if is_hero and include_nest:
 		vb.add_child(_mk_hero_nest(id))
 	return p
 
@@ -498,21 +911,22 @@ func _mk_carry_row(id: String) -> Control:
 ## ⚠️ v1.1：一个武将的**装备巢（五部位）+ 兵位**。
 ##   放进 _mk_carry_row 里面，让人一眼看出「这套装备是挂在这个武将身上的」——
 ##   这正是用户纠错的核心：装备巢不是全局的，是每个武将各自一套。
-func _mk_hero_nest(who: String) -> Control:
+func _mk_hero_nest(who: String, show_equipment: bool = true, show_troops: bool = true) -> Control:
 	var box := VBoxContainer.new()
 	box.add_theme_constant_override("separation", 2)
 
-	var used := GameState.hero_equip_of(who).size()
-	var slots := GameState.equip_slots()
-	box.add_child(_mk_label("　装备巢 %d / %d 部位" % [used, slots], 11,
-		GOOD if used > 0 else DIM))
-	if slots <= 0:
-		box.add_child(_mk_label("　　未解锁 —— 点亮技能树「装备槽」", 11, WARN))
-	for sub in GameState.EQUIP_SLOTS:
-		box.add_child(_mk_hero_equip_row(who, str(sub)))
+	if show_equipment:
+		var used := GameState.hero_equip_of(who).size()
+		var slots := GameState.equip_slots()
+		box.add_child(_mk_label("　装备巢 %d / %d 部位" % [used, slots], 11,
+			GOOD if used > 0 else DIM))
+		if slots <= 0:
+			box.add_child(_mk_label("　　未解锁 —— 点亮技能树「装备槽」", 11, WARN))
+		for sub in GameState.EQUIP_SLOTS:
+			box.add_child(_mk_hero_equip_row(who, str(sub)))
 
 	# 兵位：技能树「武将带兵」点亮后才有（0 兵位时这一行整块不显示）
-	if GameState.troop_cap(who) > 0:
+	if show_troops and GameState.troop_cap(who) > 0:
 		box.add_child(_mk_troop_row(who))
 	return box
 
@@ -520,7 +934,8 @@ func _mk_hero_nest(who: String) -> Control:
 ## 武将 who 的某个部位那一行：未解锁 / 空槽 / 已装。
 func _mk_hero_equip_row(who: String, sub: String) -> Control:
 	var unlocked := GameState.is_slot_unlocked(sub)
-	var col: Color = GameState.EQUIP_SLOT_COLOR.get(sub, Color(0.62, 0.62, 0.62))
+	var col: Color = {"兵器": Art.RED, "铠甲": Art.ROUTES["魏线"],
+		"坐骑": Art.GOLD, "兵书": Art.ROUTES["吴线"], "宝物": Art.RARITY[4]}.get(sub, Art.DIM)
 
 	var p := PanelContainer.new()
 	if unlocked:
@@ -539,7 +954,7 @@ func _mk_hero_equip_row(who: String, sub: String) -> Control:
 	var lb := _mk_label("", 12, INK)
 	lb.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	lb.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	lb.custom_minimum_size = Vector2(140, 0)
+	lb.custom_minimum_size = Vector2(110, 0)
 	hb.add_child(lb)
 
 	if not unlocked:
@@ -553,8 +968,9 @@ func _mk_hero_equip_row(who: String, sub: String) -> Control:
 		lb.add_theme_color_override("font_color", DIM)
 		hb.add_child(_mk_hero_equip_menu(who, sub))
 	else:
+		hb.add_child(Art.image(id, Vector2(28, 28)))
 		var c := GameData.card(id)
-		lb.text = "%s　%s" % [str(c.get("name", "?")), str(c.get("effect", ""))]
+		lb.text = "%s　%s" % [str(c.get("name", "?")), GameData.effect_text(c)]
 		var rb := Button.new()
 		rb.text = "卸下"
 		rb.pressed.connect(_on_unequip.bind(who, id))
@@ -581,7 +997,7 @@ func _mk_hero_equip_menu(who: String, sub: String) -> Control:
 		any = true
 		var owner := GameState.equip_owner(str(id))
 		var tag := "" if (owner == "" or owner == who) else "（在%s身上）" % GameData.card_name(owner)
-		pop.add_item("%s　%s%s" % [str(c.get("name", "?")), str(c.get("effect", "")), tag])
+		pop.add_icon_item(Art.texture(str(id)), "%s　%s%s" % [str(c.get("name", "?")), GameData.effect_text(c), tag])
 		pop.set_item_metadata(pop.item_count - 1, str(id))
 	if not any:
 		pop.add_item("（仓库里没有%s，去开卡包）" % sub)
@@ -613,6 +1029,7 @@ func _mk_troop_row(who: String) -> Control:
 
 	for tid in mine:
 		var row := HBoxContainer.new()
+		row.add_child(Art.image(str(tid), Vector2(28, 28)))
 		row.add_theme_constant_override("separation", 6)
 		var lb := _mk_label("　　%s　战力 %s" % [GameData.card_name(str(tid)),
 			_pw(float(GameData.card(str(tid)).get("power", 0.0)))], 12, INK)
@@ -646,7 +1063,7 @@ func _mk_troop_menu(who: String) -> Control:
 			continue
 		any = true
 		var tag := "" if owner == "" else "（在%s麾下）" % GameData.card_name(owner)
-		pop.add_item("%s %s　战力 %s%s" % [GameData.card_name(sid),
+		pop.add_icon_item(Art.texture(sid), "%s %s　战力 %s%s" % [GameData.card_name(sid),
 			GameData.star_text(int(GameData.card(sid).get("star", 0))),
 			_pw(float(GameData.card(sid).get("power", 0.0))), tag])
 		pop.set_item_metadata(pop.item_count - 1, sid)
@@ -671,7 +1088,7 @@ func _mk_carry_menu() -> Control:
 			continue
 		any = true
 		var c := GameData.card(str(id))
-		pop.add_item("%s %s　战力 %s" % [c.get("name", "?"), GameData.star_text(int(c.get("star", 0))),
+		pop.add_icon_item(Art.texture(str(id)), "%s %s　战力 %s" % [c.get("name", "?"), GameData.star_text(int(c.get("star", 0))),
 			_pw(GameState.hero_card_power(str(id)))])
 		pop.set_item_metadata(pop.item_count - 1, str(id))
 	if not any:
@@ -692,8 +1109,18 @@ func _on_carry(id: String) -> void:
 	GameState.carry_remove(id)
 
 
-func _on_hero_lv(id: String) -> void:
-	GameState.buy_hero_lv(id)
+func _on_hero_fuse(id: String) -> void:
+	GameState.fuse_hero(id)
+
+
+func _on_practice() -> void:
+	var idx := GameState.practice_region if GameState.practice_region > 0 else 1
+	practice_requested.emit(idx)
+
+
+func _on_automation(enabled: bool) -> void:
+	GameState.set_automation(enabled)
+	_refresh_progression()
 
 
 ## v1.1：装备是每将独立的，所以卸下必须知道「从谁身上」。
@@ -751,9 +1178,32 @@ func recommend_region() -> int:
 func _mk_label(text: String, size: int, color: Color = INK) -> Label:
 	var l := Label.new()
 	l.text = text
-	l.add_theme_font_size_override("font_size", size)
+	l.add_theme_font_size_override("font_size", maxi(12, size) if size > 4 else size)
 	l.add_theme_color_override("font_color", color)
+	if size >= 17:
+		l.add_theme_font_override("font", Art.title_font())
+	if text.length() > 26 and size <= 14:
+		l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		l.custom_minimum_size.x = 180
 	return l
+
+
+func _section_heading(mark: String, title: String, note: String) -> Control:
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 9)
+	row.add_child(Art.stamp(mark, Vector2(34, 36)))
+	var titles := VBoxContainer.new()
+	titles.add_theme_constant_override("separation", 0)
+	titles.add_child(_mk_label(title, 22, INK))
+	titles.add_child(_mk_label(note, 12, DIM))
+	row.add_child(titles)
+	return row
+
+
+func _style_primary(button: Button) -> void:
+	button.add_theme_font_override("font", Art.title_font())
+	button.add_theme_font_size_override("font_size", 26)
+	UISkin.button(button, true)
 
 
 func _flat(bg: Color, border: Color, w: int, radius: int) -> StyleBoxFlat:
@@ -794,22 +1244,10 @@ func _tex(path: String) -> Texture2D:
 ## 纸九宫格。margin 必须**等于源纹理上的真实边框宽度** ——
 ## ⚠️ Godot 4 的 StyleBoxTexture 没有 texture_scale，九宫格的角是按源纹理 1:1 画的，
 ##    想改边框粗细只能重新生成对应尺寸的纹理，不能在运行时缩放。
-func _paper(path: String, margin: float) -> StyleBox:
-	var t := _tex(path)
-	if t == null:
-		return null
-	var sb := StyleBoxTexture.new()
-	sb.texture = t
-	sb.set_texture_margin_all(margin)
-	sb.content_margin_left = 10
-	sb.content_margin_right = 10
-	sb.content_margin_top = 8
-	sb.content_margin_bottom = 8
-	return sb
+func _paper(_path: String, _margin: float, _scale: float = 1.0) -> StyleBox:
+	return Art.panel(Art.PAPER, 8)
 
 
-## 覆盖层的「纸面板」：一整块纸，内边距放宽（列里塞的东西比按钮里多）。
-## 拿不到纹理就回退成暖纸纯色 —— 没图也能跑。
 func _paper_panel() -> StyleBox:
 	var sb := _paper(UI_DIR + "panel.png", PANEL_MARGIN)
 	if sb != null:
@@ -824,7 +1262,8 @@ func _paper_panel() -> StyleBox:
 ## 全幅背景贴图（旧屋书桌 / 古城图）
 func _bg_rect(name: String) -> TextureRect:
 	var bg := TextureRect.new()
-	bg.texture = _tex(BG_DIR + name)
+	bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	bg.texture = Art.background(name.get_basename())
 	bg.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	bg.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
 	bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -837,6 +1276,8 @@ func _fmtv(v: float, u: Dictionary) -> String:
 	# 「拍力」是复利倍率（×1.15/级），取整会把它显示成"1倍"，必须带小数。
 	if unit == "倍":
 		return "×%.2f" % v
+	if unit == "拍/秒":
+		return "%.2f 拍/秒" % v
 	return "%s%s" % [GameState.fmt(v), unit]
 
 

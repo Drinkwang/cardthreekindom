@@ -1,0 +1,24 @@
+{
+  "version": "v2.1",
+  "date": "2026-10-09",
+  "generator": "Built-in image_gen.imagegen",
+  "setting": "Ancient Han / Three Kingdoms, vintage paper and ink illustration",
+  "assets": [
+    {
+      "id": "power",
+      "path": "res://assets/art_v9/upgrade_power.png",
+      "prompt": "Use case: stylized-concept. Asset type: a standalone production illustration for a Godot game upgrade card, square composition, opaque full-bleed warm ivory parchment. Ancient Han dynasty / Three Kingdoms China only. Match a nostalgic Chinese illustrated card game: fine dark brown ink outlines, confident woodcut-like hatching, restrained vintage printed pigments, cinnabar red, muted teal, ochre and warm paper grain, readable shapes at small display size. Elegant detailed illustration rather than a UI mockup. All visual content within the central 80% with breathing room, no border. No text, no lettering, no numerals, no logos, no modern objects, no school, no modern clothing, no photorealism, no 3D render. Primary request: clearly depict increasing slap strength. Subject: one anatomically correct open hand descending in a powerful sweeping slap over a small wooden tabletop and a stack of illustrated ancient general paper cards, cards flipping upward with a bold curved cinnabar ink impact arc, a few ancient round copper coins with square holes. Hand is attached to a simple ancient dark cloth sleeve entering from upper right, no face or whole person. Foreground stack and flipping cards are large and crisp. Scene feels forceful and tactile, not fighting or violent. Grounding wooden desk occupies lower quarter; clean parchment behind. Use a strong red and ochre focal accent."
+    },
+    {
+      "id": "speed",
+      "path": "res://assets/art_v9/upgrade_speed.png",
+      "prompt": "Use case: stylized-concept. Asset type: a standalone production illustration for a Godot game upgrade card, square composition, opaque full-bleed warm ivory parchment. Ancient Han dynasty / Three Kingdoms China only. Match a nostalgic Chinese illustrated card game: fine dark brown ink outlines, confident woodcut-like hatching, restrained vintage printed pigments, cinnabar red, muted teal, ochre and warm paper grain, readable shapes at small display size. Elegant detailed illustration rather than a UI mockup. All visual content within the central 80% with breathing room, no border. No text, no lettering, no numerals, no logos, no modern objects, no school, no modern clothing, no photorealism, no 3D render. Primary request: clearly depict faster rhythmic slap actions. Subject: one anatomically correct open hand in a simple ancient dark teal cloth sleeve sweeping rapidly across three separate small stacks of illustrated general paper cards on an old wooden tabletop, sweeping flowing blue-green wind ribbons and short graceful ink motion strokes trace its path. Exactly one solid hand, no strange extra fingers or multiple actual arms. Several paper cards turn neatly upward, a few ancient copper coins with square holes rise along the path. Table occupies lower quarter; clean parchment behind. Energy is nimble, flowing and rhythmic. Use deep teal and subtle cinnabar accents; keep the three card stacks large and understandable."
+    },
+    {
+      "id": "duration",
+      "path": "res://assets/art_v9/upgrade_duration.png",
+      "prompt": "Use case: stylized-concept. Asset type: a standalone production illustration for a Godot game upgrade card, square composition, opaque full-bleed warm ivory parchment. Ancient Han dynasty / Three Kingdoms China only. Match a nostalgic Chinese illustrated card game: fine dark brown ink outlines, confident woodcut-like hatching, restrained vintage printed pigments, cinnabar red, muted teal, ochre and warm paper grain, readable shapes at small display size. Elegant detailed illustration rather than a UI mockup. All visual content within the central 80% with breathing room, no border. No text, no lettering, no numerals, no logos, no modern objects, no school, no modern clothing, no photorealism, no 3D render. Primary request: clearly depict having more time in an ancient Chinese incremental game. Subject: a handsome ancient Chinese bronze clepsydra water clock: a dark patinated bronze vessel steadily dripping water into a smaller bronze receiving vessel with a plain upright timing rod (no numbers or marks), standing beside a rolled bamboo scroll and neatly stacked illustrated general paper cards on an old wooden tabletop. A restrained warm circular ochre flowing-water motif suggests a longer cycle. Copper coins with square holes next to the cards. No hand, no hourglass, no sandglass, no modern clock or watch. Large readable bronze vessels, elegant quiet composition, foreground focal area uses gold ochre and dark bronze with muted red card backs."
+    }
+  ],
+  "usage": "Upgrade core cards in scripts/upgrade_view.gd"
+}

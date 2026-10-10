@@ -1,0 +1,2382 @@
+extends Control
+const Art = preload("res://scripts/ui/print_art.gd")
+const InkImpact = preload("res://scripts/ui/ink_impact.gd")
+const StoryBook = preload("res://scripts/story_book.gd")
+const StoryView = preload("res://scripts/story_view.gd")
+const SlapCursor = preload("res://scripts/ui/slap_cursor.gd")
+const CityMinimap = preload("res://scripts/ui/city_minimap.gd")
+const CityLayout = preload("res://scripts/city_layout.gd")
+const SlapFeedback = preload("res://scripts/ui/slap_feedback.gd")
+var _story: Control
+var _story_camp_run := -1
+## 《拍案三国》单界面 —— 限时拍击、赚钱与长期升级。
+##
+## 主界面是一座可探索的城池：将牌分散在街巷与空地，各自留出间距。
+##   单击         = 圆圈范围拍击，圈内多牌共用一掌和一次冷却
+##   滚轮缩放     = 镜头围绕鼠标缩放；鼠标靠边移动视野，右上地图可收起
+## 血量拍光的卡会当场翻面转走，收进你的卡组。
+##
+## 胜败都回「大本营」整备：商店 / 构筑 / 升级 / 基建。
+## 通关后进入大地图；失败后原关重试或换地图。
+## 卡包 / 招降 / 合成 / 城建 / 路线 / 收藏 收进右侧抽屉，不抢桌面。
+## 未来"背面朝上"的伏兵牌，只需要在 _mk_card 里不画卡面即可（见 TODO 注释）。
+
+# 路线色。S5 起换成**纸上能压住的深色版** —— 原来的亮色是给深色主题的，
+# 落在米色纸上（星级、图例、路线行）对比度只有 2~3:1，读不动。
+const ROUTE_COLOR := {
+	"魏线": Color(0.15, 0.27, 0.52),
+	"蜀线": Color(0.62, 0.18, 0.14),
+	"吴线": Color(0.09, 0.37, 0.33),
+	"群雄线": Color(0.52, 0.36, 0.06),
+	"通用": Color(0.42, 0.40, 0.36),
+	"起点": Color(0.42, 0.40, 0.36),
+}
+
+const CARD_SIZE := Vector2(106, 146)             # 初始/保底尺寸
+const CARD_MIN_W := 92.0                         # 牌张数多时最小宽度
+const CARD_MAX_W := 200.0                        # 桌上只有两三张时最大宽度
+const CARD_RATIO := 1.38                         # 高 / 宽
+const CARD_BG := Color(0.945, 0.925, 0.878)      # 纸牌本色
+const CARD_INK := Color(0.13, 0.12, 0.11)        # 卡面字色
+const CARD_DIM := Color(0.42, 0.40, 0.37)        # 卡面次级字色
+const TABLE_BG := Color(0.115, 0.135, 0.125)     # 桌布
+const LOG_MAX := 3
+# 与 GameState 保持同步（避免通过 autoload 实例取常量）
+const START_REGION := 1
+const HERO_ALWAYS := "I01"          # 主角卡：固定上阵、不占携带位、不可卸下
+
+# ── S5「90 年代怀旧印刷」美术资源 ────────────────────────────────────
+const BG_DIR := "res://assets/art_v2/backgrounds/"
+const UI_DIR := "res://assets/ui/"
+const TEX_DIR := "res://assets/tex/"
+const CARD_DIR := "res://assets/cards/"
+# ⚠️ 九宫格边距必须等于源纹理上的**真实**边框宽度（纹理就是按这些尺寸生成的）
+const FRAME_MARGIN := 16.0      # cardface_*.png（源 128×176，边框 16px）
+const PANEL_MARGIN := 14.0      # panel.png（源 112×112，边框 14px）
+const BTN_MARGIN := 6.0         # btn_*.png（源 40×40，边框 6px）
+                                # ⚠️ 按钮边框不能大：顶栏按钮只有 ~28px 高，
+                                #    九宫格的角是 1:1 画的，边框一大按钮横向就被撑爆（顶栏会溢出屏）
+# 纸面上的印墨字色（换成纸底 UI 后，字必须由浅转深，否则看不见）
+const INK := Color(0.17, 0.13, 0.10)
+const INK_DIM := Color(0.40, 0.34, 0.27)
+const INK_SOFT := Color(0.53, 0.46, 0.37)
+# 纸色（= ui/panel.png 主色）。原来用 accent.darkened(0.74) 做"强调底色"，
+# 那是给深色主题的；纸面上必须反过来 —— 往纸色提亮，再用 accent 描边。
+const PAPER := Color(0.933, 0.894, 0.796)
+
+# ---------- 桌面 ----------
+var _table: Control
+const WORLD_SIZE := Vector2(2400, 1500)
+const DEFAULT_ZOOM := 1.8
+const ZOOM_MIN := 0.65
+const ZOOM_MAX := 4.0
+const EDGE_PAN_BAND := 32.0
+const EDGE_PAN_SPEED := 460.0
+var _world_size := WORLD_SIZE
+var _pile_layer: Control
+var _slap_cursor: Control
+var _camera_zoom := DEFAULT_ZOOM
+var _camera_pan := Vector2.ZERO
+var _camera_scale := 1.0
+var _panning := false
+var _zoom_label: Label
+var _camera_toolbar: Control
+var _minimap: Control
+var _window_focused := true
+var _initial_camera := true
+var _slap_receipt: Control
+var _cursor_hidden := false
+var _cursor_preview := Vector2(-1, -1)
+var _cards: Array = []                            # 与 GameState.battle 一一对应
+var _shown_gen := -1
+var _shown_effect_seq := -1
+var _banner: Label
+
+# ---------- 限时界面刷新 ----------
+var _round_ui_clock := 0.0
+
+# ---------- 顶栏 ----------
+var _lbl_region: Label
+var _lbl_stamina: Label
+var _lbl_dmg: Label
+var _lbl_gold: Label
+var _lbl_progress: Label
+var _lbl_route: Label
+var _lbl_combo: Label
+var _lbl_income: Label
+var _lbl_hint: Label
+var _lbl_pace: Label
+var _stamina_bar: ProgressBar
+var _btn_drawer: Button
+var _btn_retreat: Button
+
+# ---------- 抽屉 / 舆图 / 翻牌 ----------
+var _drawer: PanelContainer
+var _drawer_open := false
+var _tabs: TabContainer
+var _shop_boxes := {}
+var _collection_search := ""
+var _collection_type := "全部类别"
+var _collection_route := "全部路线"
+var _collection_owned := false
+
+var _btn_map: Button
+var _btn_home: Button
+var _btn_city: Button
+var _map_layer: Control
+var _map_view: PaanMapView
+var _map_left: VBoxContainer
+var _map_right: VBoxContainer
+var _map_title: Label
+var _map_progress: Label
+var _map_legend: Label
+var _map_foot: Label
+var _sel_idx := -1
+
+var _home: PaanHome
+var _city: PaanCity
+var _shop: PaanShop
+var _city_from_home := false
+
+var _reveal: PaanReveal
+
+var _log_lbl: Label
+var _log_lines: Array = []
+var _was_in_battle := false
+var _offline_shown := false
+
+# ---------- 底部上阵条（v1.0）----------
+# 用户要求：「带领的武将在 UI 下方」「玩家可以查看已有卡池的将兵，移动到 UI 下方，拖过去」。
+# ⚠️ 主界面铁律 = 第一眼必须看到满桌的牌 —— 所以卡池**默认收起**，只留一条窄上阵栏常驻。
+var _bar: PanelContainer
+var _slot_row: HBoxContainer
+var _lbl_bar: Label
+var _btn_pool: Button
+var _pool: PanelContainer
+var _pool_box: HBoxContainer
+var _pool_open := false
+var _bar_sig := ""                                # 上阵名单的指纹，变了才重建槽位
+var _pool_sig := ""                               # 卡池内容的指纹，变了才重建牌
+const POOL_H := 158.0                             # 卡池条高度（展开时才占位；含横向滚动条）
+const SLOT_W := 88.0                              # 紧凑上阵肖像宽度；留出更多城池视野
+
+
+func _ready() -> void:
+	theme = Art.theme()
+	_build()
+	GameState.changed.connect(_on_changed)
+	GameState.map_changed.connect(_on_map_changed)
+	GameState.shop_changed.connect(_refresh_shop)
+	GameState.message.connect(_append_log)
+	_on_map_changed()
+	_refresh_shop()
+	_on_changed()
+	if not GameState.in_battle and not GameState.last_outcome.is_empty():
+		_open_home()
+	if GameState.offline_report != "" and not _offline_shown:
+		_offline_shown = true
+		_append_log(GameState.offline_report)
+	_maybe_story.call_deferred()
+
+
+func _process(delta: float) -> void:
+	# 看升级与札记时暂停手动轮；自动经营仍按自己的节奏运行。
+	var overlay_open := (_home != null and _home.visible) or (_map_layer != null and _map_layer.visible) \
+		or (_city != null and _city.visible) or (_shop != null and _shop.visible) \
+		or (_story != null and _story.visible) or (_reveal != null and _reveal.visible) or _drawer_open or _pool_open
+	GameState.narrative_paused = overlay_open and not GameState.automation_enabled
+	if _camera_toolbar != null: _camera_toolbar.visible = not overlay_open
+	if _minimap != null: _minimap.visible = not overlay_open
+	if _table != null and _slap_cursor != null:
+		var pointer := _cursor_preview if _cursor_preview.x >= 0 else _table.get_local_mouse_position()
+		if _window_focused: _advance_edge_pan(delta, pointer)
+		_update_slap_cursor(pointer)
+	_round_ui_clock += delta
+	if _round_ui_clock >= 0.05:
+		_round_ui_clock = 0.0
+		_update_topbar()
+		_update_minimap()
+
+func _input(event: InputEvent) -> void:
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_MIDDLE and not event.pressed:
+		_panning = false
+	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_M and _input_allowed():
+		_minimap.toggle()
+		get_viewport().set_input_as_handled()
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_WM_WINDOW_FOCUS_OUT:
+		_window_focused = false
+		_panning = false
+	elif what == NOTIFICATION_WM_WINDOW_FOCUS_IN:
+		_window_focused = true
+
+
+# =====================================================================
+# 静态布局
+# =====================================================================
+func _build() -> void:
+	set_anchors_preset(Control.PRESET_FULL_RECT)
+
+	# S5：整棵子树的按钮统一换成印刷纸按钮（已在按钮上加过 override 的除外）
+	var th := _paper_button_theme()
+	if th != null:
+		theme = th
+
+	var root := VBoxContainer.new()
+	root.set_anchors_preset(Control.PRESET_FULL_RECT)
+	root.add_theme_constant_override("separation", 0)
+	add_child(root)
+
+	root.add_child(_build_topbar())
+
+	var mid := HBoxContainer.new()
+	mid.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	mid.add_theme_constant_override("separation", 0)
+	mid.add_child(_build_table())
+	_drawer = _build_drawer()
+	mid.add_child(_drawer)
+	root.add_child(mid)
+
+	_pool = _build_pool()
+	root.add_child(_pool)
+	root.add_child(_build_bottombar())
+
+	# 覆盖层：舆图 / 大本营 / 城建（在下），翻牌揭示（最上）
+	_map_layer = _build_map_layer()
+	add_child(_map_layer)
+	_home = PaanHome.new()
+	_home.deploy.connect(_on_home_deploy)
+	_home.request_map.connect(_on_home_map)
+	_home.request_city.connect(_open_city)
+	_home.request_shop.connect(_open_shop)
+	_home.closed.connect(_close_home)
+	_home.practice_requested.connect(_on_home_practice)
+	_home.request_journal.connect(_open_journal)
+	add_child(_home)
+	_home.visible = false
+	_city = PaanCity.new()
+	_city.closed.connect(_return_from_city)
+	_city.request_home.connect(_open_home)
+	_city.request_map.connect(_on_home_map)
+	_city.deploy.connect(_on_city_deploy)
+	add_child(_city)
+	_city.visible = false
+	_shop = PaanShop.new()
+	_shop.closed.connect(_return_from_shop)
+	add_child(_shop)
+	_shop.visible = false
+	_reveal = PaanReveal.new()
+	add_child(_reveal)
+	_story = StoryView.new()
+	_story.name = "StoryDiary"
+	_story.event_finished.connect(func(id: String, _skipped: bool): GameState.mark_story_seen(id))
+	_story.closed.connect(func(): GameState.narrative_paused = false)
+	add_child(_story)
+	_story.visible = false
+	var overlays := [_map_layer, _home, _city, _shop, _reveal, _story]
+	for i in range(overlays.size()):
+		overlays[i].z_index = 200 + i * 100
+
+	_set_drawer(false)
+
+
+func _build_topbar() -> Control:
+	var panel := PanelContainer.new()
+	panel.custom_minimum_size.y = 76
+	panel.add_theme_stylebox_override("panel", Art.panel(Art.PAPER, 10))
+	var hb := HBoxContainer.new()
+	hb.add_theme_constant_override("separation", 8)
+	panel.add_child(hb)
+	var masthead := PanelContainer.new()
+	masthead.custom_minimum_size.x = 140
+	masthead.add_theme_stylebox_override("panel", Art.panel(Art.RED, 7, Art.RED, 2))
+	var brand := VBoxContainer.new()
+	brand.add_theme_constant_override("separation", 0)
+	masthead.add_child(brand)
+	var title := Art.label("拍案三国", 26, Art.PAPER_LIGHT)
+	title.add_theme_font_override("font", Art.title_font())
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	brand.add_child(title)
+	var sub := Art.label("拍 牌 聚 财  ·  经 营 荆 州", 10, Art.PAPER_LIGHT)
+	sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	brand.add_child(sub)
+	hb.add_child(masthead)
+	hb.add_child(_vsep())
+	var place := VBoxContainer.new()
+	place.custom_minimum_size.x = 102
+	place.alignment = BoxContainer.ALIGNMENT_CENTER
+	place.add_theme_constant_override("separation", 3)
+	hb.add_child(place)
+	_lbl_region = Art.label("", 24)
+	_lbl_region.add_theme_font_override("font", Art.title_font())
+	place.add_child(_lbl_region)
+	_lbl_route = Art.label("", 11, Art.DIM)
+	place.add_child(_lbl_route)
+	hb.add_child(_vsep())
+	var stamina := VBoxContainer.new()
+	stamina.custom_minimum_size.x = 143
+	stamina.alignment = BoxContainer.ALIGNMENT_CENTER
+	stamina.add_theme_constant_override("separation", 1)
+	hb.add_child(stamina)
+	_lbl_stamina = Art.label("", 15)
+	stamina.add_child(_lbl_stamina)
+	_stamina_bar = ProgressBar.new()
+	_stamina_bar.custom_minimum_size = Vector2(143, 6)
+	_stamina_bar.show_percentage = false
+	stamina.add_child(_stamina_bar)
+	_lbl_combo = Art.label("", 11, Art.DIM)
+	stamina.add_child(_lbl_combo)
+	_lbl_pace = Art.label("", 11, Art.RED)
+	_lbl_pace.name = "RoundSlapPace"
+	stamina.add_child(_lbl_pace)
+	hb.add_child(_vsep())
+	var money := VBoxContainer.new()
+	money.custom_minimum_size.x = 140
+	money.alignment = BoxContainer.ALIGNMENT_CENTER
+	money.add_theme_constant_override("separation", 2)
+	hb.add_child(money)
+	_lbl_gold = Art.label("", 18)
+	_lbl_gold.clip_text = true
+	money.add_child(_lbl_gold)
+	_lbl_dmg = Art.label("", 11, Art.DIM)
+	money.add_child(_lbl_dmg)
+	_lbl_income = Art.label("", 10, Art.GOLD)
+	money.add_child(_lbl_income)
+	var space := Control.new()
+	space.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	hb.add_child(space)
+	_btn_map = _nav_button("舆图", "map", _open_map)
+	hb.add_child(_btn_map)
+	_btn_home = _nav_button("大本营", "home", _open_home)
+	hb.add_child(_btn_home)
+	_btn_city = _nav_button("基建", "city", _open_city)
+	hb.add_child(_btn_city)
+	_btn_drawer = _nav_button("卡铺", "shop", func(): _set_drawer(not _drawer_open))
+	hb.add_child(_btn_drawer)
+	_btn_retreat = Button.new()
+	_btn_retreat.text = "收钱"
+	_btn_retreat.custom_minimum_size = Vector2(50, 40)
+	_btn_retreat.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	_btn_retreat.tooltip_text = "提前结束本轮，带着赚到的金币回营升级"
+	_btn_retreat.pressed.connect(func(): GameState.retreat())
+	hb.add_child(_btn_retreat)
+	var menu := Button.new()
+	menu.text = "封面"
+	menu.custom_minimum_size = Vector2(46, 40)
+	menu.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	menu.pressed.connect(func():
+		if GameState.in_battle and not GameState.automation_enabled:
+			GameState.retreat()
+		GameState.save_game()
+		get_tree().change_scene_to_file("res://scenes/MainMenu.tscn"))
+	hb.add_child(menu)
+	return panel
+
+
+func _nav_button(title: String, kind: String, action: Callable) -> Button:
+	var button := Button.new()
+	button.text = title
+	button.icon = Art.nav_icon(kind)
+	button.expand_icon = true
+	button.add_theme_constant_override("icon_max_width", 28)
+	button.add_theme_font_override("font", Art.title_font())
+	button.add_theme_font_size_override("font_size", 15)
+	button.custom_minimum_size = Vector2(76 if title.length() < 3 else 88, 46)
+	button.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	button.add_theme_stylebox_override("normal", Art.panel(Color(0, 0, 0, 0), 3, Art.RULE, 0))
+	button.tooltip_text = "打开" + title
+	button.pressed.connect(action)
+	return button
+
+
+func _build_table() -> Control:
+	var panel := PanelContainer.new()
+	panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	panel.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	panel.add_theme_stylebox_override("panel", Art.panel(Color("cfb183"), 0, Art.RULE, 0))
+
+	var layer := Control.new()
+	layer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	layer.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	layer.mouse_filter = Control.MOUSE_FILTER_STOP
+	layer.clip_contents = true
+	layer.set_meta("paan_table", true)
+	layer.gui_input.connect(_on_table_input)
+	layer.resized.connect(_layout_cards)
+	panel.add_child(layer)
+	_table = layer
+	_pile_layer = Control.new()
+	_pile_layer.name = "CityPileWorld"
+	_pile_layer.size = WORLD_SIZE
+	_pile_layer.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	layer.add_child(_pile_layer)
+	var background := TextureRect.new()
+	background.name = "CityCourtyardArt"
+	background.texture = load("res://assets/art_v12/city_world.png")
+	background.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	background.stretch_mode = TextureRect.STRETCH_SCALE
+	background.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	background.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_pile_layer.add_child(background)
+	_slap_cursor = SlapCursor.new()
+	_slap_cursor.name = "SlapRangeCursor"
+	layer.add_child(_slap_cursor)
+	_camera_toolbar = _build_camera_toolbar()
+	layer.add_child(_camera_toolbar)
+	_camera_toolbar.resized.connect(_apply_camera)
+	_minimap = CityMinimap.new()
+	_minimap.name = "CityMinimap"
+	layer.add_child(_minimap)
+	_minimap.set_world(background.texture, _world_size)
+	_minimap.navigate_requested.connect(_navigate_minimap)
+	_minimap.expanded_changed.connect(func(_expanded: bool): _apply_camera())
+
+	_banner = _mk_label("", 20, Color(0.92, 0.90, 0.84))
+	_banner.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_banner.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	_banner.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_banner.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_banner.visible = false
+	layer.add_child(_banner)
+	return panel
+
+func _build_camera_toolbar() -> Control:
+	var panel := PanelContainer.new()
+	panel.name = "CameraControls"
+	panel.add_theme_stylebox_override("panel", Art.panel(Art.PAPER_LIGHT, 5, Art.RULE, 1))
+	panel.z_index = 110
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 4)
+	panel.add_child(row)
+	var minus := Button.new()
+	minus.text = "−"
+	minus.custom_minimum_size = Vector2(34, 30)
+	minus.tooltip_text = "缩小镜头（鼠标滚轮向下）"
+	minus.pressed.connect(func(): _set_camera_zoom(_camera_zoom / 1.15, _table.size * 0.5))
+	row.add_child(minus)
+	_zoom_label = Art.label("100%", 13)
+	_zoom_label.custom_minimum_size.x = 48
+	_zoom_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_zoom_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	row.add_child(_zoom_label)
+	var plus := Button.new()
+	plus.text = "+"
+	plus.custom_minimum_size = Vector2(34, 30)
+	plus.tooltip_text = "放大镜头（鼠标滚轮向上）"
+	plus.pressed.connect(func(): _set_camera_zoom(_camera_zoom * 1.15, _table.size * 0.5))
+	row.add_child(plus)
+	var reset := Button.new()
+	reset.text = "全城"
+	reset.tooltip_text = "恢复完整城池视野"
+	reset.custom_minimum_size = Vector2(50, 30)
+	reset.pressed.connect(_reset_camera)
+	row.add_child(reset)
+	return panel
+
+func _world_to_screen(point: Vector2) -> Vector2:
+	return _pile_layer.position + point * _camera_scale
+
+func _screen_to_world(point: Vector2) -> Vector2:
+	return (point - _pile_layer.position) / maxf(0.0001, _camera_scale)
+
+func _apply_camera() -> void:
+	if _pile_layer == null or _table.size.y < 10: return
+	_camera_scale = minf(_table.size.x / _world_size.x, _table.size.y / _world_size.y) * _camera_zoom
+	var limit := ((_world_size * _camera_scale - _table.size) * 0.5).max(Vector2.ZERO)
+	_camera_pan.x = clampf(_camera_pan.x, -limit.x, limit.x)
+	_camera_pan.y = clampf(_camera_pan.y, -limit.y, limit.y)
+	_pile_layer.scale = Vector2.ONE * _camera_scale
+	_pile_layer.position = (_table.size - _world_size * _camera_scale) * 0.5 + _camera_pan
+	if _zoom_label != null: _zoom_label.text = "%d%%" % roundi(_camera_zoom * 100.0)
+	if _camera_toolbar != null:
+		_camera_toolbar.position = Vector2(16, 14)
+	if _minimap != null:
+		_minimap.position = Vector2(maxf(8, _table.size.x - _minimap.size.x - 16), 14)
+	_update_minimap()
+
+func _viewport_world_rect() -> Rect2:
+	return Rect2(_screen_to_world(Vector2.ZERO), _table.size / maxf(_camera_scale, 0.0001)).intersection(Rect2(Vector2.ZERO, _world_size))
+
+func _update_minimap() -> void:
+	if _minimap == null or _pile_layer == null: return
+	var positions: Array[Vector2] = []
+	for i in range(mini(_cards.size(), GameState.battle.size())):
+		var card: Dictionary = _cards[i]
+		if not card.has("rest_pos"): continue
+		if not bool(card.dead) and float(GameState.battle[i].hp) > 0:
+			positions.append(card.rest_pos + card.size * 0.5)
+	_minimap.update_view(_viewport_world_rect(), positions)
+	_minimap.set_city_title(str(GameData.region(GameState.battle_region).get("name", "城池")))
+
+func _over_camera_ui(screen_pos: Vector2) -> bool:
+	return (_camera_toolbar != null and _camera_toolbar.visible and _camera_toolbar.get_rect().has_point(screen_pos)) \
+		or (_minimap != null and _minimap.visible and _minimap.get_rect().has_point(screen_pos))
+
+func _advance_edge_pan(delta: float, screen_pos: Vector2) -> void:
+	if not _input_allowed() or _panning or _over_camera_ui(screen_pos) or not Rect2(Vector2.ZERO, _table.size).has_point(screen_pos): return
+	var direction := Vector2.ZERO
+	if screen_pos.x < EDGE_PAN_BAND: direction.x = 1.0 - screen_pos.x / EDGE_PAN_BAND
+	elif screen_pos.x > _table.size.x - EDGE_PAN_BAND: direction.x = -1.0 + (_table.size.x - screen_pos.x) / EDGE_PAN_BAND
+	if screen_pos.y < EDGE_PAN_BAND: direction.y = 1.0 - screen_pos.y / EDGE_PAN_BAND
+	elif screen_pos.y > _table.size.y - EDGE_PAN_BAND: direction.y = -1.0 + (_table.size.y - screen_pos.y) / EDGE_PAN_BAND
+	if direction.length_squared() <= 0.0001: return
+	if direction.length_squared() > 1.0: direction = direction.normalized()
+	_camera_pan += direction * EDGE_PAN_SPEED * minf(delta, 0.05)
+	_apply_camera()
+
+func _navigate_minimap(world_point: Vector2) -> void:
+	if not _input_allowed(): return
+	_camera_pan = (_world_size * 0.5 - world_point) * _camera_scale
+	_apply_camera()
+	_update_slap_cursor(_table.get_local_mouse_position())
+
+func _set_camera_zoom(value: float, screen_anchor: Vector2) -> void:
+	var anchor := _screen_to_world(screen_anchor)
+	_camera_zoom = clampf(value, ZOOM_MIN, ZOOM_MAX)
+	_apply_camera()
+	_camera_pan += screen_anchor - _world_to_screen(anchor)
+	_apply_camera()
+	_update_slap_cursor(screen_anchor)
+
+func _reset_camera() -> void:
+	_camera_zoom = 1.0
+	_camera_pan = Vector2.ZERO
+	_apply_camera()
+
+func _focus_starting_district() -> void:
+	_camera_zoom = DEFAULT_ZOOM
+	_apply_camera()
+	_camera_pan = (_world_size * 0.5 - _world_size * Vector2(0.42, 0.32)) * _camera_scale
+	_apply_camera()
+
+func _input_allowed() -> bool:
+	if not GameState.in_battle or not GameState.round_active or GameState.narrative_paused: return false
+	return not ((_home != null and _home.visible) or (_map_layer != null and _map_layer.visible)
+		or (_city != null and _city.visible) or (_shop != null and _shop.visible)
+		or (_story != null and _story.visible) or (_reveal != null and _reveal.visible)
+		or _drawer_open or _pool_open)
+
+func _update_slap_cursor(screen_pos: Vector2) -> void:
+	var over_tools := _over_camera_ui(screen_pos)
+	var active := _window_focused and _input_allowed() and Rect2(Vector2.ZERO, _table.size).has_point(screen_pos) and not over_tools and not _panning
+	_slap_cursor.visible = active
+	if active != _cursor_hidden:
+		_cursor_hidden = active
+		Input.set_mouse_mode(Input.MOUSE_MODE_HIDDEN if active else Input.MOUSE_MODE_VISIBLE)
+	if not active: return
+	_slap_cursor.center = screen_pos
+	_slap_cursor.radius = GameState.slap_radius() * _camera_scale
+	_slap_cursor.cooldown = clampf(GameState.slap_cooldown_left / GameState.slap_interval(), 0, 1)
+	var world := _screen_to_world(screen_pos)
+	var hits := _area_targets(world, GameState.slap_radius())
+	_slap_cursor.targets = hits.size()
+	_slap_cursor.outlines = []
+	for i in hits:
+		var card: Dictionary = _cards[i]
+		var center: Vector2 = card.rest_pos + card.size * 0.5
+		var corners := PackedVector2Array()
+		for corner in [Vector2(-1, -1), Vector2(1, -1), Vector2(1, 1), Vector2(-1, 1)]:
+			corners.append(_world_to_screen(center + (card.size * corner * 0.5).rotated(float(card.rot))))
+		_slap_cursor.outlines.append(corners)
+	_slap_cursor.queue_redraw()
+
+
+func _build_drawer() -> PanelContainer:
+	var panel := PanelContainer.new()
+	panel.custom_minimum_size = Vector2(392, 0)
+	panel.add_theme_stylebox_override("panel",
+		_paper_or_flat(UI_DIR + "panel.png", PANEL_MARGIN, 0.30,
+			Color(0.15, 0.15, 0.16), Color(0.30, 0.30, 0.32), 1, 0))
+	panel.clip_contents = true
+
+	_tabs = TabContainer.new()
+	panel.add_child(_tabs)
+	for nm in ["卡包", "招降", "合成", "城建", "路线", "收藏"]:
+		var body := VBoxContainer.new()
+		body.name = nm
+		var scroll := ScrollContainer.new()
+		scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+		scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+		body.add_child(scroll)
+		var box := VBoxContainer.new()
+		box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		box.add_theme_constant_override("separation", 4)
+		scroll.add_child(box)
+		_shop_boxes[nm] = box
+		_tabs.add_child(body)
+		if nm == "收藏":
+			_tabs.set_tab_title(_tabs.get_tab_count() - 1, "图鉴")
+		elif nm == "城建":
+			_tabs.set_tab_title(_tabs.get_tab_count() - 1, "基建")
+
+	return panel
+
+
+func _build_bottombar() -> Control:
+	var panel := PanelContainer.new()
+	panel.name = "CompactDeployBar"
+	panel.custom_minimum_size.y = 112
+	panel.add_theme_stylebox_override("panel", Art.panel(Art.PAPER, 9, Art.RULE, 2))
+	_bar = panel
+	var hb := HBoxContainer.new()
+	hb.add_theme_constant_override("separation", 12)
+	panel.add_child(hb)
+	var legend := VBoxContainer.new()
+	legend.custom_minimum_size.x = 44
+	legend.alignment = BoxContainer.ALIGNMENT_CENTER
+	legend.add_theme_constant_override("separation", 3)
+	legend.add_child(Art.stamp("上阵", Vector2(38, 62)))
+	_lbl_bar = Art.label("", 10, Art.DIM)
+	_lbl_bar.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	legend.add_child(_lbl_bar)
+	hb.add_child(legend)
+	# 携带位升级后仍保持底栏高度；超出的将兵可横向查看和拖入。
+	var slots_scroll := ScrollContainer.new()
+	slots_scroll.name = "DeploySlotsScroll"
+	slots_scroll.custom_minimum_size.x = 390
+	slots_scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	slots_scroll.size_flags_stretch_ratio = 0.9
+	slots_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
+	slots_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	hb.add_child(slots_scroll)
+	_slot_row = HBoxContainer.new()
+	_slot_row.add_theme_constant_override("separation", 8)
+	_slot_row.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	slots_scroll.add_child(_slot_row)
+	hb.add_child(_vsep())
+	var info := VBoxContainer.new()
+	info.name = "DeployFieldNotes"
+	info.custom_minimum_size.x = 300
+	info.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	info.alignment = BoxContainer.ALIGNMENT_CENTER
+	info.add_theme_constant_override("separation", 6)
+	hb.add_child(info)
+	_lbl_hint = Art.label("", 12, Art.INK)
+	_lbl_hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	info.add_child(_lbl_hint)
+	_lbl_progress = Art.label("", 11, Art.DIM)
+	_lbl_progress.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	info.add_child(_lbl_progress)
+	_log_lbl = Art.label("", 10, Art.GOLD)
+	_log_lbl.clip_text = true
+	info.add_child(_log_lbl)
+	_btn_pool = Button.new()
+	_btn_pool.text = "卡池 ▾"
+	_btn_pool.custom_minimum_size = Vector2(72, 52)
+	_btn_pool.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	_btn_pool.add_theme_font_override("font", Art.title_font())
+	_btn_pool.add_theme_font_size_override("font_size", 18)
+	_btn_pool.tooltip_text = "展开已有将兵，把牌拖到上阵槽"
+	_btn_pool.pressed.connect(func(): _set_pool(not _pool_open))
+	hb.add_child(_btn_pool)
+	return panel
+
+
+func _build_pool() -> PanelContainer:
+	## 卡池条：默认收起（主界面铁律 —— 第一眼必须看到满桌的牌）。
+	## 展开时插在牌桌下方（不是覆盖层），牌桌自然缩短，不会挡住任何一张牌。
+	var panel := PanelContainer.new()
+	panel.custom_minimum_size = Vector2(0, POOL_H)
+	panel.add_theme_stylebox_override("panel",
+		_paper_or_flat(UI_DIR + "panel.png", PANEL_MARGIN, 0.26,
+			Color(0.16, 0.16, 0.17), Color(0.30, 0.30, 0.32), 1, 0))
+
+	var hb := HBoxContainer.new()
+	hb.add_theme_constant_override("separation", 10)
+	panel.add_child(hb)
+
+	var head := VBoxContainer.new()
+	head.custom_minimum_size = Vector2(58, 0)
+	head.add_child(_mk_label("卡池", 12, INK))
+	head.add_child(_mk_label("待命", 10, INK_SOFT))
+	head.add_child(_mk_label("拖→", 10, Color(0.24, 0.33, 0.22)))
+	hb.add_child(head)
+
+	var scroll := ScrollContainer.new()
+	scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	hb.add_child(scroll)
+
+	_pool_box = HBoxContainer.new()
+	_pool_box.add_theme_constant_override("separation", 6)
+	_pool_box.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	scroll.add_child(_pool_box)
+
+	panel.visible = false
+	return panel
+
+
+func _set_pool(open: bool) -> void:
+	_pool_open = open
+	_pool.visible = open
+	_btn_pool.text = "卡池 ▴" if open else "卡池 ▾"
+	if open:
+		_rebuild_pool()
+	_layout_cards()
+
+
+func _set_drawer(open: bool) -> void:
+	if open and _shop != null and _shop.visible:
+		return
+	_drawer_open = open
+	_drawer.visible = open
+	_btn_drawer.text = "卡铺" if not open else "收起"
+	if open:
+		_layout_cards()
+
+
+# =====================================================================
+# 底部上阵条：槽位 + 卡池（v1.0）
+# =====================================================================
+## 由 _on_changed() 调用。用一个"指纹"串判断要不要重建 —— 拍卡时 changed 每一下都发，
+## 每次都重建 7 个槽位 + 几十张卡池牌会白烧 CPU（也让人眼看到闪烁）。
+func _refresh_deploy_bar() -> void:
+	var sig := "%d|%d" % [GameState.carry.size(), GameState.carry_max()]
+	for id in GameState.carry:
+		var sid := str(id)
+		sig += "|" + sid
+		# v1.1：装备/兵的数量也要进指纹 —— 不然在大本营挂了装备回来，槽位上还是旧数字
+		sig += ":%d:%d" % [GameState.hero_equip_of(sid).size(), GameState.hero_troops_of(sid).size()]
+	if sig != _bar_sig:
+		_bar_sig = sig
+		_rebuild_slots()
+		_pool_sig = ""                 # 上阵名单变了 → 卡池里的「待命」集合也变了
+	if _pool_open:
+		_rebuild_pool()
+
+
+func _rebuild_slots() -> void:
+	_clear(_slot_row)
+	var cap := GameState.carry_max()
+	_lbl_bar.text = "%d/%d" % [GameState.carry.size(), cap]
+	# 主角固定位：永远在最左，不占携带位、点不掉、拖不进（铁律 5：主角固定不占位不可卸）
+	_slot_row.add_child(_mk_slot_node(HERO_ALWAYS, -1, true))
+	for i in range(cap):
+		var id := str(GameState.carry[i]) if i < GameState.carry.size() else ""
+		_slot_row.add_child(_mk_slot_node(id, i, false))
+
+
+## 战力显示。
+## ⚠️ 不能直接用 GameState.fmt() —— 它是给金币用的（四舍五入到整数），
+##    而士兵战力是 0.2 / 0.6 / 2.0 这种小数：0.2 会显示成 "0"，看起来像废牌，
+##    玩家会以为「士卒」根本没用（用户明确要求要能看清自己带的将兵）。
+##    所以战力 < 10 时保留一位小数。
+func _fmt_pow(v: float) -> String:
+	if absf(v) < 10.0:
+		return "%.1f" % v
+	return GameState.fmt(v)
+
+
+func _slot_style(filled: bool, locked: bool) -> StyleBox:
+	if filled:
+		return Art.card_frame(2 if locked else 1)
+	return Art.panel(Art.PAPER_LIGHT.darkened(0.025), 8, Art.RULE, 0)
+
+
+func _mk_slot_node(card_id: String, slot_index: int, locked: bool) -> Control:
+	var filled := card_id != ""
+	var slot := _Slot.new()
+	slot.host = self
+	slot.card_id = card_id
+	slot.slot_index = slot_index
+	slot.locked = locked
+	slot.custom_minimum_size = Vector2(SLOT_W, 88)
+	slot.add_theme_stylebox_override("panel", _slot_style(filled, locked))
+	slot.mouse_filter = Control.MOUSE_FILTER_STOP
+	var v := VBoxContainer.new()
+	v.add_theme_constant_override("separation", 1)
+	v.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	slot.add_child(v)
+	if not filled:
+		var plus := Art.label("＋", 28, Art.RULE)
+		plus.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		plus.size_flags_vertical = Control.SIZE_EXPAND_FILL
+		plus.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		v.add_child(plus)
+		var tip := Art.label("拖入将兵", 11, Art.DIM)
+		tip.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		v.add_child(tip)
+		slot.add_child(EmptySlotOutline.new())
+		slot.tooltip_text = "空携带位 %d／%d：从卡池拖入将兵" % [slot_index + 1, GameState.carry_max()]
+		return slot
+	var c := GameData.card(card_id)
+	var nm := Art.label(str(c.get("name", card_id)), 13)
+	nm.add_theme_font_override("font", Art.title_font())
+	nm.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	nm.clip_text = true
+	v.add_child(nm)
+	var portrait := Art.image(card_id, Vector2(0, 44))
+	var portrait_source := portrait.texture as AtlasTexture
+	if portrait_source != null:
+		var strip := portrait_source.duplicate() as AtlasTexture
+		var crop := strip.region
+		crop.size.y = minf(crop.size.y, crop.size.x * 0.62)
+		strip.region = crop
+		portrait.texture = strip
+	portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+	portrait.clip_contents = true
+	v.add_child(portrait)
+	var eqn := GameState.hero_equip_of(card_id).size()
+	var tpn := GameState.hero_troops_of(card_id).size()
+	var star := int(c.get("star", 1))
+	var row := Art.label(("固定 " if locked else "★%d " % star) + _fmt_pow(GameState.hero_card_power(card_id)), 10, Art.GOLD if locked else Art.DIM)
+	row.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	row.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	v.add_child(row)
+	if eqn > 0 or tpn > 0:
+		var attachments := Art.label("装%d · 兵%d" % [eqn, tpn], 9, Art.DIM)
+		attachments.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		v.add_child(attachments)
+	if locked:
+		slot.tooltip_text = "主角「%s」固定上阵，不占携带位。拍力 %s" % [c.get("name", card_id), _fmt_pow(GameState.hero_card_power(card_id))]
+	else:
+		var detail := GameData.effect_text(c)
+		var eq_names: Array[String] = []
+		for eid in GameState.hero_equip_of(card_id):
+			eq_names.append(GameData.card_name(str(eid)))
+		if not eq_names.is_empty():
+			detail += "\n装备：" + "、".join(eq_names)
+		var troop_names: Array[String] = []
+		for tid in GameState.hero_troops_of(card_id):
+			troop_names.append(GameData.card_name(str(tid)))
+		if not troop_names.is_empty():
+			detail += "\n带兵：" + "、".join(troop_names)
+		slot.tooltip_text = "%s · ★%d · 拍力 %s\n%s\n点一下卸下，拖动替换" % [c.get("name", card_id), star, _fmt_pow(GameState.hero_card_power(card_id)), detail]
+	return slot
+
+
+func _pool_signature() -> String:
+	var ids := []
+	for id in GameState.owned.keys():
+		var sid := str(id)
+		# ⚠️ v1.1：挂在武将麾下带兵的士卒**不进卡池** —— 它们已经"在用"了，
+		#    拖也拖不动（carry_add 会拒收），留在池里只会让人以为点了没反应。
+		if not GameState.is_carryable(sid) or int(GameState.owned.get(sid, 0)) <= 0 \
+				or GameState.in_troops(sid):
+			continue
+		ids.append("%s:%d:%d" % [sid, int(GameState.owned.get(sid, 0)), GameState.hero_level(sid)])
+	ids.sort()
+	return "|".join(ids) + "||" + "|".join(GameState.carry)
+
+
+func _rebuild_pool() -> void:
+	var sig := _pool_signature()
+	if sig == _pool_sig:
+		return
+	_pool_sig = sig
+	_clear(_pool_box)
+
+	var ids := []
+	for id in GameState.owned.keys():
+		var sid := str(id)
+		if GameState.is_carryable(sid) and int(GameState.owned.get(sid, 0)) > 0 \
+				and not GameState.in_carry(sid) and not GameState.in_troops(sid):
+			ids.append(sid)
+
+	if ids.is_empty():
+		var tip := "卡池里没有待命的将兵 —— 去「商店 → 卡包」开几包，或把上阵的槽位点掉。"
+		_pool_box.add_child(_mk_label(tip, 12, INK_DIM))
+		return
+
+	# 战力从高到低，一眼看出谁是主力
+	ids.sort_custom(func(a: String, b: String) -> bool:
+		return GameState.hero_card_power(a) > GameState.hero_card_power(b))
+	for id in ids:
+		_pool_box.add_child(_mk_pool_card(id))
+
+
+func _mk_pool_card(id: String) -> Control:
+	var c := GameData.card(id)
+	var route := str(c.get("route", ""))
+	var col: Color = ROUTE_COLOR.get(route, INK_DIM)
+	var card := _PoolCard.new()
+	card.host = self
+	card.card_id = id
+	card.custom_minimum_size = Vector2(110, 128)
+	card.add_theme_stylebox_override("panel", _flat(PAPER, col, 1, 3))
+	card.mouse_filter = Control.MOUSE_FILTER_STOP
+	card.tooltip_text = "%s · %s · ★%d\n路线 %s\n战力 %s\n%s\n\n拖到左边的槽位上阵" % [
+		str(c.get("name", id)), str(c.get("type", "")), int(c.get("star", 1)),
+		route, _fmt_pow(GameState.hero_card_power(id)), GameData.effect_text(c)]
+
+	var v := VBoxContainer.new()
+	v.add_theme_constant_override("separation", 1)
+	v.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	card.add_child(v)
+
+	v.add_child(Art.image(id, Vector2(0, 68)))
+	var nm := _mk_label(str(c.get("name", id)), 12, INK)
+	nm.clip_text = true
+	nm.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	v.add_child(nm)
+
+	var l2 := _mk_label("★%d %s" % [int(c.get("star", 1)), str(c.get("type", ""))], 9, INK_SOFT)
+	l2.clip_text = true
+	l2.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	v.add_child(l2)
+
+	var l3 := _mk_label("战力 %s" % _fmt_pow(GameState.hero_card_power(id)), 10, INK)
+	l3.clip_text = true
+	l3.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	v.add_child(l3)
+
+	var l4 := _mk_label(route, 9, col)
+	l4.clip_text = true
+	l4.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	v.add_child(l4)
+
+	var n := int(GameState.owned.get(id, 0))
+	if n > 1:
+		var l5 := _mk_label("×%d" % n, 9, INK_DIM)
+		l5.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		v.add_child(l5)
+	return card
+
+
+## 拖过来的牌落到第 index 个槽位。落点已有人 = 换人（旧的回卡池）。
+func _deploy_at(id: String, index: int) -> void:
+	var cap := GameState.carry_max()
+	if index < 0 or index >= cap:
+		GameState.carry_add(id)                  # 兜底：当追加处理
+		return
+	var occupant := str(GameState.carry[index]) if index < GameState.carry.size() else ""
+	if occupant != "" and occupant != id:
+		GameState.carry_remove(occupant)
+	GameState.carry_put(id, index)
+
+
+func _undeploy(id: String) -> void:
+	if GameState.carry_remove(id):
+		_pool_sig = ""                            # 有人退回卡池 → 卡池要重画
+
+
+## 拖拽时跟着鼠标走的小纸片。用 Label 而不是真实卡面 —— 拖拽预览在
+## 独立图层上，用九宫格纹理容易被拉伸糊掉，也拖慢拖拽起手。
+func _drag_preview(id: String) -> Control:
+	var c := GameData.card(id)
+	var p := PanelContainer.new()
+	p.add_theme_stylebox_override("panel", _flat(PAPER, INK_DIM, 1, 3))
+	p.modulate = Color(1.0, 1.0, 1.0, 0.92)
+	var v := VBoxContainer.new()
+	p.add_child(v)
+	v.add_child(Art.image(id, Vector2(80, 64)))
+	v.add_child(_mk_label(str(c.get("name", id)), 12, INK))
+	v.add_child(_mk_label("战力 %s" % _fmt_pow(GameState.hero_card_power(id)), 10, INK_DIM))
+	return p
+
+
+# =====================================================================
+# 小工具
+# =====================================================================
+func _mk_label(text: String, size: int, color: Color = INK) -> Label:
+	var l := Label.new()
+	l.text = text
+	l.add_theme_font_size_override("font_size", size)
+	l.add_theme_color_override("font_color", color)
+	return l
+
+
+func _flat(bg: Color, border: Color, w: int, radius: int) -> StyleBoxFlat:
+	var sb := StyleBoxFlat.new()
+	sb.bg_color = bg
+	sb.border_color = border
+	sb.set_border_width_all(w)
+	sb.set_corner_radius_all(radius)
+	sb.content_margin_left = 8
+	sb.content_margin_right = 8
+	sb.content_margin_top = 5
+	sb.content_margin_bottom = 5
+	return sb
+
+
+func _vsep() -> Control:
+	var s := VSeparator.new()
+	s.custom_minimum_size = Vector2(2, 0)
+	return s
+
+
+# ── S5 纸质感资源加载 ────────────────────────────────────────────────
+var _tex_cache := {}
+
+
+func _tex(path: String) -> Texture2D:
+	if _tex_cache.has(path):
+		return _tex_cache[path]
+	var t: Texture2D = null
+	if ResourceLoader.exists(path):
+		t = load(path) as Texture2D
+	_tex_cache[path] = t
+	return t
+
+
+## 纸质感九宫格。margin 必须**等于源纹理上的真实边框宽度**。
+## ⚠️ Godot 4 的 StyleBoxTexture **没有 texture_scale**，九宫格的角是按源纹理 1:1 画的，
+##    想改变边框粗细只能**重新生成对应尺寸的纹理**，不能在运行时缩放。
+## margin 若小于真实边框，卡框内框线会被当成"中心"拉伸糊掉。
+## 找不到纹理时返回 null —— 调用方负责回退到 _flat()，这样没图也能跑。
+func _paper(_path: String, _margin: float, _scale: float = 1.0) -> StyleBox:
+	return Art.panel(Art.PAPER, 8)
+
+
+func _paper_or_flat(path: String, margin: float, scale: float,
+		bg: Color, border: Color, w: int, radius: int) -> StyleBox:
+	var sb := _paper(path, margin, scale)
+	if sb != null:
+		return sb
+	return _flat(bg, border, w, radius)
+
+
+## 全幅背景贴图（牌桌 / 舆图等），等比铺满
+func _bg_rect(name: String) -> TextureRect:
+	var bg := TextureRect.new()
+	bg.texture = _tex(BG_DIR + name)
+	bg.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	bg.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+	bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	return bg
+
+
+## S5：把所有 Button 换成印刷纸按钮。挂在根节点上，子树自动继承。
+## 拿不到纹理就返回 null（调用方不设 theme，等于保持原样）。
+func _paper_button_theme() -> Theme:
+	return Art.theme()
+
+
+func _clear(node: Node) -> void:
+	for c in node.get_children():
+		node.remove_child(c)
+		c.queue_free()
+
+
+# =====================================================================
+# 高频刷新：顶栏 + 卡牌血量
+# =====================================================================
+func _on_changed() -> void:
+	_update_topbar()
+	_refresh_deploy_bar()
+	if _shown_gen != GameState.battle_gen:
+		_shown_gen = GameState.battle_gen
+		_rebuild_cards()
+	else:
+		_update_cards()
+	_present_build_effects()
+
+	# 战果只改变底部继续按钮，不移走四个整备入口。
+	if _was_in_battle and not GameState.in_battle:
+		_was_in_battle = false
+		_sel_idx = -1
+		if not GameState.automation_enabled:
+			_open_home()
+			_maybe_story.call_deferred()
+	elif _map_layer != null and _map_layer.visible:
+		_refresh_map_panels()
+	elif _home != null and _home.visible:
+		_home.refresh()
+	elif _city != null and _city.visible:
+		_city.refresh()
+	elif _shop != null and _shop.visible:
+		_shop.refresh()
+	_was_in_battle = GameState.in_battle
+	_update_banner()
+
+
+func _update_topbar() -> void:
+	if GameState.in_battle:
+		var r := GameData.region(GameState.battle_region)
+		var route := str(r.get("route", ""))
+		_lbl_region.text = str(r.get("name", "?"))
+		_lbl_route.text = "%s · %d/%d段" % ["采集" if GameState.battle_mode == "practice" else route, GameState.table_progress(GameState.battle_region), GameState.table_count(GameState.battle_region)]
+		_lbl_region.add_theme_color_override("font_color", Art.INK)
+		var alive := 0
+		for e in GameState.battle:
+			if float(e["hp"]) > 0.0:
+				alive += 1
+		_lbl_stamina.text = "剩余  %.1f 秒" % GameState.round_seconds_left
+		_lbl_combo.text = "已拍 %d 次 · 余 %d 张" % [GameState.round_slaps, alive]
+		_stamina_bar.max_value = maxf(1.0, GameState.round_duration)
+		_stamina_bar.value = GameState.round_seconds_left
+		_lbl_pace.text = "已暂停 · 关闭整备继续" if GameState.narrative_paused else ("蓄掌 %.1f秒" % GameState.slap_cooldown_left if GameState.slap_cooldown_left > 0.03 else "可拍 · %.2f秒 / 次" % GameState.slap_interval())
+		_stamina_bar.visible = true
+		_btn_retreat.visible = true
+	else:
+		_lbl_region.text = "回营升级"
+		_lbl_route.text = "再来一轮，赚得更多"
+		_lbl_stamina.text = "本轮已收钱"
+		_lbl_combo.text = "买升级 · 再开一轮"
+		_lbl_pace.text = "%.2f秒 / 拍" % GameState.slap_interval()
+		_stamina_bar.visible = false
+		_btn_retreat.visible = false
+	_lbl_dmg.text = "拍力 %s · 范围 %d" % [_fmt_pow(GameState.click_damage()), roundi(GameState.slap_radius())]
+	_lbl_gold.text = "金币  " + GameState.fmt(GameState.gold)
+	_lbl_income.text = "本轮 +%s · %.1f / 秒" % [_fmt_pow(GameState.run_gold), GameState.round_gold_per_second()] if GameState.in_battle else "基建 %s / 时" % GameState.fmt(GameState.gold_per_hour())
+	_lbl_progress.text = "Lv.%d  ·  上阵 %d/%d  ·  拍力 %s  ·  荆州 %d/%d" % [GameState.player_level(), GameState.carry.size(), GameState.carry_max(), _fmt_pow(GameState.deck_power()), GameState.cleared_count(), GameState.total_field_regions()]
+	var hint := "单击拍牌 · 滚轮缩放 · 靠边移动镜头\n点击地图定位 · M收起 · 升级范围拍更多"
+	_lbl_hint.tooltip_text = "" if GameState.city_unlocked() else GameState.city_unlock_text()
+	_lbl_hint.text = hint
+
+
+func _update_banner() -> void:
+	if GameState.in_battle:
+		_banner.visible = false
+		return
+	_banner.visible = true
+	if GameState.cleared_count() >= GameState.total_field_regions():
+		_banner.text = "荆州八郡已定。\n仍可在已开区域拍牌赚钱、经营城池。"
+	elif GameState.end_reason == "settled":
+		_banner.text = "本轮金币已入账。\n去大本营升级，再开一轮。"
+	else:
+		_banner.text = "桌上没有牌。\n点顶部「大本营」整备，或「荆州舆图」挑一桌"
+
+
+# =====================================================================
+# 桌面：铺牌 / 重建
+# =====================================================================
+func _rebuild_cards() -> void:
+	for c in _pile_layer.get_children():
+		if c.name == "CityCourtyardArt":
+			continue
+		_pile_layer.remove_child(c)
+		c.queue_free()
+	_cards.clear()
+	if not GameState.in_battle or GameState.battle.is_empty():
+		return
+	for i in range(GameState.battle.size()):
+		var card := _mk_card(i)
+		_cards.append(card)
+		_pile_layer.add_child(card["node"])
+	_layout_cards()
+	for i in range(_cards.size()):
+		_update_card(i)
+
+
+func _card_size_for(n: int, area: Vector2) -> Vector2:
+	return Art.deck_metrics(n, area, CARD_RATIO)["card_size"]
+
+
+func _mk_card(i: int) -> Dictionary:
+	var e: Dictionary = GameState.battle[i]
+	var id := str(e["card_id"])
+	var c := GameData.card(id)
+	var star_n := clampi(int(c.get("star", 1)), 1, 6)
+	var boss := bool(e["boss"])
+	var rot := clampf(float(e.get("rot", 0.0)), -0.16, 0.16)
+	var node := Panel.new()
+	node.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	node.set_meta("paan_card", true)
+	var frame := Art.card_frame(star_n, boss)
+	frame.shadow_size = 7
+	frame.shadow_offset = Vector2(3, 6)
+	frame.shadow_color = Color("302619", 0.46)
+	node.add_theme_stylebox_override("panel", frame)
+	node.add_child(Art.decorate(star_n))
+	node.size = CARD_SIZE
+	node.rotation = rot
+	var portrait := Art.image(id, Vector2.ZERO)
+	portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+	portrait.clip_contents = true
+	node.add_child(portrait)
+	var seal := PanelContainer.new()
+	var color: Color = Art.ROUTES.get(str(c.get("route", "")), Art.DIM)
+	seal.add_theme_stylebox_override("panel", Art.panel(color, 1, color, 1))
+	seal.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var faction := Art.label(Art.faction_label(str(c.get("route", ""))), 12, Art.PAPER_LIGHT)
+	faction.add_theme_font_override("font", Art.title_font())
+	faction.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	faction.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	seal.add_child(faction)
+	node.add_child(seal)
+	var top := Art.label(str(c.get("name", "?")), 15)
+	top.add_theme_font_override("font", Art.title_font())
+	top.clip_text = true
+	node.add_child(top)
+	var star := Art.label(GameData.star_text(star_n), 10, Art.GOLD)
+	node.add_child(star)
+	var typ := Art.label("守将" if boss else "", 8, Art.RED)
+	typ.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	node.add_child(typ)
+	var bar := ProgressBar.new()
+	bar.show_percentage = false
+	bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	bar.add_theme_stylebox_override("background", Art.panel(Color("3b3229"), 0, Color("3b3229"), 0))
+	bar.add_theme_stylebox_override("fill", Art.panel(Art.RED, 0, Art.RED, 0))
+	node.add_child(bar)
+	var hpt := Art.label("", 10, Art.INK)
+	hpt.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	node.add_child(hpt)
+	var state := Art.label("", 12, Art.RED)
+	state.name = "CardBuildStatus"
+	state.add_theme_color_override("font_outline_color", Art.PAPER_LIGHT)
+	state.add_theme_constant_override("outline_size", 3)
+	state.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	state.z_index = 1
+	node.add_child(state)
+	return {"node": node, "bar": bar, "hpt": hpt, "dead": false,
+		"rot": rot, "size": CARD_SIZE, "fonts": {top: 15, star: 10, typ: 8, hpt: 10, faction: 12},
+		"portrait": portrait, "top": top, "star": star, "type": typ, "seal": seal, "status": state}
+
+
+func _layout_cards() -> void:
+	var n := _cards.size()
+	_world_size = CityLayout.world_size(n)
+	if _pile_layer != null: _pile_layer.size = _world_size
+	if _minimap != null: _minimap.set_world(load("res://assets/art_v12/city_world.png"), _world_size)
+	_apply_camera()
+	var area := _table.size
+	if area.x <= 60.0 or area.y <= 60.0 or _cards.is_empty():
+		return
+	var sz := CARD_SIZE
+	var k := clampf(sz.x / CARD_SIZE.x, 0.65, 1.65)
+	for i in range(_cards.size()):
+		var card: Dictionary = _cards[i]
+		card["size"] = sz
+		var node: Control = card["node"]
+		node.size = sz
+		node.pivot_offset = sz * 0.5
+		for lbl in card["fonts"].keys():
+			(lbl as Label).add_theme_font_size_override("font_size", maxi(8, roundi(float(card["fonts"][lbl]) * k)))
+		var margin := 7.0 * k
+		card["seal"].position = Vector2(margin, 6 * k)
+		card["seal"].size = Vector2(20, 25) * k
+		card["top"].position = Vector2(margin + 25 * k, 4 * k)
+		card["top"].size = Vector2(sz.x - margin * 2 - 25 * k, 18 * k)
+		card["star"].position = Vector2(margin + 25 * k, 21 * k)
+		card["star"].size = Vector2(sz.x - margin * 2 - 25 * k, 11 * k)
+		card["portrait"].position = Vector2(margin, 34 * k)
+		card["portrait"].size = Vector2(sz.x - margin * 2, maxf(20, sz.y - 58 * k))
+		card["status"].position = Vector2(margin + 3 * k, 36 * k)
+		card["status"].size = Vector2(sz.x - margin * 2 - 6 * k, 20 * k)
+		card["status"].add_theme_font_size_override("font_size", maxi(11, roundi(12 * k)))
+		card["type"].position = Vector2(margin, sz.y - 19 * k)
+		card["type"].size = Vector2(29 * k, 11 * k)
+		card["bar"].position = Vector2(margin, sz.y - 22 * k)
+		card["bar"].size = Vector2(sz.x - margin * 2, 5 * k)
+		card["hpt"].position = Vector2(margin + 30 * k, sz.y - 16 * k)
+		card["hpt"].size = Vector2(sz.x - margin * 2 - 30 * k, 11 * k)
+		var enemy: Dictionary = GameState.battle[i]
+		card["rest_pos"] = Vector2(250, 250) + Vector2(float(enemy.nx), float(enemy.ny)) * (_world_size - Vector2(500, 500)) - sz * 0.5
+		if not card["dead"]:
+			node.position = card["rest_pos"]
+	if _initial_camera:
+		_initial_camera = false
+		_focus_starting_district()
+	_apply_camera()
+
+
+func _update_card(i: int) -> void:
+	if i < 0 or i >= _cards.size() or i >= GameState.battle.size():
+		return
+	var card: Dictionary = _cards[i]
+	if card["dead"]:
+		return
+	var e: Dictionary = GameState.battle[i]
+	var hp := maxf(0.0, float(e["hp"]))
+	var hp_max := maxf(1.0, float(e["hp_max"]))
+	var bar: ProgressBar = card["bar"]
+	bar.max_value = hp_max
+	bar.value = hp
+	var hpt: Label = card["hpt"]
+	hpt.text = "%s/%s" % [_compact_hp(hp), _compact_hp(hp_max)]
+	var states := PackedStringArray()
+	if int(e.get("thunder", 0)) > 0:
+		states.append("雷%d" % int(e["thunder"]))
+	if float(e.get("burn_remaining", 0.0)) > 0.0:
+		states.append("燃")
+	if float(e.get("mark_remaining", 0.0)) > 0.0:
+		states.append("标")
+	card["status"].text = " · ".join(states)
+	card["status"].visible = not states.is_empty()
+	if hp <= 0.0:
+		_flip_card(i)
+
+
+func _present_build_effects() -> void:
+	var info: Dictionary = GameState.last_slap
+	var sequence := int(info.get("effect_seq", -1))
+	if sequence < 0 or sequence == _shown_effect_seq:
+		return
+	_shown_effect_seq = sequence
+	if not GameState.in_battle or _table == null:
+		return
+	if int(info.get("battle_gen", GameState.battle_gen)) != GameState.battle_gen:
+		return
+	var effects: Array = info.get("effects", [])
+	for effect in effects:
+		var kind := str(effect.get("kind", ""))
+		if kind in ["轻拍", "重拍"]:
+			continue
+		var index := int(effect.get("index", -1))
+		if index < 0 or index >= _cards.size():
+			continue
+		var card: Dictionary = _cards[index]
+		var pos: Vector2 = card.get("rest_pos", card["node"].position) + card["size"] * Vector2(0.5, 0.55)
+		var damage := float(effect.get("damage", 0.0))
+		var caption := kind + (" -%s" % _fmt_pow(damage) if damage > 0.0 else "")
+		var color := Color("294a80") if kind in ["雷爆", "雷印"] else Art.RED
+		if kind in ["标记", "白羽追击"]:
+			color = Color("21665b")
+		var label := Art.label(caption, 16, color)
+		label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		label.add_theme_color_override("font_outline_color", Art.PAPER_LIGHT)
+		label.add_theme_constant_override("outline_size", 3)
+		label.position = pos + Vector2(-35, 5)
+		label.z_index = 3
+		_pile_layer.add_child(label)
+		var tween := label.create_tween()
+		tween.set_parallel(true)
+		tween.tween_property(label, "position:y", label.position.y - 32, 0.6)
+		tween.tween_property(label, "modulate:a", 0.0, 0.3).set_delay(0.3)
+		tween.chain().tween_callback(label.queue_free)
+
+
+func _compact_hp(value: float) -> String:
+	if value >= 100000000:
+		return ("%.1f" % (value / 100000000.0)).trim_suffix(".0") + "亿"
+	if value >= 10000:
+		return ("%.1f" % (value / 10000.0)).trim_suffix(".0") + "万"
+	return str(roundi(value))
+
+
+func _update_cards() -> void:
+	for i in range(_cards.size()):
+		_update_card(i)
+
+
+# =====================================================================
+# 输入：单击范围拍击 / 滚轮缩放 / 靠边移动；中键拖动作为附加操作
+# =====================================================================
+func _on_table_input(ev: InputEvent) -> void:
+	if not _input_allowed(): return
+	if ev is InputEventMouse and _over_camera_ui(ev.position): return
+	if ev is InputEventMouseButton:
+		var mb := ev as InputEventMouseButton
+		if mb.button_index == MOUSE_BUTTON_WHEEL_UP or mb.button_index == MOUSE_BUTTON_WHEEL_DOWN:
+			if mb.pressed:
+				_set_camera_zoom(_camera_zoom * (1.15 if mb.button_index == MOUSE_BUTTON_WHEEL_UP else 1.0 / 1.15), mb.position)
+			return
+		if mb.button_index == MOUSE_BUTTON_MIDDLE:
+			_panning = mb.pressed
+			_update_slap_cursor(mb.position)
+			return
+		if mb.button_index == MOUSE_BUTTON_LEFT and mb.pressed and not _panning:
+			_slap_area(mb.position)
+		return
+	if ev is InputEventMouseMotion:
+		var mm := ev as InputEventMouseMotion
+		if _panning:
+			_camera_pan += mm.relative
+			_apply_camera()
+		_update_slap_cursor(mm.position)
+
+func _area_targets(world_pos: Vector2, radius: float) -> Array:
+	var hits: Array = []
+	for i in range(mini(_cards.size(), GameState.battle.size())):
+		var card: Dictionary = _cards[i]
+		if bool(card.dead) or float(GameState.battle[i].hp) <= 0: continue
+		var half: Vector2 = card.size * 0.5
+		var center: Vector2 = card.get("rest_pos", card.node.position) + half
+		var point := (world_pos - center).rotated(-float(card.rot))
+		var closest := Vector2(clampf(point.x, -half.x, half.x), clampf(point.y, -half.y, half.y))
+		if point.distance_squared_to(closest) <= (radius + 0.001) * (radius + 0.001):
+			hits.append(i)
+	return hits
+
+func _slap_area(screen_pos: Vector2) -> void:
+	if not _input_allowed() or not Rect2(Vector2.ZERO, _table.size).has_point(screen_pos): return
+	if _over_camera_ui(screen_pos): return
+	var world := _screen_to_world(screen_pos)
+	var targets := _area_targets(world, GameState.slap_radius())
+	if targets.is_empty() or not GameState.begin_slap_batch(): return
+	var generation := GameState.battle_gen
+	var gold_before := GameState.gold
+	var damage_before := GameState.run_damage
+	var count := 0
+	for i in targets:
+		if GameState.attack(int(i), false):
+			count += 1
+			if generation == GameState.battle_gen and not bool(_cards[i].dead):
+				_shake(int(i), false)
+	GameState.end_slap_batch()
+	if count > 0:
+		_spawn_area_impact(world, GameState.slap_radius(), count, GameState.gold - gold_before, GameState.run_damage - damage_before)
+	_update_slap_cursor(screen_pos)
+
+func _spawn_area_impact(world_pos: Vector2, radius: float, count: int, gold_gain: float, damage: float) -> void:
+	var pulse := SlapCursor.Pulse.new()
+	pulse.radius = radius
+	pulse.position = world_pos
+	_pile_layer.add_child(pulse)
+	if is_instance_valid(_slap_receipt):
+		_slap_receipt.visible = false
+		_slap_receipt.queue_free()
+	_slap_receipt = SlapFeedback.new()
+	_slap_receipt.name = "SlapIncomeReceipt"
+	_slap_receipt.damage_text = _fmt_pow(damage)
+	_slap_receipt.gold_text = _fmt_pow(gold_gain)
+	_slap_receipt.hit_count = count
+	_slap_receipt.impact_radius = radius * _camera_scale
+	_slap_receipt.position = _world_to_screen(world_pos)
+	_table.add_child(_slap_receipt)
+
+func _hit_index_at(local_pos: Vector2) -> int:
+	local_pos = _screen_to_world(local_pos)
+	var best := -1
+	var best_d := 1e20
+	for i in range(_cards.size()):
+		var card: Dictionary = _cards[i]
+		if card["dead"]:
+			continue
+		var node: Control = card["node"]
+		if not node.visible:
+			continue
+		var sz: Vector2 = card["size"]
+		# 在卡牌自身的（未旋转）坐标系里做判定 —— 不依赖引擎的变换栈
+		var local: Vector2 = (local_pos - card.get("rest_pos", node.position) - sz * 0.5).rotated(-float(card.rot))
+		if absf(local.x) <= sz.x * 0.5 and absf(local.y) <= sz.y * 0.5:
+			# 重叠时取离牌心最近的那张（上层被压住的牌只算边角）
+			var d: float = local.length()
+			if d < best_d:
+				best_d = d
+				best = i
+	return best
+
+
+func _slap(i: int, heavy: bool, pos: Vector2) -> void:
+	if not GameState.in_battle or i < 0 or i >= GameState.battle.size():
+		return
+	if float(GameState.battle[i]["hp"]) <= 0.0:
+		return
+	var generation := GameState.battle_gen
+	if not GameState.attack(i, heavy):
+		return
+	# 清桌会自动补牌。新桌的卡不能承接上一桌的摇动和翻牌动画。
+	_spawn_impact(pos, i, heavy)
+	if generation == GameState.battle_gen and i < _cards.size() and i < GameState.battle.size() and not bool(_cards[i]["dead"]):
+		_shake(i, heavy)
+		if float(GameState.battle[i]["hp"]) <= 0.0:
+			_flip_card(i)
+
+
+func _shake(i: int, heavy: bool) -> void:
+	var card: Dictionary = _cards[i]
+	var node: Control = card["node"]
+	var old_tween := card.get("shake_tween") as Tween
+	if old_tween != null and old_tween.is_valid():
+		old_tween.kill()
+	var base: Vector2 = card.get("rest_pos", node.position)
+	var amp := 7.0 if heavy else 3.0
+	var tw := node.create_tween()
+	card["shake_tween"] = tw
+	tw.tween_property(node, "position", base + Vector2(amp, -amp * 0.4), 0.04)
+	tw.tween_property(node, "position", base + Vector2(-amp * 0.7, amp * 0.3), 0.05)
+	tw.tween_property(node, "position", base, 0.07)
+
+
+func _spawn_impact(pos: Vector2, _i: int, heavy: bool) -> void:
+	var info: Dictionary = GameState.last_slap
+	var tag := str(info.get("tag", ""))
+	var impact := InkImpact.new()
+	impact.heavy = heavy
+	impact.finisher = tag.contains("拍案")
+	impact.set_meta("print_impact", true)
+	_pile_layer.add_child(impact)
+	impact.position = pos - impact.size * 0.5
+	var txt := "-%s" % _fmt_pow(float(info.get("damage", 0.0)))
+	var gain := float(info.get("gold_gain", 0.0))
+	if gain > 0.0:
+		txt += "  +%s金" % _fmt_pow(gain)
+	if tag != "":
+		txt = "%s %s" % [tag, txt]
+	var lbl := Art.label(txt, 20 if heavy else 15,
+		Art.GOLD if tag != "" else Art.RED if heavy else Art.INK)
+	lbl.add_theme_color_override("font_outline_color", Art.PAPER_LIGHT)
+	lbl.add_theme_constant_override("outline_size", 3)
+	lbl.position = pos + Vector2(-18, -30)
+	lbl.z_index = 2
+	_pile_layer.add_child(lbl)
+	var tw := lbl.create_tween()
+	tw.set_parallel(true)
+	tw.tween_property(lbl, "position", lbl.position + Vector2(0, -40), 0.5)
+	tw.tween_property(lbl, "modulate:a", 0.0, 0.35).set_delay(0.15)
+	tw.chain().tween_callback(lbl.queue_free)
+	var stamp := PanelContainer.new()
+	var ink := Art.RED if heavy else Art.INK
+	var sb := Art.panel(Color(0, 0, 0, 0), 2, ink, 2)
+	stamp.add_theme_stylebox_override("panel", sb)
+	stamp.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var stamp_size := Vector2(38, 38) if heavy else Vector2(28, 28)
+	stamp.size = stamp_size
+	stamp.position = pos - stamp_size * 0.5
+	stamp.pivot_offset = stamp_size * 0.5
+	stamp.rotation = -0.16
+	var mark := Art.label("重" if heavy else "拍", 22 if heavy else 16, ink)
+	mark.add_theme_font_override("font", Art.title_font())
+	mark.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	mark.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	stamp.add_child(mark)
+	_pile_layer.add_child(stamp)
+	var st := stamp.create_tween()
+	st.set_parallel(true)
+	st.tween_property(stamp, "scale", Vector2(1.35, 1.35), 0.3)
+	st.tween_property(stamp, "modulate:a", 0.0, 0.3)
+	st.chain().tween_callback(stamp.queue_free)
+
+
+func _flip_card(i: int) -> void:
+	var card: Dictionary = _cards[i]
+	if card["dead"]:
+		return
+	card["dead"] = true
+	var node: Control = card["node"]
+	var tw := node.create_tween()
+	tw.tween_property(node, "scale:x", 0.04, 0.1)
+	tw.tween_callback(func():
+		for child in node.get_children():
+			if child is CanvasItem:
+				child.visible = false
+		var back := TextureRect.new()
+		back.texture = load("res://assets/art_v2/cardback.svg")
+		back.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		back.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		back.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		node.add_child(back)
+		var seal := Art.label("拍", roundi(node.size.x * 0.22), Art.PAPER_LIGHT)
+		seal.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		seal.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		seal.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		back.add_child(seal))
+	tw.tween_property(node, "scale:x", 1.0, 0.12)
+	tw.tween_property(node, "position", node.position + Vector2(0, 60), 0.18)
+	tw.parallel().tween_property(node, "scale", Vector2(0.35, 0.35), 0.18)
+	tw.parallel().tween_property(node, "modulate:a", 0.0, 0.18)
+	tw.tween_callback(func(): node.visible = false)
+
+
+func _build_map_layer() -> Control:
+	var layer := PanelContainer.new()
+	layer.set_anchors_preset(Control.PRESET_FULL_RECT)
+	layer.mouse_filter = Control.MOUSE_FILTER_STOP
+	layer.add_theme_stylebox_override("panel",
+		_paper_or_flat(TEX_DIR + "paper.png", 0.0, 1.0,
+			Color(0.90, 0.86, 0.75), Color(0.20, 0.21, 0.24), 0, 0))
+	layer.visible = false
+
+	var vb := VBoxContainer.new()
+	vb.add_theme_constant_override("separation", 0)
+	layer.add_child(vb)
+
+	# ---- 顶栏 ----
+	var top := PanelContainer.new()
+	top.custom_minimum_size = Vector2(0, 58)
+	top.add_theme_stylebox_override("panel",
+		_paper_or_flat(UI_DIR + "panel.png", PANEL_MARGIN, 0.30,
+			Color(0.12, 0.13, 0.15), Color(0.26, 0.27, 0.31), 1, 0))
+	var th := HBoxContainer.new()
+	th.add_theme_constant_override("separation", 16)
+	top.add_child(th)
+	_map_title = _mk_label("荆州舆图", 22, INK)
+	th.add_child(_map_title)
+	_map_progress = _mk_label("", 14, INK_DIM)
+	th.add_child(_map_progress)
+	var sp := Control.new()
+	sp.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	th.add_child(sp)
+	_map_legend = _mk_label("", 13, INK_SOFT)
+	th.add_child(_map_legend)
+	var bc := Button.new()
+	bc.text = "← 返回大本营"
+	bc.pressed.connect(_return_from_map)
+	th.add_child(bc)
+	vb.add_child(top)
+
+	# ---- 三栏 ----
+	var mid := HBoxContainer.new()
+	mid.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	mid.add_theme_constant_override("separation", 0)
+	vb.add_child(mid)
+
+	var lp := PanelContainer.new()
+	lp.custom_minimum_size = Vector2(318, 0)
+	lp.add_theme_stylebox_override("panel",
+		_paper_or_flat(UI_DIR + "panel.png", PANEL_MARGIN, 0.30,
+			Color(0.11, 0.12, 0.135), Color(0.22, 0.23, 0.26), 1, 0))
+	var lscroll := ScrollContainer.new()
+	lscroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	lp.add_child(lscroll)
+	_map_left = VBoxContainer.new()
+	_map_left.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_map_left.add_theme_constant_override("separation", 3)
+	lscroll.add_child(_map_left)
+	mid.add_child(lp)
+
+	var mp := PanelContainer.new()
+	mp.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	mp.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	mp.add_theme_stylebox_override("panel",
+		_paper_or_flat(TEX_DIR + "paper.png", 0.0, 1.0,
+			Color(0.90, 0.86, 0.75), Color(0.20, 0.21, 0.24), 1, 0))
+	_map_view = PaanMapView.new()
+	_map_view.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_map_view.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	_map_view.region_chosen.connect(_on_map_chosen)
+	mp.add_child(_map_view)
+	mid.add_child(mp)
+
+	var rp := PanelContainer.new()
+	rp.custom_minimum_size = Vector2(330, 0)
+	rp.add_theme_stylebox_override("panel",
+		_paper_or_flat(UI_DIR + "panel.png", PANEL_MARGIN, 0.30,
+			Color(0.11, 0.12, 0.135), Color(0.22, 0.23, 0.26), 1, 0))
+	var rscroll := ScrollContainer.new()
+	rscroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	rp.add_child(rscroll)
+	_map_right = VBoxContainer.new()
+	_map_right.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_map_right.add_theme_constant_override("separation", 6)
+	rscroll.add_child(_map_right)
+	mid.add_child(rp)
+
+	# ---- 底栏 ----
+	var bot := PanelContainer.new()
+	bot.custom_minimum_size = Vector2(0, 46)
+	bot.add_theme_stylebox_override("panel",
+		_paper_or_flat(UI_DIR + "panel.png", PANEL_MARGIN, 0.26,
+			Color(0.12, 0.13, 0.15), Color(0.26, 0.27, 0.31), 1, 0))
+	_map_foot = _mk_label("", 13, Color(0.24, 0.33, 0.22))
+	bot.add_child(_map_foot)
+	vb.add_child(bot)
+
+	return layer
+
+
+func _open_map() -> void:
+	_close_home()
+	_close_city()
+	_close_shop()
+	_map_layer.visible = true
+	if _sel_idx <= 0:
+		_sel_idx = _default_region()
+	_map_view.select(_sel_idx)
+	_map_view._recompute()
+	_refresh_map_panels()
+
+
+func _close_map() -> void:
+	_map_layer.visible = false
+
+
+func _return_from_map() -> void:
+	_close_map()
+	_open_home()
+
+
+func _on_home_map() -> void:
+	_sel_idx = _default_region()
+	_open_map()
+
+
+# =====================================================================
+# 大本营（全屏覆盖层）：升级树 / 上阵 / 装备 / 出征
+# =====================================================================
+func _open_home() -> void:
+	if _home == null:
+		return
+	_close_map()
+	_close_city()
+	_close_shop()
+	_home.open_home()
+	_maybe_story.call_deferred()
+
+func _maybe_story() -> void:
+	if _story == null or _story.visible or GameState.automation_enabled: return
+	if _story_camp_run == GameState.runs: return
+	var event: Dictionary = StoryBook.next_event(GameState.story_context(), GameState.story_seen)
+	if event.is_empty(): return
+	_story_camp_run = GameState.runs
+	GameState.narrative_paused = true
+	_panning = false
+	_story.open_event(event)
+
+func _open_journal() -> void:
+	GameState.narrative_paused = true
+	_panning = false
+	_story.open_journal(GameState.story_seen)
+
+func _on_home_practice(idx: int) -> void:
+	if GameState.start_practice(idx):
+		_close_home()
+		_close_map()
+		_close_shop()
+		_close_city()
+
+func _exit_tree() -> void:
+	GameState.narrative_paused = false
+	if _cursor_hidden:
+		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+
+
+func _close_home() -> void:
+	if _home != null:
+		_home.visible = false
+
+
+# =====================================================================
+# 城建（全屏覆盖层）：城池 / 建筑 / 更换 / 合成
+# =====================================================================
+func _open_city() -> void:
+	if _city == null:
+		return
+	_city_from_home = _home != null and _home.visible
+	_close_map()
+	_close_home()
+	_close_shop()
+	_city.open_city()
+
+
+func _close_city() -> void:
+	if _city != null:
+		_city.visible = false
+
+
+func _return_from_city() -> void:
+	_close_city()
+	if _city_from_home or not GameState.in_battle:
+		_open_home()
+
+
+func _open_shop() -> void:
+	_close_map()
+	_close_city()
+	_close_home()
+	_set_drawer(false)
+	if _tabs.get_parent() != _shop.content:
+		_tabs.reparent(_shop.content, false)
+	# 大本营商店只展示消费和收藏，经营仍从基建进入。
+	_tabs.set_tab_hidden(3, true)
+	_tabs.set_tab_hidden(4, true)
+	_tabs.current_tab = 0
+	_shop.open_shop()
+	_refresh_shop()
+
+
+func _close_shop() -> void:
+	if _shop == null:
+		return
+	_shop.visible = false
+	if _tabs.get_parent() == _shop.content:
+		_tabs.set_tab_hidden(3, false)
+		_tabs.set_tab_hidden(4, false)
+		_tabs.reparent(_drawer, false)
+
+
+func _return_from_shop() -> void:
+	_close_shop()
+	_open_home()
+
+
+func _on_home_deploy(idx: int) -> void:
+	# 按钮响应后营地立即收起，同一帧的重复按下不会再重铺一局。
+	if not _home.visible:
+		return
+	if GameState.start_battle(idx):
+		_close_home()
+		_close_shop()
+		_append_log("铺桌：「%s」%d 张牌摆上桌面" % [
+			GameData.region(idx).get("name", "?"), GameState.battle.size()])
+
+
+func _on_city_deploy(idx: int) -> void:
+	if _city == null or not _city.visible:
+		return
+	if GameState.start_battle(idx):
+		_close_city()
+		_close_home()
+		_close_shop()
+		_close_map()
+		_append_log("整备完成，重新铺桌：「%s」" % GameData.region(idx).get("name", "?"))
+
+
+func _default_region() -> int:
+	if GameState.in_battle:
+		return GameState.battle_region
+	if str(GameState.last_outcome.get("result", "")) == "settled":
+		var previous := int(GameState.last_outcome.get("region", 0))
+		if GameState.region_status(previous) == "available":
+			return previous
+	# 刚拍完的那一桌：优先把它刚解锁的邻居推出来，让玩家顺着线往下走
+	var from := GameState.battle_region
+	if from > 0:
+		for n in GameData.region(from).get("unlocks", []):
+			var j := int(n)
+			if GameState.region_status(j) == "available":
+				return j
+	for r in GameData.regions:
+		var i := int(r["idx"])
+		if GameState.region_status(i) == "available":
+			return i
+	return GameState.START_REGION
+
+
+func _on_map_changed() -> void:
+	if _map_layer != null and _map_layer.visible:
+		_refresh_map_panels()
+
+
+func _on_map_chosen(idx: int) -> void:
+	_sel_idx = idx
+	_refresh_map_panels()
+
+
+func _on_map_deploy(idx: int) -> void:
+	if GameState.start_battle(idx):
+		_close_map()
+		_close_home()
+		_close_city()
+		_close_shop()
+		var r := GameData.region(idx)
+		_append_log("铺桌：「%s」%d 张牌摆上桌面" % [
+			r.get("name", "?"), GameState.battle.size()])
+
+
+func _refresh_map_panels() -> void:
+	if _map_layer == null or not _map_layer.visible:
+		return
+	var total := GameState.total_field_regions()
+	var done := GameState.cleared_count()
+	_map_progress.text = "已克服  %d / %d" % [done, total]
+
+	var parts := []
+	for rt in GameState.ROUTES:
+		var n := 0
+		var c := 0
+		for r in GameData.regions:
+			if str(r.get("route", "")) == rt:
+				n += 1
+				if GameState.region_status(int(r["idx"])) == "cleared":
+					c += 1
+		parts.append("%s %d/%d" % [rt, c, n])
+	_map_legend.text = "　".join(parts)
+
+	_map_foot.text = "亮起的节点可以立刻开打　·　点节点看详情，点「铺这一桌」把牌铺到桌面上" \
+		+ "　·　当前：%s" % (_region_brief(_sel_idx) if _sel_idx > 0 else "未选")
+
+	_fill_map_left()
+	_fill_map_right()
+
+
+func _region_brief(idx: int) -> String:
+	if idx <= 0:
+		return "—"
+	var r := GameData.region(idx)
+	return "%s（%s）" % [r.get("name", "?"), r.get("route", "")]
+
+
+func _fill_map_left() -> void:
+	_clear(_map_left)
+	_map_left.add_child(_mk_label("郡 · 势力 归属", 15, INK))
+	_map_left.add_child(_mk_label("同一个郡的节点在图上会抱成一团领土色块", 11,
+		INK_SOFT))
+
+	# 按路线分组列出郡
+	var by_route := {}
+	for r in GameData.regions:
+		var rt := str(r.get("route", "通用"))
+		if not by_route.has(rt):
+			by_route[rt] = {}
+		var cnty := str(r.get("county", "?"))
+		if not by_route[rt].has(cnty):
+			by_route[rt][cnty] = []
+		by_route[rt][cnty].append(int(r["idx"]))
+
+	for rt in GameState.ROUTES:
+		if not by_route.has(rt):
+			continue
+		var accent: Color = ROUTE_COLOR.get(rt, Color.GRAY)
+		var cnties: Dictionary = by_route[rt]
+		var n_all := 0
+		var n_done := 0
+		for k in cnties.keys():
+			for idx in cnties[k]:
+				n_all += 1
+				if GameState.region_status(int(idx)) == "cleared":
+					n_done += 1
+		var head := _mk_label("● %s　%d/%d" % [rt, n_done, n_all], 14)
+		head.add_theme_color_override("font_color", accent)
+		_map_left.add_child(head)
+		for k in cnties.keys():
+			var ids: Array = cnties[k]
+			var d := 0
+			for idx in ids:
+				if GameState.region_status(int(idx)) == "cleared":
+					d += 1
+			var row := _mk_label("　　%s　%d/%d" % [k, d, ids.size()], 12, Color(0.38, 0.33, 0.26))
+			_map_left.add_child(row)
+
+	_map_left.add_child(_mk_label("", 8))
+	_map_left.add_child(_mk_label("图例", 13, INK))
+	# 图例的「●」是当**文字**画的，所以在纸上要能读 —— 用压深版，不用节点上的亮色
+	for kv in [["已克服", Color(0.18, 0.44, 0.26)], ["可挑战（亮）", Color(0.66, 0.50, 0.06)],
+			["未解锁（灰）", Color(0.36, 0.34, 0.30)]]:
+		_map_left.add_child(_mk_label("　● %s" % kv[0], 12, kv[1]))
+	_map_left.add_child(_mk_label("　── 已通行的相邻连通", 12, Color(0.42, 0.34, 0.18)))
+	_map_left.add_child(_mk_label("　- - 尚未打通的相邻", 12, INK_SOFT))
+	_map_left.add_child(_mk_label("　〜 长江 / 汉水", 12, Color(0.20, 0.34, 0.52)))
+
+
+func _fill_map_right() -> void:
+	_clear(_map_right)
+	var idx := _sel_idx
+	if idx <= 0:
+		_map_right.add_child(_mk_label("点舆图上的一个节点", 13, Color(0.40, 0.34, 0.27)))
+		return
+	var r := GameData.region(idx)
+	var status := GameState.region_status(idx)
+	var route := str(r.get("route", ""))
+	var accent: Color = ROUTE_COLOR.get(route, Color.GRAY)
+
+	var panel := PanelContainer.new()
+	var sb := Art.panel(Art.PAPER_LIGHT, 1, Art.RULE, 2)
+	sb.content_margin_left = 10
+	sb.content_margin_right = 10
+	sb.content_margin_top = 8
+	sb.content_margin_bottom = 8
+	panel.add_theme_stylebox_override("panel", sb)
+	var pv := VBoxContainer.new()
+	pv.add_theme_constant_override("separation", 2)
+	panel.add_child(pv)
+	pv.add_child(_mk_label("%d. %s" % [idx, r.get("name", "?")], 20, INK))
+	pv.add_child(_mk_label("%s　·　%s　·　%s" % [
+		route, r.get("county", ""), r.get("difficulty", "")], 12, Color(0.34, 0.29, 0.23)))
+	pv.add_child(Art.image(Art.city_id(idx), Vector2(0, 110)))
+	_map_right.add_child(panel)
+
+	# v1.0：新野已经不是"桌上没有牌"的序章了，删掉原先那条特殊分支，
+	# 让它和别的区域一样走下面的「守军 / 总血量 / 需要几拍」。
+
+	_map_right.add_child(_mk_label("守军　%d 张" % int(r.get("enemy_count", 0)), 14))
+	_map_right.add_child(_mk_label("城池牌堆　%d/%d 段" % [GameState.table_progress(idx), GameState.table_count(idx)], 14))
+	_map_right.add_child(_mk_label("下一段厚度　%s" % GameState.fmt(GameState.table_hp(idx)), 14))
+	_map_right.add_child(_mk_label("本轮时长　%.0f 秒 · %.2f 秒 / 拍" % [GameState.round_duration_value(), GameState.slap_interval()], 14))
+	_map_right.add_child(_mk_label("你的伤害　%.1f / 拍" % GameState.click_damage(), 14))
+	var need_slaps := GameState.slaps_needed(idx)
+	var my_slaps := int(ceil(GameState.round_duration_value() / GameState.slap_interval()))
+	var vtxt := "下一桌约需 %d 拍 · 本轮可拍约 %d 次" % [need_slaps, my_slaps]
+	var vcol := Color(0.13, 0.34, 0.21)
+	if need_slaps > my_slaps:
+		vtxt += " · 先赚金币升级"
+		vcol = Art.GOLD
+	_map_right.add_child(_mk_label(vtxt, 14, vcol))
+	_map_right.add_child(_mk_label("推荐战力　%s　·　你的战力 %.1f" % [
+		GameState.fmt(float(r.get("power", 0))), GameState.deck_power()], 13,
+		Color(0.28, 0.32, 0.38)))
+	_map_right.add_child(_mk_label("每拍即时赚钱；清桌自动续桌；结束后购买升级再来一轮。", 11,
+		Color(0.44, 0.36, 0.22)))
+	_map_right.add_child(_mk_label("", 6))
+
+	var city := str(r.get("city", ""))
+	if GameState.city_unlocked():
+		_map_right.add_child(_mk_label("克服后：获得城池卡「%s」　建筑槽位 %d" % [
+			city, GameState.city_slots(idx)], 12, Color(0.30, 0.34, 0.24)))
+	else:
+		_map_right.add_child(_mk_label("克服后：解锁相邻区域（城池要等 %s）" % GameState.city_unlock_text(),
+			12, Color(0.45, 0.36, 0.15)))
+
+	var unlocked_names := []
+	for n in r.get("unlocks", []):
+		unlocked_names.append(str(GameData.region(int(n)).get("name", "?")))
+	if not unlocked_names.is_empty():
+		_map_right.add_child(_mk_label("打通后开启：%s" % _join_str(unlocked_names, "、"), 12,
+			Color(0.40, 0.35, 0.28)))
+
+	var need := []
+	for n in r.get("unlocked_by", []):
+		if not GameState._is_cleared(int(n)):
+			need.append(str(GameData.region(int(n)).get("name", "?")))
+	if not need.is_empty():
+		_map_right.add_child(_mk_label("还需先打通：%s" % _join_str(need, "、"), 12,
+			Color(0.58, 0.28, 0.22)))
+
+	_map_right.add_child(_mk_label("", 8))
+	if status == "available":
+		var b := Button.new()
+		b.text = "开始赚钱  ▶"
+		b.custom_minimum_size = Vector2(0, 46)
+		b.pressed.connect(func(): _on_map_deploy(idx))
+		_map_right.add_child(b)
+	elif status == "cleared":
+		_map_right.add_child(_mk_label("✓ 全城牌桌已经掌握", 14, Color(0.18, 0.39, 0.25)))
+		var practice_button := Button.new()
+		practice_button.text = "回这座城赚钱"
+		practice_button.custom_minimum_size.y = 42
+		practice_button.pressed.connect(_on_home_practice.bind(idx))
+		_map_right.add_child(practice_button)
+		_map_right.add_child(_mk_label("该区域已归入基建，可放置建筑获得挂机收益。", 11,
+			Color(0.40, 0.35, 0.28)))
+		var arr := GameState.city_buildings(idx)
+		if arr.size() > 0:
+			_map_right.add_child(_mk_label("城池建筑 %d/%d" % [GameState.city_used_slots(idx), GameState.city_slots(idx)],
+				12, Color(0.40, 0.35, 0.28)))
+	else:
+		_map_right.add_child(_mk_label("🔒 未解锁", 14, Color(0.45, 0.40, 0.33)))
+
+
+# =====================================================================
+# 开包 / 招降 / 合成 —— 都要放翻牌特效
+# =====================================================================
+func _play_reveal(title: String, ids: Array, sub: String) -> void:
+	if _reveal == null or ids.is_empty():
+		return
+	_reveal.open(title, ids, sub)
+
+
+func _do_buy_pack(i: int) -> void:
+	var got := GameState.buy_pack(i)
+	if got.is_empty():
+		return
+	var nm: String = GameData.packs[i].get("name", "卡包")
+	var high := 0
+	for id in got:
+		high = maxi(high, int(GameData.card(id).get("star", 0)))
+	_play_reveal("开「%s」" % nm, got, "%d 张　最高 %s" % [got.size(), GameData.star_text(high)])
+
+
+func _do_ransom(id: String) -> void:
+	var nm := GameData.card_name(id)
+	if GameState.ransom(id):
+		_play_reveal("招降 · %s" % nm, [id], "入我帐下")
+
+
+func _do_synth(star: int) -> void:
+	var got := GameState.synthesize(star)
+	if got == "":
+		return
+	_play_reveal("合成 · %s" % GameData.star_text(star + 1), [got], "3 张 %s 熔铸而成" % GameData.star_text(star))
+
+
+# =====================================================================
+# 抽屉其余页
+# =====================================================================
+func _refresh_shop() -> void:
+	_fill_packs()
+	_fill_ransom()
+	_fill_synth()
+	_fill_cities()
+	_fill_routes()
+	_fill_collection()
+
+
+func _fill_packs() -> void:
+	var box: VBoxContainer = _shop_boxes["卡包"]
+	_clear(box)
+	box.add_child(_mk_label("按郡解锁牌池；每包补货涨5%，最多原价1.5倍。每10包保底一张当前池★3以上。", 12))
+	for i in range(GameData.packs.size()):
+		var p: Dictionary = GameData.packs[i]
+		var unlocked := GameState.pack_unlocked(i)
+		var price := GameState.pack_price(i)
+		var bought := int(GameState.pack_bought.get(p.get("name", ""), 0))
+		var b := Button.new()
+		var cover_id := ""
+		var cover_star := -1
+		for candidate in GameState._pack_pool(i):
+			var score := int(candidate.get("star", 1)) + (10 if candidate.get("type", "") == "武将" else 0)
+			if score > cover_star:
+				cover_id = str(candidate["id"])
+				cover_star = score
+		b.icon = Art.texture(cover_id)
+		b.expand_icon = true
+		b.add_theme_constant_override("icon_max_width", 54)
+		b.custom_minimum_size.y = 72
+		b.text = "%s · %s\n%d 金币　已开 %d" % [
+			p.get("name", "?"), p.get("scope", ""), price, bought]
+		b.disabled = not unlocked or GameState.gold < float(price)
+		b.tooltip_text = "每包 %d 张 · %s\n%s" % [p.get("cards", 5), p.get("pity", ""), p.get("unlock", "")]
+		b.pressed.connect(_do_buy_pack.bind(i))
+		box.add_child(b)
+
+
+func _fill_ransom() -> void:
+	var box: VBoxContainer = _shop_boxes["招降"]
+	_clear(box)
+	if GameState.captured.is_empty():
+		box.add_child(_mk_label("囚禁台是空的。拍翻 ★★★ 及以上武将后，他们会出现在这里。", 12))
+		return
+	box.add_child(_mk_label("囚禁台（%d 名）" % GameState.captured.size(), 16, Color(0.38, 0.33, 0.26)))
+	var seen := {}
+	for id in GameState.captured:
+		if seen.has(id):
+			continue
+		seen[id] = true
+		var cnt := 0
+		for x in GameState.captured:
+			if x == id:
+				cnt += 1
+		var cost := GameState.ransom_cost(id)
+		var c := GameData.card(id)
+		var b := Button.new()
+		b.icon = Art.texture(str(id))
+		b.expand_icon = true
+		b.add_theme_constant_override("icon_max_width", 46)
+		b.custom_minimum_size.y = 60
+		b.text = "%s %s · %s\n招降 %d 金币%s" % [
+			c.get("name", "?"), GameData.star_text(int(c.get("star", 0))),
+			c.get("route", ""), cost, ("　x%d" % cnt) if cnt > 1 else ""]
+		b.disabled = GameState.gold < float(cost)
+		b.pressed.connect(func(): _do_ransom(id))
+		box.add_child(b)
+
+
+func _fill_synth() -> void:
+	var box: VBoxContainer = _shop_boxes["合成"]
+	_clear(box)
+	box.add_child(_mk_label("士兵/装备：自由3张同星+金币→高一星，受当前进度上限约束。武将与建筑在构筑/基建同名合成。", 12))
+	for star in range(1, 6):
+		var cands := GameState._star_candidates(star)
+		var cost := GameState.synth_cost(star)
+		var b := Button.new()
+		b.text = "★%d ×3 → ★%d　%d 金币\n持有 %d 张同星素材" % [star, star + 1, cost, cands.size()]
+		b.disabled = cands.size() < 3 or GameState.gold < float(cost)
+		b.pressed.connect(func(): _do_synth(star))
+		box.add_child(b)
+
+
+func _fill_cities() -> void:
+	var box: VBoxContainer = _shop_boxes["城建"]
+	_clear(box)
+	box.add_child(_mk_label("城池提供槽位；建筑卡的来源、加成、追加与倍率组成挂机收益。", 12))
+	if not GameState.city_unlocked():
+		box.add_child(_mk_label("尚未解锁　·　%s" % GameState.city_unlock_text(), 14, Color(0.50, 0.36, 0.10)))
+		box.add_child(_mk_label("先把前几桌拍完 —— 本作故意让挂机晚一点登场。", 12, Color(0.44, 0.39, 0.32)))
+		return
+
+	box.add_child(_mk_label("建筑产出 %s / 小时　·　离线效率 %.0f%%" % [
+		GameState.fmt(GameState.gold_per_hour()), GameState.offline_efficiency() * 100.0], 13,
+		Color(0.13, 0.34, 0.21)))
+
+	var b := Button.new()
+	b.text = "进入基建（装配建筑 / 组合收益 / 同名合成）"
+	b.custom_minimum_size = Vector2(0, 44)
+	b.pressed.connect(func():
+		_set_drawer(false)
+		_open_city())
+	box.add_child(b)
+
+	# 一览：每处已克服城池的槽位占用（v1.0：新野克服后也在此列，它也有 1 个槽位）
+	for r in GameData.regions:
+		var i := int(r["idx"])
+		if GameState.region_status(i) != "cleared":
+			continue
+		var slots := GameState.city_slots(i)
+		box.add_child(_mk_label("%s　%s　槽位 %d/%d　%s/时" % [
+			str(r.get("county", "")), str(r.get("name", "?")), GameState.city_used_slots(i), slots,
+			GameState.fmt(city_output(i))], 12, Color(0.28, 0.36, 0.28)))
+
+
+func city_output(idx: int) -> float:
+	return float(GameState.city_combo(idx)["hourly"])
+
+
+func _fill_routes() -> void:
+	var box: VBoxContainer = _shop_boxes["路线"]
+	_clear(box)
+	box.add_child(_mk_label("选路线 = 选武将池 + 选 combo 方向 + 选难度手感。软锁：都能走，专精有奖励。", 12))
+	for rt in GameData.routes:
+		box.add_child(_mk_route_row(rt))
+
+
+func _mk_route_row(rt: Dictionary) -> Control:
+	var name: String = rt.get("name", "")
+	var panel := PanelContainer.new()
+	var sb := StyleBoxFlat.new()
+	sb.bg_color = ROUTE_COLOR.get(name, Color.GRAY).lerp(PAPER, 0.88)
+	sb.set_corner_radius_all(6)
+	sb.set_border_width_all(1)
+	sb.border_color = ROUTE_COLOR.get(name, Color.GRAY)
+	sb.content_margin_left = 8
+	sb.content_margin_right = 8
+	panel.add_theme_stylebox_override("panel", sb)
+
+	var vb := VBoxContainer.new()
+	panel.add_child(vb)
+	vb.add_child(_mk_label("%s　%s　难度 %s" % [
+		name, rt.get("counties", ""), rt.get("difficulty", "")], 14))
+	vb.add_child(_mk_label("combo：%s" % rt.get("combo", ""), 12, Color(0.38, 0.33, 0.26)))
+	var bond := GameState.bond_tier(name)
+	vb.add_child(_mk_label("亲和 %d　·　羁绊 %s　·　卡组内同线 %d 张" % [
+		int(GameState.affinity.get(name, 0)),
+		["未触发", "一档（3 张）", "二档（6 张）"][bond],
+		GameState.route_unit_count(name)], 12, Color(0.38, 0.33, 0.26)))
+	return panel
+
+
+func _fill_collection() -> void:
+	var box: VBoxContainer = _shop_boxes["收藏"]
+	_clear(box)
+	box.add_child(Art.label("三国牌谱 · %d 张" % GameData.cards.size(), 19, Art.RED))
+	var search := LineEdit.new()
+	search.placeholder_text = "搜索名称、效果或编号"
+	search.text = _collection_search
+	box.add_child(search)
+	var filters := HBoxContainer.new()
+	box.add_child(filters)
+	var types := OptionButton.new()
+	for type in ["全部类别", "初始武将", "武将", "士兵", "装备", "城池", "建筑"]:
+		types.add_item(type)
+		if type == _collection_type:
+			types.select(types.item_count - 1)
+	filters.add_child(types)
+	var routes := OptionButton.new()
+	for route in ["全部路线", "魏线", "蜀线", "吴线", "群雄线", "通用", "起点"]:
+		routes.add_item(route)
+		if route == _collection_route:
+			routes.select(routes.item_count - 1)
+	filters.add_child(routes)
+	var only := CheckButton.new()
+	only.text = "只看持有"
+	only.button_pressed = _collection_owned
+	box.add_child(only)
+	var rows := VBoxContainer.new()
+	rows.add_theme_constant_override("separation", 5)
+	box.add_child(rows)
+	search.text_changed.connect(func(value: String):
+		_collection_search = value
+		_render_collection(rows))
+	types.item_selected.connect(func(index: int):
+		_collection_type = types.get_item_text(index)
+		_render_collection(rows))
+	routes.item_selected.connect(func(index: int):
+		_collection_route = routes.get_item_text(index)
+		_render_collection(rows))
+	only.toggled.connect(func(value: bool):
+		_collection_owned = value
+		_render_collection(rows))
+	_render_collection(rows)
+
+
+func _render_collection(box: VBoxContainer) -> void:
+	_clear(box)
+	var matches := 0
+	for c in GameData.cards:
+		var id := str(c["id"])
+		var count := int(GameState.owned.get(id, 0))
+		if _collection_owned and count <= 0:
+			continue
+		if _collection_type != "全部类别" and str(c.get("type", "")) != _collection_type:
+			continue
+		if _collection_route != "全部路线" and str(c.get("route", "")) != _collection_route:
+			continue
+		var searchable := "%s %s %s" % [id, c.get("name", ""), c.get("effect", "")]
+		if not _collection_search.is_empty() and not searchable.containsn(_collection_search):
+			continue
+		matches += 1
+		var p := PanelContainer.new()
+		p.add_theme_stylebox_override("panel", Art.card_frame(int(c.get("star", 1))))
+		var hb := HBoxContainer.new()
+		hb.add_theme_constant_override("separation", 9)
+		p.add_child(hb)
+		hb.add_child(Art.image(id, Vector2(68, 76)))
+		var text := VBoxContainer.new()
+		text.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		hb.add_child(text)
+		text.add_child(Art.label("%s %s" % [c.get("name", "?"), GameData.star_text(int(c.get("star", 1)))], 13))
+		text.add_child(Art.label("%s · %s · %s" % [c.get("type", ""), c.get("route", ""), "持有 ×%d" % count if count > 0 else "未收录"], 10, Art.DIM))
+		var effect := Art.label(GameData.effect_text(c), 11, Art.DIM)
+		effect.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		effect.custom_minimum_size.x = 220
+		text.add_child(effect)
+		box.add_child(p)
+	if matches == 0:
+		box.add_child(Art.label("没有符合条件的卡牌", 13, Art.DIM))
+
+
+func _append_log(t: String) -> void:
+	_log_lines.append(t)
+	while _log_lines.size() > LOG_MAX:
+		_log_lines.pop_front()
+	_render_log()
+
+
+func _render_log() -> void:
+	if _log_lbl == null:
+		return
+	_log_lbl.text = "　·　".join(_log_lines)
+
+
+func _join_str(arr: Array, sep: String) -> String:
+	var s := ""
+	for i in range(arr.size()):
+		if i > 0:
+			s += sep
+		s += str(arr[i])
+	return s
+
+
+# =====================================================================
+# 底部上阵条：拖拽源 / 落点（v1.0）
+# =====================================================================
+## ⚠️ 用**内部类**而不是新建 class_name 脚本 —— 新 class_name 会写进全局类缓存，
+##    没跑 `--import` 就直接报 `Could not find type`（本项目已经踩过两次）。
+## ⚠️ 这些控件的**子 Label 必须 mouse_filter = IGNORE**：Godot 只问鼠标下**最上面那个**
+##    Control 要不要 `_get_drag_data()`，不会往上冒泡 —— 子 Label 吃掉了按下事件，
+##    父容器就永远收不到拖拽起手。
+
+## 卡池里的一张将兵牌：拖出去 → 落到槽位上阵。
+class _PoolCard extends PanelContainer:
+	# ⚠️ host **不能**标注成 Control：那样分析器会在 `host._drag_preview()` 上报
+	#    "Function not found in base Control"，因为它只知道 Control 的成员。
+	#    留成 Variant 走动态派发，才能在运行时调到父脚本 main.gd 的方法。
+	var host = null                     # 即 main.gd（父脚本）
+	var card_id := ""
+
+	func _get_drag_data(_at: Vector2) -> Variant:
+		if card_id == "" or host == null:
+			return null
+		# ⚠️ set_drag_preview() 只在**真实拖拽会话**里合法，否则引擎会打
+		#    "Condition !get_viewport()->gui_is_dragging() is true" 的 ERROR。
+		#    自检（无头）会直接调 _get_drag_data() 来验 payload —— 那时没有拖拽会话，
+		#    所以必须先问一句。（已实测：真实拖拽时 gui_is_dragging() 确实是 true，
+		#    所以这个守卫不会让预览消失。）
+		var vp := get_viewport()
+		if vp != null and vp.gui_is_dragging():
+			set_drag_preview(host._drag_preview(card_id))
+		# 用带 kind 的字典而不是裸 id：防止"把卡池牌拖到卡池上"被当成一次成功操作
+		return {"paan_kind": "pool", "id": card_id}
+
+
+## 一个上阵槽位。收卡池来的牌；左键点一下 = 卸下。主角位 locked，两点都不响应。
+class _Slot extends PanelContainer:
+	var host = null                     # main.gd（同上，必须留 Variant）
+	var card_id := ""
+	var slot_index := -1
+	var locked := false
+
+	func _can_drop_data(_at: Vector2, data: Variant) -> bool:
+		if locked or host == null:
+			return false
+		return data is Dictionary and str((data as Dictionary).get("paan_kind", "")) == "pool"
+
+	func _drop_data(_at: Vector2, data: Variant) -> void:
+		host._deploy_at(str((data as Dictionary).get("id", "")), slot_index)
+
+	func _gui_input(ev: InputEvent) -> void:
+		if locked or card_id == "":
+			return
+		if ev is InputEventMouseButton:
+			var mb := ev as InputEventMouseButton
+			if mb.pressed and mb.button_index == MOUSE_BUTTON_LEFT:
+				host._undeploy(card_id)
+				accept_event()
+
+
+class EmptySlotOutline extends Control:
+	func _ready() -> void:
+		mouse_filter = Control.MOUSE_FILTER_IGNORE
+		set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		resized.connect(queue_redraw)
+	func _draw() -> void:
+		var rect := Rect2(Vector2(5, 5), size - Vector2(10, 10))
+		var color := Color("a18c6b")
+		for pair in [[rect.position, Vector2(rect.end.x, rect.position.y)],
+			[Vector2(rect.end.x, rect.position.y), rect.end],
+			[rect.end, Vector2(rect.position.x, rect.end.y)],
+			[Vector2(rect.position.x, rect.end.y), rect.position]]:
+			draw_dashed_line(pair[0], pair[1], color, 1.0, 4.0)

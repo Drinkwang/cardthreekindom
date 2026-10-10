@@ -8,13 +8,17 @@
 
 config_version=5
 
+[animation]
+
+compatibility/default_parent_skeleton_in_mesh_instance_3d=true
+
 [application]
 
 config/name="拍案三国"
-config/description="三国增量拍卡游戏：场上全是敌人，拍翻即收；打下的城池是地基，盖上的建筑替你赚钱。"
-config/version="1.0.0"
+config/description="古代三国增量拍卡：将牌分散在城池，滚轮缩放、靠边移动、右上小地图可收起；单击圆圈赚钱，升级范围。"
+config/version="2.5.0"
 run/main_scene="res://scenes/MainMenu.tscn"
-config/features=PackedStringArray("4.3", "GL Compatibility")
+config/features=PackedStringArray("4.7", "GL Compatibility")
 
 [autoload]
 

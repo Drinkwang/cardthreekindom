@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>拍案三国 · 全卡构筑策划册</title>
+<link rel="stylesheet" href="./catalog.css">
+<script src="./catalog-data.js" defer></script>
+<script src="./catalog.js" defer></script>
+</head>
+<body>
+<a class="skip-link" href="#catalog-results">跳到卡牌名册</a>
+<main class="folio">
+  <header class="masthead">
+    <div class="brand"><span class="seal" aria-hidden="true">策</span><div><p class="eyebrow">拍案三国 · 星级效果与合成构筑</p><h1>全卡构筑册</h1></div></div>
+    <div class="header-meta"><p id="roster-counts">57名现有武将 · 24种士兵 · 新增关银屏 · 常驻主角</p><div class="header-actions"><span class="status" id="plan-status">目标策划稿，未接入游戏</span><a class="paper-link" href="./拍案三国_全武将与士兵星级效果构筑策划案.md">阅读完整策划 ↗</a></div></div>
+  </header>
+  <section class="principles" aria-label="构筑原则">
+    <p><b>星级决定强度</b><span>高星有更强数值、范围与规则；低星用独特接口接通组合。</span></p>
+    <p><b>武将合成，不练级</b><span>3张同名同品相合成：原版 → 精制 → 珍藏。★不变，无独立Lv。</span></p>
+    <p><b>编队与自动拍</b><span>同种兵全队只1支有效编队，余卡用于合成。自动轻拍完整继承构筑。</span></p>
+  </section>
+  <section class="catalog-layout" aria-label="卡牌效果名册">
+    <div class="catalog-panel paper-panel">
+      <div class="filters">
+        <label class="search-label" for="card-search">查卡、查机制、查搭配</label>
+        <div class="search-row"><input id="card-search" type="search" autocomplete="off" spellcheck="false" placeholder="例如：关羽 / 燃烧 / 破甲 / 搭配名" aria-describedby="search-tip"><button type="button" class="quiet-button" id="clear-search">清空</button></div>
+        <p id="search-tip" class="sr-only">同时搜索卡名、技能、效果、判定与搭配卡名。按斜杠键聚焦搜索。</p>
+        <div class="filter-row">
+          <div class="segmented" role="group" aria-label="卡牌种类"><button type="button" data-type="all" aria-pressed="true">全部</button><button type="button" data-type="武将" aria-pressed="false">武将</button><button type="button" data-type="士兵" aria-pressed="false">士兵</button></div>
+          <label class="star-filter" for="star-filter">星级<select id="star-filter"><option value="all">全部星级</option><option value="1">★1</option><option value="2">★2</option><option value="3">★3</option><option value="4">★4</option><option value="5">★5</option><option value="6">★6</option></select></label>
+          <button type="button" class="range-button" data-range="low" aria-pressed="false" title="Alt+1">低星 ≤3</button><button type="button" class="range-button" data-range="high" aria-pressed="false" title="Alt+2">高星 ≥5</button>
+        </div>
+      </div>
+      <div class="catalog-caption"><h2 id="catalog-results" tabindex="-1">卡牌名册</h2><p id="result-count" role="status" aria-live="polite">正在展开名册…</p></div>
+      <div class="card-grid" id="card-grid" role="group" aria-label="选择一张卡查看详情"></div>
+      <nav class="pagination" aria-label="名册翻页"><button class="quiet-button" id="prev-page" type="button">← 前页</button><span id="page-info">第1页</span><button class="quiet-button" id="next-page" type="button">后页 →</button></nav>
+    </div>
+    <aside class="detail-panel paper-panel" id="detail-panel" aria-label="选中卡牌的策划详情"><div class="empty-state"><span class="mini-seal">阅</span><h2>选一张卡，读懂它怎么接招。</h2><p>右侧展开卡面词条、触发判定与可选搭配。</p></div></aside>
+  </section>
+  <details class="example-panel paper-panel">
+    <summary>四条组合思路 <span>只是示例，可自由替换卡牌，没有指定套装判定。</span></summary>
+    <div class="example-grid" id="combo-examples"></div>
+  </details>
+  <footer class="folio-footer"><span id="edition">v2.2 · 2026-10-06</span><span>Alt+1 低星 · Alt+2 高星 · / 搜索 · 卡名按钮可跳转</span><span>本册展示目标设计，当前游戏技能以实机为准。</span></footer>
+</main>
+</body>
+</html>

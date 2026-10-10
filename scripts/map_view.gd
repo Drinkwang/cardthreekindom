@@ -1,5 +1,6 @@
 class_name PaanMapView
 extends Control
+const Art = preload("res://scripts/ui/print_art.gd")
 ## 荆州舆图 —— 全屏覆盖层里的策略地图。
 ##
 ## 当前是"纯代码几何版"（下一版换 AI 地形底图，只要把 _draw_backdrop() 换掉即可）：
@@ -23,12 +24,12 @@ const RELAX_ITERS := 320
 const KM_PER_LAT := 111.0
 const KM_PER_LON := 111.0 * 0.872          # 北纬 29° 附近，1° 经度的实际长度
 
-const COL_CLEARED := Color(0.22, 0.50, 0.29)
+const COL_CLEARED := Color(0.20, 0.38, 0.29)
 const COL_AVAILABLE := Color(0.72, 0.46, 0.05)
-const COL_LOCKED := Color(0.46, 0.43, 0.39)
+const COL_LOCKED := Color(0.77, 0.71, 0.59)
 const COL_START := Color(0.48, 0.40, 0.28)
 const COL_RIVER := Color(0.26, 0.42, 0.56, 0.34)
-const COL_GRID := Color(0.32, 0.26, 0.19, 0.10)
+const COL_GRID := Color(0.32, 0.26, 0.19, 0.045)
 # S5：底图换成泛黄旧地图后，字必须由浅转深（原来是白字，落在纸上会看不见）
 const COL_TEXT := Color(0.15, 0.12, 0.09)
 const COL_TEXT_DIM := Color(0.40, 0.34, 0.27)
@@ -36,18 +37,10 @@ const COL_TEXT_DIM := Color(0.40, 0.34, 0.27)
 const COL_HALO := Color(0.94, 0.91, 0.82, 0.90)
 
 ## S5：老式印刷折页地图底图（没有就退回原来的纯几何版）
-const BG_DIR := "res://assets/bg/"
+const BG_DIR := "res://assets/art_v2/backgrounds/"
 const BACKDROP_ALPHA := 0.60
 
-const ROUTE_COLOR := {
-	"魏线": Color(0.42, 0.60, 0.90),
-	"蜀线": Color(0.90, 0.44, 0.40),
-	"吴线": Color(0.36, 0.78, 0.64),
-	"群雄线": Color(0.90, 0.72, 0.36),
-	"通用": Color(0.62, 0.62, 0.62),
-	"起点": Color(0.62, 0.62, 0.62),
-	"现实线": Color(0.72, 0.52, 0.88),
-}
+const ROUTE_COLOR := Art.ROUTES
 
 # 河流用「经过哪些区域」来表示（几何版权宜做法，换底图后删掉）
 const RIVERS := [
@@ -66,14 +59,19 @@ var _backdrop: Texture2D
 
 
 func _ready() -> void:
+	theme = Art.theme()
+	clip_contents = true
 	mouse_filter = Control.MOUSE_FILTER_STOP
-	_font = get_theme_default_font()
+	_font = Art.title_font()
 	if _font == null:
 		_font = ThemeDB.fallback_font
 	var p := BG_DIR + "map.png"
 	if ResourceLoader.exists(p):
 		_backdrop = load(p) as Texture2D
 	resized.connect(_recompute)
+	mouse_exited.connect(func():
+		hover_idx = -1
+		queue_redraw())
 	_recompute()
 	set_process(true)
 
@@ -174,7 +172,20 @@ func _draw() -> void:
 	_draw_rivers()
 	_draw_edges()
 	_draw_nodes()
+	_draw_cartography()
 	_draw_tooltip()
+
+
+func _draw_cartography() -> void:
+	# 双墨线、北向标与卷号保持地图印刷物的尺度，不遮住可点的城池。
+	draw_rect(Rect2(Vector2(7, 7), size - Vector2(14, 14)), Color(0.49, 0.37, 0.23, 0.55), false, 1)
+	draw_rect(Rect2(Vector2(11, 11), size - Vector2(22, 22)), Color(0.49, 0.37, 0.23, 0.22), false, 1)
+	var compass := Vector2(36, size.y - 52)
+	draw_line(compass - Vector2(0, 15), compass + Vector2(0, 10), Art.DIM, 1.2)
+	draw_line(compass - Vector2(9, 0), compass + Vector2(9, 0), Art.DIM, 1.2)
+	draw_colored_polygon(PackedVector2Array([compass + Vector2(0, -19), compass + Vector2(-4, -9), compass + Vector2(4, -9)]), Art.RED)
+	_text_centered("北", compass + Vector2(0, -26), 12, Art.DIM)
+	_text_centered("荆州八郡", Vector2(size.x - 59, size.y - 29), 13, Art.DIM)
 
 
 ## S5：老式印刷折页地图底图。语义层（郡域团 / 河流 / 节点）仍画在它上面，
@@ -253,9 +264,9 @@ func _draw_edges() -> void:
 			var open_a := GameState.region_status(a) != "locked"
 			var open_b := GameState.region_status(b) != "locked"
 			if open_a and open_b:
-				draw_line(_pts[a], _pts[b], Color(0.85, 0.82, 0.62, 0.42), 2.0)
+				draw_line(_pts[a], _pts[b], Color(0.45, 0.34, 0.22, 0.5), 2.0)
 			else:
-				_dashed(_pts[a], _pts[b], Color(0.55, 0.55, 0.60, 0.22), 1.0)
+				_dashed(_pts[a], _pts[b], Color(0.43, 0.35, 0.26, 0.25), 1.0)
 
 
 func _dashed(a: Vector2, b: Vector2, col: Color, w: float) -> void:
@@ -283,12 +294,12 @@ func _draw_nodes() -> void:
 		# 当前这一桌：脉冲圈
 		if idx == cur:
 			var pr := NODE_R + 8.0 + sin(_pulse) * 5.0
-			draw_arc(p, pr, 0.0, TAU, 48, Color(1.0, 0.94, 0.62, 0.75), 2.5, true)
+			draw_arc(p, pr, 0.0, TAU, 48, Art.RED, 2.5, true)
 			draw_circle(p, pr + 5.0, Color(1.0, 0.92, 0.55, 0.07))
 
 		# 已选中的
 		if idx == selected_idx:
-			draw_arc(p, NODE_R + 5.0, 0.0, TAU, 40, Color(1, 1, 1, 0.9), 2.0, true)
+			draw_arc(p, NODE_R + 5.0, 0.0, TAU, 40, Art.RED, 2.0, true)
 
 		# 悬停变大的外圈
 		var rr := NODE_R
@@ -297,7 +308,7 @@ func _draw_nodes() -> void:
 			draw_circle(p, rr + 6.0, Color(1, 1, 1, 0.10))
 
 		var fill := COL_LOCKED
-		var border := Color(0.42, 0.43, 0.47)
+		var border := Art.RULE
 		match status:
 			"cleared":
 				fill = COL_CLEARED
@@ -307,24 +318,31 @@ func _draw_nodes() -> void:
 				border = Color(0.98, 0.95, 0.88, 0.92)
 			_:
 				fill = COL_LOCKED
-				border = Color(0.40, 0.41, 0.45)
+				border = Color(0.46, 0.39, 0.30)
 		# v1.0：新野不再是"免打的起点"。未克服时按普通区域着色（要能一眼看出它是待打的敌人），
 		# 克服之后才换回起点的专属颜色。
 		if idx == GameState.START_REGION and status == "cleared":
 			fill = COL_START
 			border = Color(0.45, 0.36, 0.22)
 
-		draw_circle(p, rr, fill)
-		draw_arc(p, rr, 0.0, TAU, 40, border, 2.0, true)
+		if status == "cleared":
+			var seal_rect := Rect2(p - Vector2(rr, rr), Vector2(rr, rr) * 2.0)
+			draw_rect(seal_rect, fill)
+			draw_rect(seal_rect.grow(-3), Color(0.94, 0.88, 0.73, 0.60), false, 1)
+		else:
+			draw_circle(p, rr, fill)
+			draw_arc(p, rr, 0.0, TAU, 40, border, 1.5, true)
 
 		# 序号
 		var num := str(idx)
-		var fnum := int(round(13.0 * _fs_scale))
-		_text_centered(num, p + Vector2(0, fnum * 0.36), fnum, Color(0.08, 0.09, 0.10))
+		var fnum := maxi(12, int(round(13.0 * _fs_scale)))
+		_text_centered(num, p + Vector2(0, fnum * 0.36), fnum, Art.PAPER_LIGHT if status != "locked" else Art.DIM)
 
 		# 名字（带描边，压在底纹上也看得清）
-		var fname := int(round(11.5 * _fs_scale))
+		var fname := maxi(12, int(round(13.0 * _fs_scale)))
 		var npos := p + Vector2(0, rr + fname + 3.0)
+		if npos.y > size.y - 24.0:
+			npos = p - Vector2(0, rr + 6.0)
 		var ncol := COL_TEXT if status != "locked" else COL_TEXT_DIM
 		_text_outlined(str(r0.get("name", "?")), npos, fname, ncol)
 
@@ -335,36 +353,25 @@ func _draw_nodes() -> void:
 
 
 func _draw_tooltip() -> void:
-	var idx := hover_idx if hover_idx > 0 else selected_idx
+	var idx := hover_idx
 	if idx <= 0 or not _pts.has(idx):
 		return
 	var r0 := GameData.region(idx)
 	if r0.is_empty():
 		return
 	var p: Vector2 = _pts[idx]
-	var lines := [
-		"%s　[%s]" % [r0.get("name", "?"), r0.get("route", "")],
-		"%s · %s" % [r0.get("county", ""), r0.get("difficulty", "")],
-	]
 	var status := GameState.region_status(idx)
-	# v1.0：新野已经是真关卡，不再走"起点序章 · 桌上无牌"这条特殊分支，按正常状态显示。
-	if status == "cleared":
-		lines.append("已克服 · 建筑槽位 %d" % GameState.city_slots(idx))
-	elif status == "available":
-		lines.append("可挑战 · 守军 %d　总血量 %s" % [
-			int(r0.get("enemy_count", 0)), GameState.fmt(float(r0.get("total_hp", 0)))])
-	else:
-		lines.append("未解锁 · 先打通相邻区域")
+	var status_text := {"cleared": "已克服", "available": "可挑战", "locked": "未解锁"}
+	var lines := ["%s · %s" % [r0.get("name", "?"), status_text.get(status, "未解锁")]]
 
-	var fs := int(round(12.0 * _fs_scale))
+	var fs := maxi(12, int(round(12.0 * _fs_scale)))
 	var w := 0.0
 	for l in lines:
 		w = maxf(w, _font.get_string_size(str(l), HORIZONTAL_ALIGNMENT_LEFT, -1, fs).x)
 	var pad := 9.0
 	var box := Vector2(w + pad * 2.0, float(lines.size()) * (fs + 6.0) + pad * 2.0)
-	var at := p + Vector2(NODE_R + 10.0, -box.y * 0.5)
-	at.x = clampf(at.x, PAD, size.x - PAD - box.x)
-	at.y = clampf(at.y, PAD, size.y - PAD - box.y)
+	# 节点集中在图中央，提示退到外缘；详细战报已放在地图右栏。
+	var at := Vector2(20.0 if p.x > size.x * 0.5 else size.x - 20.0 - box.x, 20.0)
 
 	var sb := StyleBoxFlat.new()
 	sb.bg_color = Color(0.98, 0.95, 0.87, 0.97)

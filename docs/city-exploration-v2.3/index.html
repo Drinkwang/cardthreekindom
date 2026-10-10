@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>拍案三国 · 城池巡游与可收起小地图</title>
+<style>
+:root{color-scheme:light;--paper:#f3e7ce;--light:#fff7e6;--ink:#2d251c;--muted:#75674f;--red:#a04431;--rule:#bda47b;--teal:#21665b}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:#e0cfad;color:var(--ink);font-family:"Microsoft YaHei",sans-serif;line-height:1.75}
+main{max-width:1440px;margin:28px auto;padding:32px;background:var(--paper);border:1px solid var(--rule)}header{padding-bottom:20px;border-bottom:2px solid var(--red)}
+h1,h2{font-family:KaiTi,serif;font-weight:normal}h1{font-size:42px;margin:0 0 10px}h2{font-size:29px;margin:28px 0 12px}p{margin:10px 0}a{color:var(--red)}
+.tag{color:var(--red);font-size:13px;letter-spacing:2px}nav,.controls,.checks,.switches{display:flex;flex-wrap:wrap;gap:10px 18px}nav{font-size:14px;margin-top:12px}.controls,.checks{background:var(--light);padding:14px 18px;border:1px solid var(--rule)}
+kbd{font:inherit;font-size:13px;border:1px solid var(--rule);padding:2px 6px;background:var(--light)}figure{margin:14px 0}img{display:block;width:100%;height:auto;border:1px solid var(--rule)}figcaption,.small{font-size:14px;color:var(--muted)}figcaption{margin-top:8px}
+.switches{margin-top:18px}button{font:inherit;font-size:14px;cursor:pointer;padding:9px 17px;border:1px solid var(--red);background:var(--light);color:var(--red)}button[aria-pressed="true"]{background:var(--red);color:var(--light)}button:focus-visible{outline:3px solid var(--teal);outline-offset:3px}
+.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;background:var(--light);font-size:14px}th,td{text-align:left;vertical-align:top;padding:13px;border:1px solid var(--rule)}th{color:var(--red);white-space:nowrap}.recommended{background:#eaf0de}.recommended td:first-child{font-weight:bold;color:var(--teal)}
+details{margin-top:18px}summary{cursor:pointer;color:var(--red)}footer{margin-top:30px;border-top:1px solid var(--rule);padding-top:12px;color:var(--muted);font-size:13px}
+@media(max-width:760px){main{margin:0;padding:18px}h1{font-size:31px}h2{font-size:25px}.switches{gap:8px}button{padding:8px 11px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+</head>
+<body><main>
+<header>
+<div class="tag">拍案三国 · v2.3 · 2026.10.09</div>
+<h1>巡城寻牌，掌风落在街巷</h1>
+<p>卡牌分散在城内空地，彼此留出间距。滚轮缩放，鼠标靠近场地边缘移动镜头；右上角小地图显示全城牌点与当前视野，也可以收起来。</p>
+<nav><a href="#play">实机画面</a><a href="#choices">小地图方案</a><a href="#art">生成城池原图</a><a href="#checks">回归验证</a><a href="实施说明.md">实施说明</a></nav>
+</header>
+<section id="play">
+<h2>右上角地图 · 展开、收起、定位</h2>
+<div class="controls"><span><kbd>左键</kbd>圆圈拍牌</span><span><kbd>滚轮</kbd>以鼠标位置缩放</span><span><kbd>鼠标靠边</kbd>巡游城池</span><span><kbd>M</kbd>收起 / 展开</span><span><kbd>小地图</kbd>点击 / 拖动定位</span><span><kbd>全城</kbd>恢复完整视野</span></div>
+<div class="switches" role="group" aria-label="切换实机画面">
+<button type="button" data-shot="expanded" aria-pressed="true">展开小地图</button>
+<button type="button" data-shot="collapsed" aria-pressed="false">收起小地图</button>
+<button type="button" data-shot="east" aria-pressed="false">移到另一街区</button>
+<button type="button" data-shot="compact" aria-pressed="false">1280 × 720</button>
+</div>
+<figure><a id="shot-link" href="play-expanded.png"><img id="shot" src="play-expanded.png" alt="180%镜头下的新野城池，卡牌分散摆放，右上角小地图展开"></a><figcaption id="shot-caption" aria-live="polite">开局180%镜头：街巷中的牌保持间距。右上角朱红点标出全城剩余牌，青绿色框标出当前可见范围。</figcaption></figure>
+<p class="small">这是 Godot 实机截图。点图可查看原尺寸；四个按钮切换同一版本的不同地图状态。拍击圈与卡牌一起缩放，升级范围才会增加实际覆盖面积。</p>
+</section>
+<section id="choices">
+<h2>为什么推荐放右上角</h2>
+<p>本游戏底部已有上阵卡条。把小地图放在右上角，既能随时查看剩余牌的位置，又为底部留出空间；暂时不需要时收成一个“地图 M”按钮。</p>
+<div class="table-wrap"><table>
+<thead><tr><th>方案</th><th>适用方式</th><th>本游戏中的取舍</th></tr></thead>
+<tbody>
+<tr class="recommended"><td>右上角可收起 · 本轮采用</td><td>持续提供全城概览；标题、按钮或快捷键切换。</td><td>避开底部上阵条。展开时显示牌点和视野框，收起后保留入口。</td></tr>
+<tr><td>右下角常驻</td><td>地图与底部操作区集中，适合那里留有空间的界面。</td><td>这里会挤占上阵条与卡池空间；较矮窗口更容易拥挤。</td></tr>
+<tr><td>全屏或半透明地图</td><td>集中查看全城路线、街区与远处目标。</td><td>概览面积大，但会遮挡拍牌场地；更适合需要时短暂打开。</td></tr>
+</tbody></table></div>
+<p class="small">以上取舍根据本项目界面作出。不同游戏会使用不同角落：<a href="https://www.galaydegames.com/uploads/6/2/8/0/62800289/minimapstudy.pdf">小地图位置案例研究，第4页</a>列举右上与右下等位置。<a href="https://www.factorio.com/blog/post/fff-405">Factorio 开发日志</a>也说明了将地图信息放在旁边、保留正常地图交互的方案。</p>
+</section>
+<section id="art">
+<h2>新生成的完整城池 · 已接入游戏</h2>
+<figure><a href="../../assets/art_v11/city_world.png"><img src="../../assets/art_v11/city_world.png" loading="lazy" alt="新野完整俯视城池地图，北城门、园林、集市、河道与大片空地"></a><figcaption>内置 ImageGen 新生成的俯视城池原图。北城门、园林、集市、河道区分街区，空地承载实时卡牌；主场地与小地图共用同一张图。</figcaption></figure>
+<p>卡牌、红点、视野框与光标由游戏实时绘制。<a href="../../assets/art_v11/generation.json">完整提示词与素材路径</a>已保存。</p>
+<details><summary>查看本轮之前确认的效果图</summary><p><a href="../ui-concepts/city-exploration-v2/01-normal.png">正常视野</a> · <a href="../ui-concepts/city-exploration-v2/02-wheel-zoom.png">滚轮放大</a> · <a href="../ui-concepts/city-exploration-v2/03-edge-pan.png">移到另一城区</a></p></details>
+</section>
+<section id="checks">
+<h2>回归测试</h2>
+<div class="checks"><span>城池探索 <strong>208 / 208</strong></span><span>城池范围 <strong>230 / 230</strong></span><span>赚钱循环 <strong>438 / 438</strong></span><span>升级页 <strong>160 / 160</strong></span><span>卡牌美术 <strong>5569 / 5569</strong></span></div>
+<p class="small">以上五组检查通过，错误数为0。覆盖卡牌间距、滚轮缩放、边缘移动、小地图坐标与收起展开，以及原有范围拍击、赚钱与升级规则。</p>
+</section>
+<footer>Godot 4.7.1 · 截图与测试使用独立存档 · 每轮拍击即时赚金币，成长与连续完成的城池段落保存。</footer>
+</main>
+<script>
+const shots={
+expanded:{src:'play-expanded.png',alt:'180%镜头下的新野城池，卡牌分散摆放，右上角小地图展开',caption:'开局180%镜头：街巷中的牌保持间距。右上角朱红点标出全城剩余牌，青绿色框标出当前可见范围。'},
+collapsed:{src:'play-collapsed.png',alt:'右上角小地图收起为地图M按钮，露出更多城池场地',caption:'小地图收起后保留“地图 M”入口。滚轮缩放与鼠标靠边移动继续可用。'},
+east:{src:'play-east.png',alt:'镜头移动到城池另一街区，小地图视野框随之改变位置',caption:'镜头移到另一街区：看到别处的卡牌，小地图视野框同步移动，牌点保持全城坐标。'},
+compact:{src:'play-720.png',alt:'1280×720窗口下的城池、小地图和上阵条',caption:'1280×720窗口：右上角小地图、左上缩放栏与底部上阵条的实际布局。'}
+};
+const buttons=[...document.querySelectorAll('[data-shot]')],picture=document.querySelector('#shot'),caption=document.querySelector('#shot-caption'),link=document.querySelector('#shot-link');
+function choose(key){const item=shots[key];if(!item)return;buttons.forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.shot===key)));picture.src=item.src;picture.alt=item.alt;caption.textContent=item.caption;link.href=item.src;}
+buttons.forEach(button=>button.addEventListener('click',()=>choose(button.dataset.shot)));
+</script>
+</body></html>

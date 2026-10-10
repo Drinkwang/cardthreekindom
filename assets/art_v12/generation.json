@@ -1,0 +1,21 @@
+{
+  "version": "v2.4",
+  "date": "2026-10-10",
+  "generator": "Built-in image_gen.imagegen",
+  "reference_images": [
+    {
+      "path": "assets/art_v11/city_world.png",
+      "role": "edit_target"
+    },
+    {
+      "path": "docs/ui-concepts/city-exploration-v2/01-normal.png",
+      "role": "style_reference"
+    }
+  ],
+  "assets": [
+    {
+      "path": "res://assets/art_v12/city_world.png",
+      "prompt": "Use case: precise-object-edit / stylized-concept.\nInput image 1 is EDIT TARGET, current full top-down city map. Input image 2 is STYLE REFERENCE ONLY, the approved game mockup; use its richer stonework, neighborhood edges and natural ink illustration, never copy any UI or cards.\nPrimary request: Refine the full city world texture for an ancient Chinese Three Kingdoms printed-paper card game. Keep the full enclosing walls, north gate, northwest garden, northeast wooden market, southeast teal canal/bridge, southwest barracks, and same directly overhead orthographic viewpoint and broad open playable inner rectangle. Strengthen the sense of distinct city districts and tactile stone ground so this reads as an explorable city, not a flat uniform dirt yard.\nChange ground materials inside: the north-central gate plaza is pale gray-beige fitted stone pavers with restrained visible seams, a broad quiet diagonal flagstone route passes from northwest to southeast, a narrower muted stone street crosses through center; between routes are uneven ochre packed-earth courts with a few worn stones, faint moss at path edges, delicate printed hatching. Central stone paving should have visible texture and varied shape while staying lower-contrast than foreground portrait cards. A few tiny tree shadows along the outer garden margins. Richer, crisper architectural linework, more volume in dark roofs and quiet cast shadows at outer buildings, vivid but muted foliage, slight warm sunlight, nostalgic Chinese book-print pigments. Preserve city coherence. Large quiet open ground about65-70% of image, continuous across the interior.\nImportant playable constraint: keep buildings, trees, market goods, walls, water and furniture in outermost 15-18% of image, no obstacles in inner x18%-82%,y18%-82%; no new building in center. Use paving to define central neighborhoods. Cards will be placed dynamically, so ground must remain unobstructed. Avoid dark patterns that could resemble cards or interactable objects. Keep same overall composition and location of large structures as input1. Landscape approx8:5 fullcity map.\nAvoid: no baked cards, no portraits, no characters, no UI, no frame, no text, no labels, no compass, no circle, no dots, no minimap viewport rectangle, no modern objects, no 3D render or photorealism. Opaque texture. Improve detail and readable visual hierarchy, not saturation bloom."
+    }
+  ]
+}

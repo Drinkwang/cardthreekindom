@@ -1,0 +1,71 @@
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+[GameData] 卡牌 169 / 区域 21 / 路线 4 / 卡包 9 / 建筑 30
+[GameState] 引擎版本 4.7.1-stable (official) ✓
+ERROR: 失败主操作重新挑战
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] check (res://tests/hub_test.gd:9)
+       [1] _ready (res://tests/hub_test.gd:62)
+       [2] frames (res://tests/hub_test.gd:13)
+ERROR: 失败次操作换地图
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] check (res://tests/hub_test.gd:9)
+       [1] _ready (res://tests/hub_test.gd:63)
+       [2] frames (res://tests/hub_test.gd:13)
+ERROR: 换地图定位刚才的失败区域
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] check (res://tests/hub_test.gd:9)
+       [1] _ready (res://tests/hub_test.gd:142)
+       [2] frames (res://tests/hub_test.gd:13)
+ERROR: 战斗中回营显示继续
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] check (res://tests/hub_test.gd:9)
+       [1] _ready (res://tests/hub_test.gd:160)
+       [2] frames (res://tests/hub_test.gd:13)
+ERROR: 通关同样留在四区大本营
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] check (res://tests/hub_test.gd:9)
+       [1] _ready (res://tests/hub_test.gd:175)
+       [2] frames (res://tests/hub_test.gd:13)
+ERROR: 通关主操作进入大地图
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] check (res://tests/hub_test.gd:9)
+       [1] _ready (res://tests/hub_test.gd:177)
+       [2] frames (res://tests/hub_test.gd:13)
+ERROR: 通关后升级返回仍保持胜利与地图操作
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] check (res://tests/hub_test.gd:9)
+       [1] _ready (res://tests/hub_test.gd:191)
+       [2] frames (res://tests/hub_test.gd:13)
+ERROR: 进入地图选中相邻可挑战区域
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] check (res://tests/hub_test.gd:9)
+       [1] _ready (res://tests/hub_test.gd:194)
+       [2] frames (res://tests/hub_test.gd:13)
+ERROR: 重进游戏从战后营地恢复
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] check (res://tests/hub_test.gd:9)
+       [1] _ready (res://tests/hub_test.gd:203)
+       [2] frames (res://tests/hub_test.gd:13)
+ERROR: 恢复通关战果按钮
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] check (res://tests/hub_test.gd:9)
+       [1] _ready (res://tests/hub_test.gd:204)
+       [2] frames (res://tests/hub_test.gd:13)
+ERROR: 存在两个可选区域供换地图验证
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] check (res://tests/hub_test.gd:9)
+       [1] _ready (res://tests/hub_test.gd:210)
+       [2] frames (res://tests/hub_test.gd:13)
+[Hub v1.4] 检查 49 项，失败 11 项

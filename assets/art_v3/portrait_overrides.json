@@ -1,0 +1,8 @@
+{
+  "version": "print-v3-playground",
+  "cards": {
+    "I01": {"atlas": "res://assets/art_v3/portraits/I01.png", "columns": 1, "rows": 1, "index": 0},
+    "G00": {"atlas": "res://assets/art_v3/portraits/G00.png", "columns": 1, "rows": 1, "index": 0},
+    "G56": {"atlas": "res://assets/art_v3/portraits/G56.png", "columns": 1, "rows": 1, "index": 0}
+  }
+}

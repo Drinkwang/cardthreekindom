@@ -1,0 +1,11 @@
+{
+  "version": "v2.3",
+  "date": "2026-10-09",
+  "generator": "Built-in image_gen.imagegen",
+  "assets": [
+    {
+      "path": "res://assets/art_v11/city_world.png",
+      "prompt": "Use case: stylized-concept.\nAsset type: production full-city world map background for a Godot game, 拍案三国, and the SAME texture will also be used in its small minimap.\nPrimary request: One wide landscape full ancient Chinese Three Kingdoms walled city seen from directly above. World layout ratio 2400:1500. Warm ochre ground, pale parchment print texture, delicate dark brown ink outlines, woodcut hatching, muted teal canal, sparse cinnabar banners, nostalgic Chinese illustrated paper game art.\nComposition: Full city boundary fits within image. City gate and walls along outer edges. Distinct neighborhoods: north gate court, northwest garden with sparse trees and quiet stone walks, northeast wooden market stalls, southeast small canal and bridge with warehouses, southwest barracks margin. All buildings SMALL and kept along city perimeter or along sparse dividing lanes. Most of image (about 75%) consists of broad connected open plazas and street ground, quiet low-contrast surfaces where DYNAMIC cards can later be placed. Plenty of open space in all 4 quadrants, avoid a dense building maze. Top-down orthographic view with roof shapes seen from above, consistent overhead city map; no horizon, no oblique camera, no perspective vanishing point, no illustrated frame.\nCritical game constraints: no people, no cards, no card piles, no UI, no text, no names, no dots or minimap rectangle, no cursor, no labels. No modern clothing or buildings. Waterway only in outermost southeast margin, clear traversable ground through entire inner rectangle (roughly x15%-85%, y15%-85%). A few tasteful paving marks in open ground but overall spacious. All game cards and minimap overlays are rendered by code, so never bake any into image. Decorative buildings only in outer 15% edges. Complete city texture suitable for smooth zoom and panning; clear different districts around edges; opaque warm paper background. High quality illustration, sharp linework, coherent muted pigments, not 3D, not photorealistic."
+    }
+  ]
+}

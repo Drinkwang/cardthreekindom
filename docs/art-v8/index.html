@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>拍案三国 · 武将图集与产品美术 v8</title>
+  <style>
+    :root{color-scheme:light;--paper:#f5ecd6;--light:#fff8e6;--ink:#30251d;--muted:#80705a;--red:#9c3428;--gold:#9c7734;--rule:#bda47c}
+    *{box-sizing:border-box}body{margin:0;background:#392519;color:var(--ink);font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;line-height:1.7}
+    .book{max-width:1460px;margin:24px auto;padding:34px 38px 42px;background:var(--paper);border:1px solid #caad7c;outline:1px solid #bc6544;outline-offset:-8px;box-shadow:0 16px 65px #12090485}
+    a{color:var(--red);text-underline-offset:4px}button,input{font:inherit}button{cursor:pointer}.eyebrow{font-size:12px;letter-spacing:.16em;color:var(--red)}h1,h2,h3,.serif{font-family:KaiTi,STKaiti,SimSun,serif}h1{font-size:44px;line-height:1.25;margin:9px 0 18px}h2{font-size:29px;line-height:1.4;margin:0}h3{font-size:22px;margin:0}.lead{max-width:780px;color:#5c4a35;margin:0}.top{display:flex;justify-content:space-between;align-items:flex-start;gap:30px;padding:10px 0 26px;border-bottom:2px solid var(--red)}.stamp{display:inline-flex;justify-content:center;align-items:center;background:var(--red);border:4px double #f3dec3;color:var(--light);font:30px KaiTi,serif;width:57px;height:65px;flex-shrink:0}.brand{display:flex;gap:20px}.nav{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}.pill,.toggle{display:inline-block;padding:7px 15px;background:var(--light);border:1px solid var(--rule);border-radius:0;color:var(--ink);text-decoration:none;font-size:13px}.pill.primary{background:var(--red);border-color:var(--red);color:var(--light)}.overview{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin:27px 0}.metric{padding:13px 19px;border-left:2px solid var(--gold);background:#efe0bc59}.metric b{font-family:KaiTi,serif;font-size:28px;color:var(--red)}.metric small{display:block;color:var(--muted);font-size:12px}.section{padding-top:28px;border-top:1px solid var(--rule);margin-top:26px}.section-top{display:flex;justify-content:space-between;align-items:baseline;gap:20px;margin-bottom:17px}.note{font-size:12px;color:var(--muted);margin:7px 0 15px}.screens{display:grid;grid-template-columns:1fr 1fr;gap:20px}.screen{margin:0;min-width:0;border:1px solid var(--rule);background:var(--light)}.screen a{display:block}.screen img{display:block;width:100%;aspect-ratio:8/5;object-fit:contain;background:#ede0c1}.screen figcaption{padding:14px 16px}.screen figcaption b{font:22px KaiTi,serif}.screen figcaption p{font-size:13px;color:#67573f;margin:5px 0 0}.missing{display:flex;align-items:center;justify-content:center;background:#efe3c9;color:var(--muted);aspect-ratio:8/5;font-size:14px;padding:20px;text-align:center}.screens .missing{display:none}.tools{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:16px}.search{flex:1;min-width:240px;max-width:550px;padding:11px 14px;border:1px solid var(--rule);color:var(--ink);background:var(--light);outline-offset:3px}.search:focus{outline:1px solid var(--red)}.toggle.active{background:var(--red);border-color:var(--red);color:var(--light)}.count{font-size:13px;color:var(--muted);margin-left:auto}.portraits{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:14px}.portrait-card{margin:0;background:var(--light);border:1px solid #baa27c;min-width:0;box-shadow:1px 2px 0 #b8a07832}.portrait-card .portrait{position:relative;width:100%;aspect-ratio:1;background:#f0e4c9;overflow:hidden}.portrait img{position:absolute;display:block;width:400%;height:300%;max-width:none;object-fit:fill}.portrait::after{content:"";position:absolute;inset:2px;border:1px solid #7d5b2c26;pointer-events:none}.portrait.pending img{display:none}.portrait.pending::before{content:"等待图集";position:absolute;inset:0;display:grid;place-content:center;font-size:12px;color:var(--muted)}.portrait-card figcaption{padding:8px 10px 10px}.portrait-name{font:21px KaiTi,serif;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.portrait-meta{display:flex;justify-content:space-between;gap:7px;font-size:10px;color:var(--muted);white-space:nowrap}.atlas-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}.atlas{margin:0;border:1px solid var(--rule);background:var(--light)}.atlas img{display:block;width:100%;aspect-ratio:4/3;object-fit:contain;background:#f0e4c9}.atlas figcaption{padding:12px 14px;font-size:13px}.atlas strong{display:block;font:22px KaiTi,serif}.atlas .missing{aspect-ratio:4/3;display:none}.empty{padding:30px;text-align:center;color:var(--muted);border:1px dashed var(--rule);grid-column:1/-1}.footer{padding-top:22px;margin-top:32px;border-top:1px solid var(--rule);display:flex;justify-content:space-between;gap:16px;color:var(--muted);font-size:12px}.topaside{text-align:right;min-width:200px;font-size:12px;color:var(--muted)}
+    @media(max-width:1100px){.book{margin:12px;padding:28px}.portraits{grid-template-columns:repeat(6,minmax(0,1fr))}.atlas-list{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    @media(max-width:760px){.book{padding:23px 19px;margin:8px}.top{display:block}.topaside{text-align:left;margin-top:18px}h1{font-size:32px}.brand{gap:13px}.screens{grid-template-columns:1fr}.portraits{grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}.portrait-name{font-size:19px}.portrait-meta{display:block}.overview{gap:7px}.metric{padding:9px}.metric b{font-size:22px}.atlas-list{grid-template-columns:1fr}.section-top{display:block}.count{margin-left:0}.footer{display:block}}
+    @media(max-width:420px){.portraits{grid-template-columns:repeat(3,minmax(0,1fr))}.metric b{font-size:19px}}
+  </style>
+</head>
+<body>
+  <main class="book">
+    <header class="top">
+      <div>
+        <div class="brand"><span class="stamp" aria-hidden="true">将</span><div><div class="eyebrow">拍案三国 · 美术迭代 v8</div><h1>一册将牌，同一种印刷</h1></div></div>
+        <p class="lead">把武将的笔触、纸色和头肩比例统一。阵位、仓库、组合提示和主卡共享同一图集格位，让小头像也清楚、耐看。</p>
+        <nav class="nav" aria-label="本页导航"><a class="pill primary" href="../product-v3/index.html">完整产品策划案</a><a class="pill" href="#screens">实机界面</a><a class="pill" href="#portraits">武将图鉴</a><a class="pill" href="#atlases">原始图集</a></nav>
+      </div>
+      <aside class="topaside"><span class="eyebrow">怀旧印刷 · 头肩取景</span><p>墨线 / 低饱和套色 / 旧纸底<br>资源批次：2026年10月8日</p><a href="../../assets/art_v8/heroes_catalog.json">打开58张映射表</a></aside>
+    </header>
+    <div class="overview"><div class="metric"><b>58 张统一肖像</b><small>57名武将 + 初始主角 I01</small></div><div class="metric"><b>5 张原始图集</b><small>全部4列 × 3行，固定格位</small></div><div class="metric"><b>同一卡，同一张脸</b><small>小头像只轻裁切，不重画人物</small></div></div>
+    <section class="section" id="screens">
+      <div class="section-top"><h2>构筑与基建 · 实机界面</h2><span class="note">点击图片查看原尺寸截图</span></div>
+      <div class="screens">
+        <figure class="screen"><a href="deck.png"><img src="deck.png" alt="卡组构筑实机截图" data-wait="截图待更新"></a><div class="missing">卡组构筑实机截图待更新</div><figcaption><b>构筑 · 将牌册</b><p>大幅选中卡、横向真实联动与统一头像仓库。当前培养规则沿用；取消武将练级和同名品相合成见完整目标策划案。</p></figcaption></figure>
+        <figure class="screen"><a href="base.png"><img src="base.png" alt="基建建筑组合实机截图" data-wait="截图待更新"></a><div class="missing">基建实机截图待更新</div><figcaption><b>基建 · 建筑构筑</b><p>六槽装配、产出链条与同名合成。战后保留整备，升级和换卡后可以继续挑战。</p></figcaption></figure>
+      </div>
+      <p class="note">小窗口实机检查：<a href="deck-720.png">构筑 1280×720</a>　/　<a href="base-720.png">基建 1280×720</a>　/　<a href="fusion.png">同名建筑合成</a>　/　<a href="实施说明.md">本轮实施与验收</a></p>
+    </section>
+    <section class="section" id="portraits">
+      <div class="section-top"><h2>武将图鉴 · 统一头像检查</h2><span class="note">按固定ID顺序，直接从新图集取格位</span></div>
+      <div class="tools"><label for="search" class="serif">找将牌</label><input class="search" id="search" type="search" placeholder="输入姓名或ID，例如 关羽 / G28" autocomplete="off"><button class="toggle active" data-group="all" type="button">全部</button><button class="toggle" data-group="01" type="button">第1册</button><button class="toggle" data-group="02" type="button">第2册</button><button class="toggle" data-group="03" type="button">第3册</button><button class="toggle" data-group="04" type="button">第4册</button><button class="toggle" data-group="05" type="button">第5册</button><span class="count" id="count" aria-live="polite">载入图集索引…</span></div>
+      <div class="portraits" id="portrait-list"><p class="empty">正在读取武将图集索引。</p></div>
+      <p class="note">图鉴只显示v8原图。新图还未保存或导入时显示等待状态，不混入旧版头像。最后一张图的末两格为空白纸底，不对应卡牌。</p>
+    </section>
+    <section class="section" id="atlases"><div class="section-top"><h2>原始图集 · 对齐与风格检查</h2><a href="../../assets/art_v8/README.md" class="note">资源取景说明</a></div><div class="atlas-list" id="atlas-list"></div></section>
+    <footer class="footer"><span>拍案三国 / print-v8-unified-heroes</span><span><a href="../../assets/art_v8/generation.json">生图提示词与来源</a>　·　<a href="../art-v7/index.html">上一版美术册</a></span></footer>
+  </main>
+  <script>
+    const catalogUrl='../../assets/art_v8/heroes_catalog.json';
+    const portraitList=document.querySelector('#portrait-list'),atlasList=document.querySelector('#atlas-list'),search=document.querySelector('#search'),count=document.querySelector('#count');
+    let catalog=null,group='all';
+    const assetUrl=path=>'../../'+path.replace(/^res:\/\//,'');
+    function waitingImage(img){img.addEventListener('error',()=>{const missing=img.closest('figure').querySelector('.missing');if(missing){img.parentElement.style.display='none';missing.style.display='flex';}});}
+    document.querySelectorAll('img[data-wait]').forEach(waitingImage);
+    function addPortrait(id,card){
+      const figure=document.createElement('figure');figure.className='portrait-card';figure.title=id+' '+card.name+' · '+card.atlas.split('/').pop()+' 第'+(card.index+1)+'格';
+      const face=document.createElement('div');face.className='portrait pending';
+      const img=document.createElement('img');img.alt=card.name+'统一肖像';img.loading='eager';img.style.width=(card.columns*100)+'%';img.style.height=(card.rows*100)+'%';img.style.left=-(card.index%card.columns*100)+'%';img.style.top=-(Math.floor(card.index/card.columns)*100)+'%';img.addEventListener('load',()=>face.classList.remove('pending'));img.src=assetUrl(card.atlas);face.append(img);
+      const caption=document.createElement('figcaption'),name=document.createElement('span'),meta=document.createElement('div'),code=document.createElement('span'),position=document.createElement('span');name.className='portrait-name';name.textContent=card.name;meta.className='portrait-meta';code.textContent=id;position.textContent='第'+(card.index+1)+'格';meta.append(code,position);caption.append(name,meta);figure.append(face,caption);portraitList.append(figure);
+    }
+    function renderPortraits(){
+      if(!catalog)return;const query=search.value.trim().toLowerCase();portraitList.replaceChildren();let visible=0;
+      Object.entries(catalog.cards).forEach(([id,card])=>{const cardGroup=card.atlas.match(/heroes_(\d+)\.png$/)?.[1];if(group!=='all'&&cardGroup!==group)return;if(query&&!((id+' '+card.name).toLowerCase().includes(query)))return;addPortrait(id,card);visible++;});
+      count.textContent=visible+' / '+catalog.card_count+' 张';if(!visible){const empty=document.createElement('p');empty.className='empty';empty.textContent='没有匹配的将牌，试试姓名或数字ID。';portraitList.append(empty);}
+    }
+    function renderAtlases(){catalog.atlases.forEach((atlas,index)=>{const figure=document.createElement('figure');figure.className='atlas';const link=document.createElement('a');link.href=assetUrl(atlas.path);const img=document.createElement('img');img.src=link.href;img.alt='第'+(index+1)+'张统一武将图集';img.loading='lazy';link.append(img);const missing=document.createElement('div');missing.className='missing';missing.textContent='第'+(index+1)+'张图集待保存';const caption=document.createElement('figcaption'),title=document.createElement('strong'),detail=document.createElement('span');title.textContent='第'+(index+1)+'册 · '+atlas.count+'个映射';detail.textContent=atlas.first_id+' — '+atlas.last_id+' / '+atlas.columns+'列 × '+atlas.rows+'行'+(index===4?' / 最后两格留空':'');caption.append(title,detail);figure.append(link,missing,caption);atlasList.append(figure);waitingImage(img);});}
+    search.addEventListener('input',renderPortraits);document.querySelectorAll('button[data-group]').forEach(button=>button.addEventListener('click',()=>{group=button.dataset.group;document.querySelectorAll('button[data-group]').forEach(item=>item.classList.toggle('active',item===button));renderPortraits();}));
+    fetch(catalogUrl).then(response=>{if(!response.ok)throw new Error('catalog');return response.json();}).then(data=>{catalog=data;renderPortraits();renderAtlases();}).catch(()=>{count.textContent='索引未读取';portraitList.innerHTML='<p class="empty">请通过项目预览服务打开此页，以读取图集索引。<br><a href="../../assets/art_v8/heroes_catalog.json">直接查看固定ID映射表</a></p>';});
+  </script>
+</body>
+</html>

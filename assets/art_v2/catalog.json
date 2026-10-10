@@ -1,0 +1,1358 @@
+{
+  "version": "print-v2",
+  "style": "nostalgic-lithographic",
+  "cards": {
+    "I01": {
+      "atlas": "res://assets/art_v2/atlases/heroes_1.png",
+      "columns": 4,
+      "rows": 4,
+      "index": 0,
+      "name": "新野之主",
+      "type": "初始武将"
+    },
+    "G28": {
+      "atlas": "res://assets/art_v2/atlases/heroes_1.png",
+      "columns": 4,
+      "rows": 4,
+      "index": 1,
+      "name": "关羽",
+      "type": "武将"
+    },
+    "G26": {
+      "atlas": "res://assets/art_v2/atlases/heroes_1.png",
+      "columns": 4,
+      "rows": 4,
+      "index": 2,
+      "name": "张飞",
+      "type": "武将"
+    },
+    "G27": {
+      "atlas": "res://assets/art_v2/atlases/heroes_1.png",
+      "columns": 4,
+      "rows": 4,
+      "index": 3,
+      "name": "赵云",
+      "type": "武将"
+    },
+    "G49": {
+      "atlas": "res://assets/art_v2/atlases/heroes_1.png",
+      "columns": 4,
+      "rows": 4,
+      "index": 4,
+      "name": "甘宁",
+      "type": "武将"
+    },
+    "G13": {
+      "atlas": "res://assets/art_v2/atlases/heroes_1.png",
+      "columns": 4,
+      "rows": 4,
+      "index": 5,
+      "name": "张辽",
+      "type": "武将"
+    },
+    "G16": {
+      "atlas": "res://assets/art_v2/atlases/heroes_1.png",
+      "columns": 4,
+      "rows": 4,
+      "index": 6,
+      "name": "曹仁",
+      "type": "武将"
+    },
+    "G51": {
+      "atlas": "res://assets/art_v2/atlases/heroes_1.png",
+      "columns": 4,
+      "rows": 4,
+      "index": 7,
+      "name": "鲁肃",
+      "type": "武将"
+    },
+    "G52": {
+      "atlas": "res://assets/art_v2/atlases/heroes_1.png",
+      "columns": 4,
+      "rows": 4,
+      "index": 8,
+      "name": "吕蒙",
+      "type": "武将"
+    },
+    "G15": {
+      "atlas": "res://assets/art_v2/atlases/heroes_1.png",
+      "columns": 4,
+      "rows": 4,
+      "index": 9,
+      "name": "夏侯惇",
+      "type": "武将"
+    },
+    "G14": {
+      "atlas": "res://assets/art_v2/atlases/heroes_1.png",
+      "columns": 4,
+      "rows": 4,
+      "index": 10,
+      "name": "许褚",
+      "type": "武将"
+    },
+    "G10": {
+      "atlas": "res://assets/art_v2/atlases/heroes_1.png",
+      "columns": 4,
+      "rows": 4,
+      "index": 11,
+      "name": "徐晃",
+      "type": "武将"
+    },
+    "G12": {
+      "atlas": "res://assets/art_v2/atlases/heroes_1.png",
+      "columns": 4,
+      "rows": 4,
+      "index": 12,
+      "name": "庞德",
+      "type": "武将"
+    },
+    "G46": {
+      "atlas": "res://assets/art_v2/atlases/heroes_1.png",
+      "columns": 4,
+      "rows": 4,
+      "index": 13,
+      "name": "太史慈",
+      "type": "武将"
+    },
+    "G47": {
+      "atlas": "res://assets/art_v2/atlases/heroes_1.png",
+      "columns": 4,
+      "rows": 4,
+      "index": 14,
+      "name": "黄忠",
+      "type": "武将"
+    },
+    "G50": {
+      "atlas": "res://assets/art_v2/atlases/heroes_1.png",
+      "columns": 4,
+      "rows": 4,
+      "index": 15,
+      "name": "沙摩柯",
+      "type": "武将"
+    },
+    "G00": {
+      "atlas": "res://assets/art_v2/atlases/heroes_2.png",
+      "columns": 4,
+      "rows": 4,
+      "index": 0,
+      "name": "雷飞",
+      "type": "武将"
+    },
+    "G56": {
+      "atlas": "res://assets/art_v2/atlases/heroes_2.png",
+      "columns": 4,
+      "rows": 4,
+      "index": 1,
+      "name": "青梅竹马",
+      "type": "武将"
+    },
+    "G01": {
+      "atlas": "res://assets/art_v2/atlases/heroes_2.png",
+      "columns": 4,
+      "rows": 4,
+      "index": 2,
+      "name": "蔡瑁",
+      "type": "武将"
+    },
+    "G02": {
+      "atlas": "res://assets/art_v2/atlases/heroes_2.png",
+      "columns": 4,
+      "rows": 4,
+      "index": 3,
+      "name": "张允",
+      "type": "武将"
+    },
+    "G03": {
+      "atlas": "res://assets/art_v2/atlases/heroes_2.png",
+      "columns": 4,
+      "rows": 4,
+      "index": 4,
+      "name": "蒯越",
+      "type": "武将"
+    },
+    "G04": {
+      "atlas": "res://assets/art_v2/atlases/heroes_2.png",
+      "columns": 4,
+      "rows": 4,
+      "index": 5,
+      "name": "朱灵",
+      "type": "武将"
+    },
+    "G05": {
+      "atlas": "res://assets/art_v2/atlases/heroes_2.png",
+      "columns": 4,
+      "rows": 4,
+      "index": 6,
+      "name": "文聘",
+      "type": "武将"
+    },
+    "G06": {
+      "atlas": "res://assets/art_v2/atlases/heroes_2.png",
+      "columns": 4,
+      "rows": 4,
+      "index": 7,
+      "name": "李典",
+      "type": "武将"
+    },
+    "G07": {
+      "atlas": "res://assets/art_v2/atlases/heroes_2.png",
+      "columns": 4,
+      "rows": 4,
+      "index": 8,
+      "name": "乐进",
+      "type": "武将"
+    },
+    "G08": {
+      "atlas": "res://assets/art_v2/atlases/heroes_2.png",
+      "columns": 4,
+      "rows": 4,
+      "index": 9,
+      "name": "于禁",
+      "type": "武将"
+    },
+    "G09": {
+      "atlas": "res://assets/art_v2/atlases/heroes_2.png",
+      "columns": 4,
+      "rows": 4,
+      "index": 10,
+      "name": "曹洪",
+      "type": "武将"
+    },
+    "G11": {
+      "atlas": "res://assets/art_v2/atlases/heroes_2.png",
+      "columns": 4,
+      "rows": 4,
+      "index": 11,
+      "name": "满宠",
+      "type": "武将"
+    },
+    "G17": {
+      "atlas": "res://assets/art_v2/atlases/heroes_2.png",
+      "columns": 4,
+      "rows": 4,
+      "index": 12,
+      "name": "傅士仁",
+      "type": "武将"
+    },
+    "G18": {
+      "atlas": "res://assets/art_v2/atlases/heroes_2.png",
+      "columns": 4,
+      "rows": 4,
+      "index": 13,
+      "name": "糜芳",
+      "type": "武将"
+    },
+    "G19": {
+      "atlas": "res://assets/art_v2/atlases/heroes_2.png",
+      "columns": 4,
+      "rows": 4,
+      "index": 14,
+      "name": "廖化",
+      "type": "武将"
+    },
+    "G20": {
+      "atlas": "res://assets/art_v2/atlases/heroes_2.png",
+      "columns": 4,
+      "rows": 4,
+      "index": 15,
+      "name": "周仓",
+      "type": "武将"
+    },
+    "G21": {
+      "atlas": "res://assets/art_v2/atlases/heroes_3.png",
+      "columns": 4,
+      "rows": 4,
+      "index": 0,
+      "name": "王甫",
+      "type": "武将"
+    },
+    "G22": {
+      "atlas": "res://assets/art_v2/atlases/heroes_3.png",
+      "columns": 4,
+      "rows": 4,
+      "index": 1,
+      "name": "赵累",
+      "type": "武将"
+    },
+    "G23": {
+      "atlas": "res://assets/art_v2/atlases/heroes_3.png",
+      "columns": 4,
+      "rows": 4,
+      "index": 2,
+      "name": "关平",
+      "type": "武将"
+    },
+    "G24": {
+      "atlas": "res://assets/art_v2/atlases/heroes_3.png",
+      "columns": 4,
+      "rows": 4,
+      "index": 3,
+      "name": "马良",
+      "type": "武将"
+    },
+    "G25": {
+      "atlas": "res://assets/art_v2/atlases/heroes_3.png",
+      "columns": 4,
+      "rows": 4,
+      "index": 4,
+      "name": "蒋琬",
+      "type": "武将"
+    },
+    "G29": {
+      "atlas": "res://assets/art_v2/atlases/heroes_3.png",
+      "columns": 4,
+      "rows": 4,
+      "index": 5,
+      "name": "杨龄",
+      "type": "武将"
+    },
+    "G30": {
+      "atlas": "res://assets/art_v2/atlases/heroes_3.png",
+      "columns": 4,
+      "rows": 4,
+      "index": 6,
+      "name": "韩玄",
+      "type": "武将"
+    },
+    "G31": {
+      "atlas": "res://assets/art_v2/atlases/heroes_3.png",
+      "columns": 4,
+      "rows": 4,
+      "index": 7,
+      "name": "金旋",
+      "type": "武将"
+    },
+    "G32": {
+      "atlas": "res://assets/art_v2/atlases/heroes_3.png",
+      "columns": 4,
+      "rows": 4,
+      "index": 8,
+      "name": "刘度",
+      "type": "武将"
+    },
+    "G33": {
+      "atlas": "res://assets/art_v2/atlases/heroes_3.png",
+      "columns": 4,
+      "rows": 4,
+      "index": 9,
+      "name": "赵范",
+      "type": "武将"
+    },
+    "G34": {
+      "atlas": "res://assets/art_v2/atlases/heroes_3.png",
+      "columns": 4,
+      "rows": 4,
+      "index": 10,
+      "name": "邢道荣",
+      "type": "武将"
+    },
+    "G35": {
+      "atlas": "res://assets/art_v2/atlases/heroes_3.png",
+      "columns": 4,
+      "rows": 4,
+      "index": 11,
+      "name": "陈生",
+      "type": "武将"
+    },
+    "G36": {
+      "atlas": "res://assets/art_v2/atlases/heroes_3.png",
+      "columns": 4,
+      "rows": 4,
+      "index": 12,
+      "name": "张虎",
+      "type": "武将"
+    },
+    "G37": {
+      "atlas": "res://assets/art_v2/atlases/heroes_3.png",
+      "columns": 4,
+      "rows": 4,
+      "index": 13,
+      "name": "张羡",
+      "type": "武将"
+    },
+    "G38": {
+      "atlas": "res://assets/art_v2/atlases/heroes_3.png",
+      "columns": 4,
+      "rows": 4,
+      "index": 14,
+      "name": "王威",
+      "type": "武将"
+    },
+    "G39": {
+      "atlas": "res://assets/art_v2/atlases/heroes_3.png",
+      "columns": 4,
+      "rows": 4,
+      "index": 15,
+      "name": "巩志",
+      "type": "武将"
+    },
+    "G40": {
+      "atlas": "res://assets/art_v2/atlases/heroes_4.png",
+      "columns": 4,
+      "rows": 4,
+      "index": 0,
+      "name": "程普",
+      "type": "武将"
+    },
+    "G41": {
+      "atlas": "res://assets/art_v2/atlases/heroes_4.png",
+      "columns": 4,
+      "rows": 4,
+      "index": 1,
+      "name": "韩当",
+      "type": "武将"
+    },
+    "G42": {
+      "atlas": "res://assets/art_v2/atlases/heroes_4.png",
+      "columns": 4,
+      "rows": 4,
+      "index": 2,
+      "name": "周泰",
+      "type": "武将"
+    },
+    "G43": {
+      "atlas": "res://assets/art_v2/atlases/heroes_4.png",
+      "columns": 4,
+      "rows": 4,
+      "index": 3,
+      "name": "黄盖",
+      "type": "武将"
+    },
+    "G44": {
+      "atlas": "res://assets/art_v2/atlases/heroes_4.png",
+      "columns": 4,
+      "rows": 4,
+      "index": 4,
+      "name": "刘磐",
+      "type": "武将"
+    },
+    "G45": {
+      "atlas": "res://assets/art_v2/atlases/heroes_4.png",
+      "columns": 4,
+      "rows": 4,
+      "index": 5,
+      "name": "黄祖",
+      "type": "武将"
+    },
+    "G48": {
+      "atlas": "res://assets/art_v2/atlases/heroes_4.png",
+      "columns": 4,
+      "rows": 4,
+      "index": 6,
+      "name": "魏延",
+      "type": "武将"
+    },
+    "G53": {
+      "atlas": "res://assets/art_v2/atlases/heroes_4.png",
+      "columns": 4,
+      "rows": 4,
+      "index": 7,
+      "name": "黄盖旧部",
+      "type": "武将"
+    },
+    "G54": {
+      "atlas": "res://assets/art_v2/atlases/heroes_4.png",
+      "columns": 4,
+      "rows": 4,
+      "index": 8,
+      "name": "江夏水军统领",
+      "type": "武将"
+    },
+    "G55": {
+      "atlas": "res://assets/art_v2/atlases/heroes_4.png",
+      "columns": 4,
+      "rows": 4,
+      "index": 9,
+      "name": "荆南校尉",
+      "type": "武将"
+    },
+    "S01": {
+      "atlas": "res://assets/art_v2/atlases/soldiers.png",
+      "columns": 6,
+      "rows": 4,
+      "index": 0,
+      "name": "新野乡勇",
+      "type": "士兵"
+    },
+    "S02": {
+      "atlas": "res://assets/art_v2/atlases/soldiers.png",
+      "columns": 6,
+      "rows": 4,
+      "index": 1,
+      "name": "南阳枪兵",
+      "type": "士兵"
+    },
+    "S03": {
+      "atlas": "res://assets/art_v2/atlases/soldiers.png",
+      "columns": 6,
+      "rows": 4,
+      "index": 2,
+      "name": "荆州弓手",
+      "type": "士兵"
+    },
+    "S04": {
+      "atlas": "res://assets/art_v2/atlases/soldiers.png",
+      "columns": 6,
+      "rows": 4,
+      "index": 3,
+      "name": "黄巾残部",
+      "type": "士兵"
+    },
+    "S05": {
+      "atlas": "res://assets/art_v2/atlases/soldiers.png",
+      "columns": 6,
+      "rows": 4,
+      "index": 4,
+      "name": "流寇",
+      "type": "士兵"
+    },
+    "S06": {
+      "atlas": "res://assets/art_v2/atlases/soldiers.png",
+      "columns": 6,
+      "rows": 4,
+      "index": 5,
+      "name": "山越部曲",
+      "type": "士兵"
+    },
+    "S07": {
+      "atlas": "res://assets/art_v2/atlases/soldiers.png",
+      "columns": 6,
+      "rows": 4,
+      "index": 6,
+      "name": "江东水卒",
+      "type": "士兵"
+    },
+    "S08": {
+      "atlas": "res://assets/art_v2/atlases/soldiers.png",
+      "columns": 6,
+      "rows": 4,
+      "index": 7,
+      "name": "樊城守卒",
+      "type": "士兵"
+    },
+    "S09": {
+      "atlas": "res://assets/art_v2/atlases/soldiers.png",
+      "columns": 6,
+      "rows": 4,
+      "index": 8,
+      "name": "襄阳弩手",
+      "type": "士兵"
+    },
+    "S10": {
+      "atlas": "res://assets/art_v2/atlases/soldiers.png",
+      "columns": 6,
+      "rows": 4,
+      "index": 9,
+      "name": "益州刀手",
+      "type": "士兵"
+    },
+    "S11": {
+      "atlas": "res://assets/art_v2/atlases/soldiers.png",
+      "columns": 6,
+      "rows": 4,
+      "index": 10,
+      "name": "西凉铁骑",
+      "type": "士兵"
+    },
+    "S12": {
+      "atlas": "res://assets/art_v2/atlases/soldiers.png",
+      "columns": 6,
+      "rows": 4,
+      "index": 11,
+      "name": "青州兵",
+      "type": "士兵"
+    },
+    "S13": {
+      "atlas": "res://assets/art_v2/atlases/soldiers.png",
+      "columns": 6,
+      "rows": 4,
+      "index": 12,
+      "name": "魏武卒",
+      "type": "士兵"
+    },
+    "S14": {
+      "atlas": "res://assets/art_v2/atlases/soldiers.png",
+      "columns": 6,
+      "rows": 4,
+      "index": 13,
+      "name": "解烦卫",
+      "type": "士兵"
+    },
+    "S15": {
+      "atlas": "res://assets/art_v2/atlases/soldiers.png",
+      "columns": 6,
+      "rows": 4,
+      "index": 14,
+      "name": "锦帆营",
+      "type": "士兵"
+    },
+    "S16": {
+      "atlas": "res://assets/art_v2/atlases/soldiers.png",
+      "columns": 6,
+      "rows": 4,
+      "index": 15,
+      "name": "车下虎士",
+      "type": "士兵"
+    },
+    "S17": {
+      "atlas": "res://assets/art_v2/atlases/soldiers.png",
+      "columns": 6,
+      "rows": 4,
+      "index": 16,
+      "name": "藤甲兵",
+      "type": "士兵"
+    },
+    "S18": {
+      "atlas": "res://assets/art_v2/atlases/soldiers.png",
+      "columns": 6,
+      "rows": 4,
+      "index": 17,
+      "name": "五溪蛮兵",
+      "type": "士兵"
+    },
+    "S19": {
+      "atlas": "res://assets/art_v2/atlases/soldiers.png",
+      "columns": 6,
+      "rows": 4,
+      "index": 18,
+      "name": "江陵守军",
+      "type": "士兵"
+    },
+    "S20": {
+      "atlas": "res://assets/art_v2/atlases/soldiers.png",
+      "columns": 6,
+      "rows": 4,
+      "index": 19,
+      "name": "许昌卫队",
+      "type": "士兵"
+    },
+    "S21": {
+      "atlas": "res://assets/art_v2/atlases/soldiers.png",
+      "columns": 6,
+      "rows": 4,
+      "index": 20,
+      "name": "虎豹骑",
+      "type": "士兵"
+    },
+    "S22": {
+      "atlas": "res://assets/art_v2/atlases/soldiers.png",
+      "columns": 6,
+      "rows": 4,
+      "index": 21,
+      "name": "无当飞军",
+      "type": "士兵"
+    },
+    "S23": {
+      "atlas": "res://assets/art_v2/atlases/soldiers.png",
+      "columns": 6,
+      "rows": 4,
+      "index": 22,
+      "name": "白毦兵",
+      "type": "士兵"
+    },
+    "S24": {
+      "atlas": "res://assets/art_v2/atlases/soldiers.png",
+      "columns": 6,
+      "rows": 4,
+      "index": 23,
+      "name": "丹阳兵",
+      "type": "士兵"
+    },
+    "E01": {
+      "atlas": "res://assets/art_v2/atlases/equipment.png",
+      "columns": 6,
+      "rows": 6,
+      "index": 0,
+      "name": "环首刀",
+      "type": "装备"
+    },
+    "E02": {
+      "atlas": "res://assets/art_v2/atlases/equipment.png",
+      "columns": 6,
+      "rows": 6,
+      "index": 1,
+      "name": "长矛",
+      "type": "装备"
+    },
+    "E03": {
+      "atlas": "res://assets/art_v2/atlases/equipment.png",
+      "columns": 6,
+      "rows": 6,
+      "index": 2,
+      "name": "铁戟",
+      "type": "装备"
+    },
+    "E04": {
+      "atlas": "res://assets/art_v2/atlases/equipment.png",
+      "columns": 6,
+      "rows": 6,
+      "index": 3,
+      "name": "双股剑",
+      "type": "装备"
+    },
+    "E05": {
+      "atlas": "res://assets/art_v2/atlases/equipment.png",
+      "columns": 6,
+      "rows": 6,
+      "index": 4,
+      "name": "大斧",
+      "type": "装备"
+    },
+    "E06": {
+      "atlas": "res://assets/art_v2/atlases/equipment.png",
+      "columns": 6,
+      "rows": 6,
+      "index": 5,
+      "name": "铁脊蛇矛",
+      "type": "装备"
+    },
+    "E07": {
+      "atlas": "res://assets/art_v2/atlases/equipment.png",
+      "columns": 6,
+      "rows": 6,
+      "index": 6,
+      "name": "古锭刀",
+      "type": "装备"
+    },
+    "E08": {
+      "atlas": "res://assets/art_v2/atlases/equipment.png",
+      "columns": 6,
+      "rows": 6,
+      "index": 7,
+      "name": "三尖两刃刀",
+      "type": "装备"
+    },
+    "E09": {
+      "atlas": "res://assets/art_v2/atlases/equipment.png",
+      "columns": 6,
+      "rows": 6,
+      "index": 8,
+      "name": "龙胆亮银枪",
+      "type": "装备"
+    },
+    "E10": {
+      "atlas": "res://assets/art_v2/atlases/equipment.png",
+      "columns": 6,
+      "rows": 6,
+      "index": 9,
+      "name": "丈八蛇矛",
+      "type": "装备"
+    },
+    "E11": {
+      "atlas": "res://assets/art_v2/atlases/equipment.png",
+      "columns": 6,
+      "rows": 6,
+      "index": 10,
+      "name": "偃月刀",
+      "type": "装备"
+    },
+    "E12": {
+      "atlas": "res://assets/art_v2/atlases/equipment.png",
+      "columns": 6,
+      "rows": 6,
+      "index": 11,
+      "name": "方天画戟",
+      "type": "装备"
+    },
+    "E13": {
+      "atlas": "res://assets/art_v2/atlases/equipment.png",
+      "columns": 6,
+      "rows": 6,
+      "index": 12,
+      "name": "皮甲",
+      "type": "装备"
+    },
+    "E14": {
+      "atlas": "res://assets/art_v2/atlases/equipment.png",
+      "columns": 6,
+      "rows": 6,
+      "index": 13,
+      "name": "铁甲",
+      "type": "装备"
+    },
+    "E15": {
+      "atlas": "res://assets/art_v2/atlases/equipment.png",
+      "columns": 6,
+      "rows": 6,
+      "index": 14,
+      "name": "藤甲",
+      "type": "装备"
+    },
+    "E16": {
+      "atlas": "res://assets/art_v2/atlases/equipment.png",
+      "columns": 6,
+      "rows": 6,
+      "index": 15,
+      "name": "锁子甲",
+      "type": "装备"
+    },
+    "E17": {
+      "atlas": "res://assets/art_v2/atlases/equipment.png",
+      "columns": 6,
+      "rows": 6,
+      "index": 16,
+      "name": "兽面吞头铠",
+      "type": "装备"
+    },
+    "E18": {
+      "atlas": "res://assets/art_v2/atlases/equipment.png",
+      "columns": 6,
+      "rows": 6,
+      "index": 17,
+      "name": "明光铠",
+      "type": "装备"
+    },
+    "E19": {
+      "atlas": "res://assets/art_v2/atlases/equipment.png",
+      "columns": 6,
+      "rows": 6,
+      "index": 18,
+      "name": "玄铁重铠",
+      "type": "装备"
+    },
+    "E20": {
+      "atlas": "res://assets/art_v2/atlases/equipment.png",
+      "columns": 6,
+      "rows": 6,
+      "index": 19,
+      "name": "西凉马",
+      "type": "装备"
+    },
+    "E21": {
+      "atlas": "res://assets/art_v2/atlases/equipment.png",
+      "columns": 6,
+      "rows": 6,
+      "index": 20,
+      "name": "白马",
+      "type": "装备"
+    },
+    "E22": {
+      "atlas": "res://assets/art_v2/atlases/equipment.png",
+      "columns": 6,
+      "rows": 6,
+      "index": 21,
+      "name": "乌骓",
+      "type": "装备"
+    },
+    "E23": {
+      "atlas": "res://assets/art_v2/atlases/equipment.png",
+      "columns": 6,
+      "rows": 6,
+      "index": 22,
+      "name": "的卢",
+      "type": "装备"
+    },
+    "E24": {
+      "atlas": "res://assets/art_v2/atlases/equipment.png",
+      "columns": 6,
+      "rows": 6,
+      "index": 23,
+      "name": "爪黄飞电",
+      "type": "装备"
+    },
+    "E25": {
+      "atlas": "res://assets/art_v2/atlases/equipment.png",
+      "columns": 6,
+      "rows": 6,
+      "index": 24,
+      "name": "绝影",
+      "type": "装备"
+    },
+    "E26": {
+      "atlas": "res://assets/art_v2/atlases/equipment.png",
+      "columns": 6,
+      "rows": 6,
+      "index": 25,
+      "name": "赤兔",
+      "type": "装备"
+    },
+    "E27": {
+      "atlas": "res://assets/art_v2/atlases/equipment.png",
+      "columns": 6,
+      "rows": 6,
+      "index": 26,
+      "name": "三略",
+      "type": "装备"
+    },
+    "E28": {
+      "atlas": "res://assets/art_v2/atlases/equipment.png",
+      "columns": 6,
+      "rows": 6,
+      "index": 27,
+      "name": "将苑",
+      "type": "装备"
+    },
+    "E29": {
+      "atlas": "res://assets/art_v2/atlases/equipment.png",
+      "columns": 6,
+      "rows": 6,
+      "index": 28,
+      "name": "六韬",
+      "type": "装备"
+    },
+    "E30": {
+      "atlas": "res://assets/art_v2/atlases/equipment.png",
+      "columns": 6,
+      "rows": 6,
+      "index": 29,
+      "name": "吴子",
+      "type": "装备"
+    },
+    "E31": {
+      "atlas": "res://assets/art_v2/atlases/equipment.png",
+      "columns": 6,
+      "rows": 6,
+      "index": 30,
+      "name": "孟德新书",
+      "type": "装备"
+    },
+    "E32": {
+      "atlas": "res://assets/art_v2/atlases/equipment.png",
+      "columns": 6,
+      "rows": 6,
+      "index": 31,
+      "name": "孙子兵法",
+      "type": "装备"
+    },
+    "E33": {
+      "atlas": "res://assets/art_v2/atlases/equipment.png",
+      "columns": 6,
+      "rows": 6,
+      "index": 32,
+      "name": "铜雀瓦",
+      "type": "装备"
+    },
+    "E34": {
+      "atlas": "res://assets/art_v2/atlases/equipment.png",
+      "columns": 6,
+      "rows": 6,
+      "index": 33,
+      "name": "荆州牧印",
+      "type": "装备"
+    },
+    "E35": {
+      "atlas": "res://assets/art_v2/atlases/equipment.png",
+      "columns": 6,
+      "rows": 6,
+      "index": 34,
+      "name": "八阵图",
+      "type": "装备"
+    },
+    "E36": {
+      "atlas": "res://assets/art_v2/atlases/equipment.png",
+      "columns": 6,
+      "rows": 6,
+      "index": 35,
+      "name": "传国玉玺",
+      "type": "装备"
+    },
+    "B01": {
+      "atlas": "res://assets/art_v2/atlases/buildings.png",
+      "columns": 6,
+      "rows": 5,
+      "index": 0,
+      "name": "菜地",
+      "type": "建筑"
+    },
+    "B02": {
+      "atlas": "res://assets/art_v2/atlases/buildings.png",
+      "columns": 6,
+      "rows": 5,
+      "index": 1,
+      "name": "茅屋",
+      "type": "建筑"
+    },
+    "B03": {
+      "atlas": "res://assets/art_v2/atlases/buildings.png",
+      "columns": 6,
+      "rows": 5,
+      "index": 2,
+      "name": "土墙",
+      "type": "建筑"
+    },
+    "B04": {
+      "atlas": "res://assets/art_v2/atlases/buildings.png",
+      "columns": 6,
+      "rows": 5,
+      "index": 3,
+      "name": "木栅",
+      "type": "建筑"
+    },
+    "B05": {
+      "atlas": "res://assets/art_v2/atlases/buildings.png",
+      "columns": 6,
+      "rows": 5,
+      "index": 4,
+      "name": "小卖部",
+      "type": "建筑"
+    },
+    "B06": {
+      "atlas": "res://assets/art_v2/atlases/buildings.png",
+      "columns": 6,
+      "rows": 5,
+      "index": 5,
+      "name": "农田",
+      "type": "建筑"
+    },
+    "B07": {
+      "atlas": "res://assets/art_v2/atlases/buildings.png",
+      "columns": 6,
+      "rows": 5,
+      "index": 6,
+      "name": "木哨塔",
+      "type": "建筑"
+    },
+    "B08": {
+      "atlas": "res://assets/art_v2/atlases/buildings.png",
+      "columns": 6,
+      "rows": 5,
+      "index": 7,
+      "name": "水井",
+      "type": "建筑"
+    },
+    "B09": {
+      "atlas": "res://assets/art_v2/atlases/buildings.png",
+      "columns": 6,
+      "rows": 5,
+      "index": 8,
+      "name": "铁匠铺",
+      "type": "建筑"
+    },
+    "B10": {
+      "atlas": "res://assets/art_v2/atlases/buildings.png",
+      "columns": 6,
+      "rows": 5,
+      "index": 9,
+      "name": "校场",
+      "type": "建筑"
+    },
+    "B11": {
+      "atlas": "res://assets/art_v2/atlases/buildings.png",
+      "columns": 6,
+      "rows": 5,
+      "index": 10,
+      "name": "粮仓",
+      "type": "建筑"
+    },
+    "B12": {
+      "atlas": "res://assets/art_v2/atlases/buildings.png",
+      "columns": 6,
+      "rows": 5,
+      "index": 11,
+      "name": "驿站",
+      "type": "建筑"
+    },
+    "B13": {
+      "atlas": "res://assets/art_v2/atlases/buildings.png",
+      "columns": 6,
+      "rows": 5,
+      "index": 12,
+      "name": "望楼",
+      "type": "建筑"
+    },
+    "B14": {
+      "atlas": "res://assets/art_v2/atlases/buildings.png",
+      "columns": 6,
+      "rows": 5,
+      "index": 13,
+      "name": "水寨",
+      "type": "建筑"
+    },
+    "B15": {
+      "atlas": "res://assets/art_v2/atlases/buildings.png",
+      "columns": 6,
+      "rows": 5,
+      "index": 14,
+      "name": "学舍",
+      "type": "建筑"
+    },
+    "B16": {
+      "atlas": "res://assets/art_v2/atlases/buildings.png",
+      "columns": 6,
+      "rows": 5,
+      "index": 15,
+      "name": "钱庄",
+      "type": "建筑"
+    },
+    "B17": {
+      "atlas": "res://assets/art_v2/atlases/buildings.png",
+      "columns": 6,
+      "rows": 5,
+      "index": 16,
+      "name": "都督府",
+      "type": "建筑"
+    },
+    "B18": {
+      "atlas": "res://assets/art_v2/atlases/buildings.png",
+      "columns": 6,
+      "rows": 5,
+      "index": 17,
+      "name": "铜雀台",
+      "type": "建筑"
+    },
+    "B19": {
+      "atlas": "res://assets/art_v2/atlases/buildings.png",
+      "columns": 6,
+      "rows": 5,
+      "index": 18,
+      "name": "水军大寨",
+      "type": "建筑"
+    },
+    "B20": {
+      "atlas": "res://assets/art_v2/atlases/buildings.png",
+      "columns": 6,
+      "rows": 5,
+      "index": 19,
+      "name": "兵器库",
+      "type": "建筑"
+    },
+    "B21": {
+      "atlas": "res://assets/art_v2/atlases/buildings.png",
+      "columns": 6,
+      "rows": 5,
+      "index": 20,
+      "name": "王城",
+      "type": "建筑"
+    },
+    "B22": {
+      "atlas": "res://assets/art_v2/atlases/buildings.png",
+      "columns": 6,
+      "rows": 5,
+      "index": 21,
+      "name": "天坛",
+      "type": "建筑"
+    },
+    "B23": {
+      "atlas": "res://assets/art_v2/atlases/buildings.png",
+      "columns": 6,
+      "rows": 5,
+      "index": 22,
+      "name": "点将台",
+      "type": "建筑"
+    },
+    "B24": {
+      "atlas": "res://assets/art_v2/atlases/buildings.png",
+      "columns": 6,
+      "rows": 5,
+      "index": 23,
+      "name": "藏经阁",
+      "type": "建筑"
+    },
+    "B25": {
+      "atlas": "res://assets/art_v2/atlases/buildings.png",
+      "columns": 6,
+      "rows": 5,
+      "index": 24,
+      "name": "烽火台",
+      "type": "建筑"
+    },
+    "B26": {
+      "atlas": "res://assets/art_v2/atlases/buildings.png",
+      "columns": 6,
+      "rows": 5,
+      "index": 25,
+      "name": "演武场",
+      "type": "建筑"
+    },
+    "B27": {
+      "atlas": "res://assets/art_v2/atlases/buildings.png",
+      "columns": 6,
+      "rows": 5,
+      "index": 26,
+      "name": "聚宝盆",
+      "type": "建筑"
+    },
+    "B28": {
+      "atlas": "res://assets/art_v2/atlases/buildings.png",
+      "columns": 6,
+      "rows": 5,
+      "index": 27,
+      "name": "军械坊",
+      "type": "建筑"
+    },
+    "B29": {
+      "atlas": "res://assets/art_v2/atlases/buildings.png",
+      "columns": 6,
+      "rows": 5,
+      "index": 28,
+      "name": "招贤馆",
+      "type": "建筑"
+    },
+    "B30": {
+      "atlas": "res://assets/art_v2/atlases/buildings.png",
+      "columns": 6,
+      "rows": 5,
+      "index": 29,
+      "name": "讲武堂",
+      "type": "建筑"
+    },
+    "C01": {
+      "atlas": "res://assets/art_v2/atlases/cities.png",
+      "columns": 7,
+      "rows": 3,
+      "index": 0,
+      "name": "新野",
+      "type": "城池"
+    },
+    "C02": {
+      "atlas": "res://assets/art_v2/atlases/cities.png",
+      "columns": 7,
+      "rows": 3,
+      "index": 1,
+      "name": "樊城",
+      "type": "城池"
+    },
+    "C03": {
+      "atlas": "res://assets/art_v2/atlases/cities.png",
+      "columns": 7,
+      "rows": 3,
+      "index": 2,
+      "name": "中庐",
+      "type": "城池"
+    },
+    "C04": {
+      "atlas": "res://assets/art_v2/atlases/cities.png",
+      "columns": 7,
+      "rows": 3,
+      "index": 3,
+      "name": "宜城",
+      "type": "城池"
+    },
+    "C05": {
+      "atlas": "res://assets/art_v2/atlases/cities.png",
+      "columns": 7,
+      "rows": 3,
+      "index": 4,
+      "name": "宛城",
+      "type": "城池"
+    },
+    "C06": {
+      "atlas": "res://assets/art_v2/atlases/cities.png",
+      "columns": 7,
+      "rows": 3,
+      "index": 5,
+      "name": "襄阳",
+      "type": "城池"
+    },
+    "C07": {
+      "atlas": "res://assets/art_v2/atlases/cities.png",
+      "columns": 7,
+      "rows": 3,
+      "index": 6,
+      "name": "当阳",
+      "type": "城池"
+    },
+    "C08": {
+      "atlas": "res://assets/art_v2/atlases/cities.png",
+      "columns": 7,
+      "rows": 3,
+      "index": 7,
+      "name": "夏口",
+      "type": "城池"
+    },
+    "C09": {
+      "atlas": "res://assets/art_v2/atlases/cities.png",
+      "columns": 7,
+      "rows": 3,
+      "index": 8,
+      "name": "夷陵",
+      "type": "城池"
+    },
+    "C10": {
+      "atlas": "res://assets/art_v2/atlases/cities.png",
+      "columns": 7,
+      "rows": 3,
+      "index": 9,
+      "name": "武昌",
+      "type": "城池"
+    },
+    "C11": {
+      "atlas": "res://assets/art_v2/atlases/cities.png",
+      "columns": 7,
+      "rows": 3,
+      "index": 10,
+      "name": "沅陵",
+      "type": "城池"
+    },
+    "C12": {
+      "atlas": "res://assets/art_v2/atlases/cities.png",
+      "columns": 7,
+      "rows": 3,
+      "index": 11,
+      "name": "公安",
+      "type": "城池"
+    },
+    "C13": {
+      "atlas": "res://assets/art_v2/atlases/cities.png",
+      "columns": 7,
+      "rows": 3,
+      "index": 12,
+      "name": "汉寿",
+      "type": "城池"
+    },
+    "C14": {
+      "atlas": "res://assets/art_v2/atlases/cities.png",
+      "columns": 7,
+      "rows": 3,
+      "index": 13,
+      "name": "临沅",
+      "type": "城池"
+    },
+    "C15": {
+      "atlas": "res://assets/art_v2/atlases/cities.png",
+      "columns": 7,
+      "rows": 3,
+      "index": 14,
+      "name": "攸县",
+      "type": "城池"
+    },
+    "C16": {
+      "atlas": "res://assets/art_v2/atlases/cities.png",
+      "columns": 7,
+      "rows": 3,
+      "index": 15,
+      "name": "临湘",
+      "type": "城池"
+    },
+    "C17": {
+      "atlas": "res://assets/art_v2/atlases/cities.png",
+      "columns": 7,
+      "rows": 3,
+      "index": 16,
+      "name": "耒阳",
+      "type": "城池"
+    },
+    "C18": {
+      "atlas": "res://assets/art_v2/atlases/cities.png",
+      "columns": 7,
+      "rows": 3,
+      "index": 17,
+      "name": "郴县",
+      "type": "城池"
+    },
+    "C19": {
+      "atlas": "res://assets/art_v2/atlases/cities.png",
+      "columns": 7,
+      "rows": 3,
+      "index": 18,
+      "name": "观阳",
+      "type": "城池"
+    },
+    "C20": {
+      "atlas": "res://assets/art_v2/atlases/cities.png",
+      "columns": 7,
+      "rows": 3,
+      "index": 19,
+      "name": "泉陵",
+      "type": "城池"
+    },
+    "C21": {
+      "atlas": "res://assets/art_v2/atlases/cities.png",
+      "columns": 7,
+      "rows": 3,
+      "index": 20,
+      "name": "江陵",
+      "type": "城池"
+    }
+  }
+}

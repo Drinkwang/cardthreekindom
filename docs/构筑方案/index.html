@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="zh-CN">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>拍案三国 · 一拍如何叠起来</title>
+<link rel="stylesheet" href="preview.css">
+<main>
+<header><div><span class="seal">将</span><div><h1>一拍，叠出一套招式</h1><p>武将不练级 · 同名确定合成 · 上阵改变拍击</p></div></div><a class="paper-button" href="拍案三国_武将合成与拍击叠加构筑策划案.md">查看完整策划案</a></header>
+<p class="note"><strong>最新：<a href="../全卡构筑策划/index.html">全武将与士兵星级构筑册（v2.2）</a></strong>，涵盖全部57将、24兵及低星组合接口。此页保留v2.1早期演示；关银屏、朱灵的1P示例已由新册0.6P、0.35P起测预算覆盖，两稿都尚未替换游戏规则。</p>
+<section class="intro"><h2>看卡面就知道如何接招</h2><p>关羽多拍一次，关银屏给每道拍击附火，张飞把即时特殊攻击翻倍。组合是效果叠加，无需激活指定套装。</p></section>
+<section class="workbench" aria-label="组合演示">
+<div class="controls"><div class="toolbar"><label>轻拍基准 <input id="base" type="number" min="1" max="1000000" value="100"></label><label>输入方式 <select id="mode"><option value="1">轻拍 ×1</option><option value="2.5">重拍 ×2.5</option></select></label></div>
+<h2>点击武将，上阵或卸下</h2><div id="heroes" class="heroes"></div><p id="selection-note" class="muted" aria-live="polite"></p><button id="reset" class="paper-button">恢复三将示例</button>
+<aside><h3>合成保留原将与技能</h3><p>原版关羽×3 → 精制关羽<br>精制关羽×3 → 珍藏关羽</p><p class="muted">品相提升基础战力；追加仍为1拍，附火仍为1倍，张飞仍为特殊攻击×2。没有武将Lv或金币培养按钮。</p></aside></div>
+<div class="result"><h2 id="result-title">连拍炎掌</h2><p id="rule-line" class="rule-line"></p><div id="packets" class="packets" aria-live="polite"></div><div class="totals"><div><span>普通合计</span><strong id="physical-total"></strong></div><div><span>火焰合计</span><strong id="fire-total" class="fire"></strong></div><div><span>雷击合计</span><strong id="thunder-total" class="thunder"></strong></div></div><p class="grand-total">单目标理论伤害 <strong id="total"></strong></p><p id="formula" class="formula"></p><p id="warnings" class="warning" aria-live="polite"></p><button id="play" class="red-button">演示这一拍</button><p class="muted">假设目标生命充足、无抗性与暴击。追加不再追加，耐力按整轮扣；实际伤害受目标剩余生命限制。</p></div>
+</section>
+<section class="examples"><h2>继续往同一拍里放规则</h2><div><article><h3>加入周瑜</h3><p>火焰再×2：<br>2道×（100普通＋400火焰）＝1000</p></article><article><h3>改为雷击</h3><p>关羽＋朱灵＋张飞：<br>2道×（100普通＋200雷击）＝600</p></article><article><h3>两种属性一起</h3><p>关羽＋关银屏＋朱灵＋张飞：<br>2道×（100普通＋200火＋200雷）＝1000</p></article></div></section>
+<footer><p>数字仅为起测参数。范围清桌、同名合成、十二将技能、界面调整、挂机继承与存档迁移规则均在完整策划案内。</p><a href="../art-v5/index.html?references=20261006">返回构筑与基建美术参考</a></footer>
+</main>
+<script src="preview.js"></script>
+</html>

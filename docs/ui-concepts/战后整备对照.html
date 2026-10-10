@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>战后仍可整备 · 拍案三国</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --paper: #f4ecd8;
+      --ink: #352c21;
+      --muted: #786a54;
+      --seal: #a1372b;
+      --line: #d2bfa0;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(ellipse at 15% 0, #fff9e8 0, transparent 65%),
+        var(--paper);
+      font-family: "KaiTi", "STKaiti", "楷体", "Noto Serif SC", serif;
+    }
+    main {
+      width: min(1642px, calc(100% - 48px));
+      margin: 26px auto 24px;
+    }
+    h1 {
+      margin: 0;
+      font-size: clamp(23px, 2.2vw, 32px);
+      font-weight: 600;
+      letter-spacing: .1em;
+    }
+    .intro {
+      margin: 9px 0 17px;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.65;
+    }
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 13px;
+    }
+    .switch {
+      display: flex;
+      flex-shrink: 0;
+      gap: 7px;
+    }
+    button {
+      min-height: 40px;
+      padding: 7px 20px;
+      border: 1px solid var(--line);
+      border-radius: 3px;
+      color: var(--ink);
+      background: #fbf6e7;
+      font: inherit;
+      font-size: 17px;
+      cursor: pointer;
+      transition: background .15s, border-color .15s;
+    }
+    button:hover { border-color: var(--seal); }
+    button[aria-pressed="true"] {
+      border-color: var(--seal);
+      color: #fff8e6;
+      background: var(--seal);
+      box-shadow: inset 0 0 0 2px #ffffff20;
+    }
+    button:focus-visible, a:focus-visible {
+      outline: 2px solid var(--seal);
+      outline-offset: 4px;
+    }
+    .hint {
+      margin: 0;
+      font-size: 16px;
+      line-height: 1.5;
+    }
+    figure {
+      margin: 0;
+      border: 1px solid var(--line);
+      border-radius: 3px;
+      overflow: hidden;
+      background: #e8dcc1;
+      box-shadow: 0 5px 22px #46351b12;
+    }
+    figure img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+    footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 13px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    footer p { margin: 0; }
+    .links { display: flex; gap: 22px; }
+    a {
+      color: var(--seal);
+      text-decoration-color: #a1372b50;
+      text-underline-offset: 4px;
+      white-space: nowrap;
+    }
+    a:hover { text-decoration-color: var(--seal); }
+    @media (max-width: 620px) {
+      main { width: calc(100% - 24px); margin-top: 20px; }
+      .intro { font-size: 14px; margin-bottom: 13px; }
+      .controls { align-items: flex-start; flex-direction: column; gap: 10px; }
+      button { min-height: 42px; padding-inline: 22px; }
+      .hint { font-size: 14px; }
+      footer { align-items: flex-start; flex-direction: column; gap: 6px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      button { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <h1>战后仍可整备</h1>
+      <p class="intro">商店、构筑、升级、地图始终保留；下方显示当前战果的继续操作。</p>
+    </header>
+    <div class="controls">
+      <div class="switch" role="group" aria-label="选择战果">
+        <button type="button" data-result="failure" aria-pressed="true" aria-controls="preview">失败后</button>
+        <button type="button" data-result="victory" aria-pressed="false" aria-controls="preview">通关后</button>
+      </div>
+      <p class="hint" id="result-hint" aria-live="polite">失败先升级，再挑战或换地图。</p>
+    </div>
+    <figure>
+      <img id="preview" src="战后整备_失败_概念v2.png" width="1586" height="992" alt="失败后的完整大本营概念界面，保留商店、构筑、升级、地图四区，底部提供重新挑战和换地图。" decoding="async">
+    </figure>
+    <footer>
+      <p>UI概念图，尚未接入游戏</p>
+      <nav class="links" aria-label="参考文件">
+        <a id="original-link" href="战后整备_失败_概念v2.png" target="_blank" rel="noopener">打开原图</a>
+        <a href="战后整备_胜败流程v2.md">流程说明</a>
+      </nav>
+    </footer>
+  </main>
+  <script>
+    (() => {
+      const results = {
+        failure: {
+          image: "战后整备_失败_概念v2.png",
+          hint: "失败先升级，再挑战或换地图。",
+          alt: "失败后的完整大本营概念界面，保留商店、构筑、升级、地图四区，底部提供重新挑战和换地图。"
+        },
+        victory: {
+          image: "战后整备_通关_概念v2.png",
+          hint: "通关先升级，再进入大地图。",
+          alt: "通关后的完整大本营概念界面，保留商店、构筑、升级、地图四区，底部提供进入大地图。"
+        }
+      };
+      const buttons = document.querySelectorAll("[data-result]");
+      const preview = document.getElementById("preview");
+      const hint = document.getElementById("result-hint");
+      const original = document.getElementById("original-link");
+      buttons.forEach(button => {
+        button.addEventListener("click", () => {
+          const result = results[button.dataset.result];
+          buttons.forEach(item => {
+            item.setAttribute("aria-pressed", String(item === button));
+          });
+          preview.src = result.image;
+          preview.alt = result.alt;
+          hint.textContent = result.hint;
+          original.href = result.image;
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

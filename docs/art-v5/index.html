@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="zh-CN">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>拍案三国 · 构筑与基建</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#2c2018;color:#2b211a;font-family:"Microsoft YaHei",sans-serif}main{max-width:1400px;margin:auto;padding:30px 24px;background:#f1e6ca;min-height:100vh}header{display:flex;align-items:end;justify-content:space-between;gap:20px;border-bottom:2px solid #9d3d2e;padding-bottom:20px}h1{font-family:KaiTi,serif;font-size:42px;margin:0 0 8px}p{margin:0;line-height:1.8;color:#74654f}a{color:#9d3d2e}nav{display:flex;gap:10px;flex-wrap:wrap;margin:22px 0}button{border:1px solid #9d3d2e;background:#f8f0dc;color:#9d3d2e;font:inherit;padding:11px 20px;cursor:pointer}button[aria-selected=true]{background:#9d3d2e;color:#f8f0dc}figure{margin:0}figure img{display:block;width:100%;height:auto;border:1px solid #b8a078}figcaption{padding:12px 0;line-height:1.8}.combos{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:24px 0}.combo{padding:18px;background:#f8f0dc;border:1px solid #b8a078;border-top:4px solid var(--tone)}h2{font-family:KaiTi,serif;font-size:26px;margin:0 0 10px}.combo strong{display:block;margin-bottom:10px;color:var(--tone)}footer{padding-top:18px;border-top:1px solid #b8a078;font-size:14px}@media(max-width:750px){main{padding:20px 12px}header{display:block}h1{font-size:34px}.combos{grid-template-columns:1fr}button{padding:10px 12px}}
+</style>
+<main>
+<header><div><h1>构筑 · 基建</h1><p>旧纸与朱印，配将牌、经营城池，再挑战一桌。</p></div><p><a href="../art-v8/index.html">v1.8最新美术与58头像图集</a> · <a href="../product-v3/index.html">完整产品策划案</a><br><a href="../全卡构筑策划/index.html">全武将与士兵星级构筑策划（v2.2）</a><br><a href="建筑卡组合实施说明.md">30种建筑、组合与同名合成说明</a> · <a href="实施说明.md">v1.5实施记录</a> · <a href="reference-generation.json">界面参考提示词</a> · <a href="../../assets/art_v5/generation.json">插画提示词</a></p></header>
+<nav aria-label="界面和插画"></nav>
+<figure><img id="shot" src="../art-v8/base.png" alt="建筑卡装配与组合收益精修实机图"><figcaption id="caption"></figcaption></figure>
+<section class="combos" aria-label="已实现的武将联动">
+<article class="combo" style="--tone:#416777"><h2>雷印</h2><strong>朱灵附雷 → 文聘重掌引爆</strong><p>每三次基础拍击积一层雷印。重拍消耗雷印，打出额外伤害；厚牌适合留印再拍。</p></article>
+<article class="combo" style="--tone:#a33d29"><h2>烈火</h2><strong>韩玄点火 → 程普借风扩散</strong><p>重拍点燃目标。每四次基础拍击把燃烧传给另一张牌，保留剩余时长。</p></article>
+<article class="combo" style="--tone:#487164"><h2>追击</h2><strong>周仓标记 → 马良白羽收割</strong><p>三次轻拍标记厚牌，基础拍击增伤。标记牌翻倒后，追击另一张普通残牌。</p></article>
+</section>
+<footer><p>通关与未通关均可继续整备、换装和建筑卡构筑；通关进入大地图，未通关可重新挑战或换地图。</p><p>“界面参考”由内置 ImageGen 生成，是新美术构图方案；“实机”由 Godot 4.7.1 渲染，使用独立展示存档。参考图与实机图可切换对照。</p></footer>
+</main>
+<script>
+const pages=[
+['统一武将构筑实机','../art-v8/deck.png','v1.8：57武将和初始主角全部统一重绘图集；大卡、阵位、仓库与连招使用同一套头肩像。'],
+['基建收益精修实机','../art-v8/base.png','v1.8：组合链与固定收益纸条；农田、水井、粮仓、驿站直接显示6+6+18=30金币/30秒，平均60金币/分。'],
+['基建精修实机','../art-v7/base.png','v1.7新生图已实施：30种建筑完整场景、大幅卡面、金色星级与朱箭头链。完整美术册见../art-v7/index.html。'],
+['构筑精修实机','../art-v7/deck.png','v1.7新生图已实施：六名核心连招武将肖像、上阵纸卡、纸牌仓库、头像接招与构筑插画。'],
+['建筑组合实机','base-combo.png','v1.6已实装：六槽建筑卡装配、组合产出、底部仓库与同名合成。农田＋水井＋粮仓＋驿站原版组合平均60金币/分。'],
+['同名合成实机','base-fusion.png','3张同名同品相→1张更高品相原建筑；不扣金币、星级不变、已装配卡受保护。'],
+['720高度实机','base-combo-720.png','1280×720窗口的实际渲染；装配卡、仓库与战后继续按钮保持可见。'],
+['基建组合新参考','base-combo-reference-v2.png','2026-10-07美术参考（玩法已实施）：6个建筑卡装配槽，产出→加成→追加→倍率形成组合，底部仓库与同名合成。详见建筑卡构筑参考说明.md与base-combo-reference-v2.prompt.txt。'],
+['构筑界面参考','deck-reference-v1.png','完整界面美术参考：大将牌、上阵卡列、雷印联动与将牌仓库；保留培养、装备、带兵及战后重试入口。'],
+['基建界面参考','base-reference-v1.png','完整界面美术参考：城册、主城经营插画、建筑槽位与仓库；保留升级、拆除、合成及战后重试入口。'],
+['构筑实机','deck.png','上方查看阵位；左侧培养所选武将；右侧显示实际组合与仓库。装备和带兵各有单独页签。'],
+['旧版基建实机','base.png','从左侧城册选择城池，在中间建设和升级；右侧切换建筑仓库与合成，底部保留战果与继续入口。'],
+['构筑新插画','../../assets/art_v5/deck_scene.png','将牌、红纸牌盒与兵牌组成的怀旧印刷插画。游戏中的将名、能力和按钮均为可交互的真实界面元素。'],
+['基建新插画','../../assets/art_v5/base_scene.png','粮仓、工坊、练兵场与城门组成的纸上城池插画，留白用于显示城池与收益。']
+];
+const nav=document.querySelector('nav'),img=document.querySelector('#shot'),caption=document.querySelector('#caption');
+pages.forEach((p,i)=>{const b=document.createElement('button');b.textContent=p[0];b.setAttribute('aria-selected',i===0?'true':'false');b.onclick=()=>{nav.querySelectorAll('button').forEach(x=>x.setAttribute('aria-selected','false'));b.setAttribute('aria-selected','true');img.src=p[1];img.alt=p[2];caption.textContent=p[2];};nav.append(b);});caption.textContent=pages[0][2];
+</script>
+</html>

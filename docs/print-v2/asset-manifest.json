@@ -1,0 +1,102 @@
+{
+  "version": "1.2",
+  "cards": 169,
+  "files": [
+    {
+      "file": "assets/art_v2/atlases/buildings.png",
+      "size": [
+        1374,
+        1145
+      ],
+      "sha256": "2992cab13776f2c64fdffb208d05934d3fa5e3927bb804152330e5fe6cbbbdfe"
+    },
+    {
+      "file": "assets/art_v2/atlases/cities.png",
+      "size": [
+        1916,
+        821
+      ],
+      "sha256": "0ce47a59d7f7fff303b69d6c473aecd2e924ca8845c64131ddf6fe1213d3c6cc"
+    },
+    {
+      "file": "assets/art_v2/atlases/equipment.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "sha256": "da95fa99a493e0cdf83d7d5abb6013978bba6052f23214ad7b8d259a5077d119"
+    },
+    {
+      "file": "assets/art_v2/atlases/heroes_1.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "sha256": "a2cb06cea339ee6fecf075496e073b4664f1b46025ae8d2bedf4388888d96593"
+    },
+    {
+      "file": "assets/art_v2/atlases/heroes_2.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "sha256": "7796e0b403ba5e7f847e4087b6d2250e1db7e2329c8a0e47219029580d1664a8"
+    },
+    {
+      "file": "assets/art_v2/atlases/heroes_3.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "sha256": "f0a574e44552f44a53cfb89840bf1785f3cbdf04caa3d89a51131a9e30e5786a"
+    },
+    {
+      "file": "assets/art_v2/atlases/heroes_4.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "sha256": "cd7ee273828def5f780605838c58a8b5c5f601338edf9b6e5a5c34ea8fa11171"
+    },
+    {
+      "file": "assets/art_v2/atlases/soldiers.png",
+      "size": [
+        1536,
+        1024
+      ],
+      "sha256": "6f48d67030902e6d4fc8502df77d81be80842c67c4952726dd17102af5138de6"
+    },
+    {
+      "file": "assets/art_v2/backgrounds/city.png",
+      "size": [
+        1586,
+        992
+      ],
+      "sha256": "f9fa687e1c8978c2217bea68a9fc9c037cdec7b0a553a5cda6651e0faa9be24e"
+    },
+    {
+      "file": "assets/art_v2/backgrounds/home.png",
+      "size": [
+        1586,
+        992
+      ],
+      "sha256": "b5161111ff3e2af0e581960a9f8a96593585b1560ed5ba035e1660c09afe4c83"
+    },
+    {
+      "file": "assets/art_v2/backgrounds/map.png",
+      "size": [
+        1586,
+        992
+      ],
+      "sha256": "e388ae15cc613a5b11102d00827915a74155968eb9f199fb3199f45858140f3f"
+    },
+    {
+      "file": "assets/art_v2/backgrounds/table.png",
+      "size": [
+        1586,
+        992
+      ],
+      "sha256": "f1dd454b8bfa2a9354e30b734813c0a7fb9ef3ae4f99b69b9f768868560ab5d0"
+    }
+  ]
+}

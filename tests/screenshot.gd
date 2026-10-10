@@ -8,7 +8,9 @@ extends Node
 ##   --map               打开全屏荆州舆图覆盖层
 ##   --demo              伪造一个中期存档（几个郡已克服），舆图/桌面都好看
 ##   --mid               伪造一个中期"局外成长"存档（升级树 / 上阵 / 装备都有），并打开大本营
-##   --home              打开全屏「大本营」覆盖层（升级树 / 上阵 / 装备 / 出征）
+##   --home              打开四区大本营（商店 / 构筑 / 升级 / 基建）
+##   --section=NAME      从大本营进入 upgrade/deck/shop/base/map
+##   --outcome=cleared   显示中期通关后的四区大本营
 ##   --city              伪造中期存档并打开全屏「城建」覆盖层（城池 / 建筑 / 合成）
 ##   --drawer=1          展开右侧商店抽屉
 ##   --pack=N            买第 N 个卡包，截翻牌揭示特效
@@ -41,8 +43,71 @@ func _ready() -> void:
 	var pool_open := false
 	var deploy_id := ""
 	var table := false
+	var shop_tab := -1
+	var captured_demo := false
+	var capture_impact := false
+	var max_carry := false
+	var section := ""
+	var upgrade_scroll := 0
+	var camera_zoom := -1.0
+	var camera_target := Vector2(-1, -1)
+	var minimap_collapsed := false
+	var minimap_gui_demo := false
+	var aim_card := -1
+	var radius_level := -1
+	var aim := Vector2(-1, -1)
+	var area_click := false
+	var outcome := ""
+	var build_demo := false
+	var building_combo := false
+	var fusion_demo := false
+	var no_story := false
 	for a in OS.get_cmdline_user_args():
-		if a.begins_with("--out="):
+		if a == "--minimap-gui-demo":
+			minimap_gui_demo = true
+		elif a == "--minimap-collapsed":
+			minimap_collapsed = true
+		elif a.begins_with("--camera-target="):
+			var coords := a.substr(16).split(",")
+			if coords.size() == 2: camera_target = Vector2(float(coords[0]), float(coords[1]))
+		elif a.begins_with("--aim-card="):
+			aim_card = int(a.substr(11))
+		elif a.begins_with("--zoom="):
+			camera_zoom = float(a.substr(7))
+		elif a.begins_with("--radius-level="):
+			radius_level = int(a.substr(15))
+		elif a.begins_with("--aim="):
+			var coords := a.substr(6).split(",")
+			if coords.size() == 2: aim = Vector2(float(coords[0]), float(coords[1]))
+		elif a == "--area-click":
+			area_click = true
+		elif a.begins_with("--upgrade-scroll="):
+			upgrade_scroll = int(a.substr(17))
+		elif a == "--no-story":
+			no_story = true
+		elif a == "--building-combo" or a == "--building-fusion":
+			building_combo = true
+			fusion_demo = a == "--building-fusion"
+			mid = true
+			open_city = true
+		elif a == "--build-demo":
+			build_demo = true
+			open_home = true
+		elif a.begins_with("--section="):
+			section = a.substr(10)
+			open_home = true
+		elif a.begins_with("--outcome="):
+			outcome = a.substr(10)
+			open_home = true
+		elif a == "--maxcarry":
+			max_carry = true
+		elif a == "--impact":
+			capture_impact = true
+		elif a == "--captured-demo":
+			captured_demo = true
+		elif a.begins_with("--tab="):
+			shop_tab = int(a.substr(6))
+		elif a.begins_with("--out="):
 			out = a.substr(6)
 		elif a.begins_with("--drag="):
 			drag = a.substr(7)
@@ -118,13 +183,13 @@ func _ready() -> void:
 			GameState.region_state[i] = "locked" if i == region else "cleared"
 		GameState.start_battle(region)
 
-	if mid or open_home or open_city:
+	if mid or ((open_home or open_city) and not fresh):
 		# 中期存档：前 4 处已克服（城建解锁）、升级树点了一截、上阵 5 张、装备槽 2 格
 		GameState.new_game()
 		GameState.runs = 37
 		GameState.up["stamina"] = 9
 		GameState.up["power"] = 4
-		GameState.up["carry"] = 2
+		GameState.up["carry"] = 3 if max_carry else 2
 		GameState.up["crit"] = 3
 		GameState.up["fortune"] = 2
 		GameState.up["idle"] = 2
@@ -221,13 +286,19 @@ func _ready() -> void:
 						GameState.place_building(ci, str(bid))
 
 		GameState.gold = 4820.0
-		# 给前两处城池的建筑升几级 —— 让城建界面的 Lv / 强化按钮有东西看
-		GameState.upgrade_building(2, 0)
-		GameState.upgrade_building(2, 0)
-		GameState.upgrade_building(3, 0)
+		if building_combo:
+			GameState.cities.clear()
+			GameState.city_quality.clear()
+			GameState.building_refined.clear()
+			for building in GameData.buildings:
+				GameState.owned[str(building["id"])] = 4
+			for id in ["B06", "B08", "B11", "B12"]:
+				GameState.place_building(2, id, 0)
 		GameState.gold = 4820.0
 		GameState.leave_battle()
+		GameState.battle_region = 5
 		GameState.end_reason = "settled"
+		GameState.last_outcome = {"region": 5, "result": "settled", "gold": 555, "kills": 3, "damage": 1101.0}
 		GameState.last_settle = "第 37 趟 · 「宛城」　击倒 3 张 · 打出 62 伤害 → 收成 30 金币。回大本营整备。"
 		GameState.map_changed.emit()
 		if open_city or table:
@@ -235,8 +306,39 @@ func _ready() -> void:
 		else:
 			open_home = true
 
+	if outcome == "cleared":
+		GameState.region_state[5] = "cleared"
+		for next_idx in GameData.region(5).get("unlocks", []):
+			if GameState.region_status(int(next_idx)) == "locked":
+				GameState.region_state[int(next_idx)] = "available"
+		GameState.last_outcome = {"region": 5, "result": "cleared", "gold": 1012, "kills": 6, "damage": 1500.0}
+		GameState.end_reason = "cleared"
+		GameState.map_changed.emit()
+
+	if build_demo:
+		GameState.carry.clear()
+		for cid in ["G04", "G05", "G30", "G40", "G20", "G24", "G14", "G26", "G27", "G43"]:
+			GameState.owned[cid] = maxi(1, int(GameState.owned.get(cid, 0)))
+		for cid in ["G04", "G05", "G30", "G40", "G20"]:
+			GameState.carry_add(cid)
+		GameState.hero_lv["G04"] = 3
 	var scene_path := "res://scenes/MainMenu.tscn" if menu else "res://scenes/Main.tscn"
+	if captured_demo:
+		GameState.captured = ["G28", "G26", "G27", "G13"]
+		GameState.gold = 50000
+	if table:
+		var battle_idx := region if region > 0 else 5
+		if region > 0:
+			for r in GameData.regions:
+				GameState.region_state[int(r["idx"])] = "cleared"
+		GameState.region_state[battle_idx] = "available"
+		GameState.start_battle(battle_idx)
+	if radius_level >= 0: GameState.up["radius"] = clampi(radius_level, 0, 20)
 	var inst = load(scene_path).instantiate()
+	if no_story:
+		GameState.story_seen = []
+		for event in preload("res://scripts/story_book.gd").events():
+			GameState.story_seen.append(str(event.id))
 	add_child(inst)
 
 	for i in range(6):
@@ -253,13 +355,20 @@ func _ready() -> void:
 	if drawer:
 		var root0 := inst as Control
 		root0._set_drawer(true)
+		if shop_tab >= 0:
+			root0._tabs.current_tab = clampi(shop_tab, 0, 5)
 	for i in range(3):
 		await get_tree().process_frame
 
 	if cleared:
-		# 把这一桌拍干净 —— 用来截"桌清空 → 舆图自动推出"的衔接画面
+		# 完整限时轮：拍击、清桌补牌、时间到后回营。
+		GameState.set_process(false)
+		GameState.narrative_paused = false
 		var guard := 0
-		while GameState.in_battle and guard < 4000:
+		while GameState.in_battle and guard < 1000:
+			GameState.advance_round(GameState.slap_interval())
+			if not GameState.in_battle:
+				break
 			var alive := -1
 			for i in range(GameState.battle.size()):
 				if float(GameState.battle[i]["hp"]) > 0.0:
@@ -267,8 +376,9 @@ func _ready() -> void:
 					break
 			if alive < 0:
 				break
-			if not GameState.attack(alive, true):
-				break
+			var card: Dictionary = inst._cards[alive]
+			var center: Vector2 = card.rest_pos + card.size * 0.5
+			inst._slap_area(inst._world_to_screen(center))
 			guard += 1
 		for i in range(4):
 			await get_tree().process_frame
@@ -281,7 +391,7 @@ func _ready() -> void:
 
 	if reveal != "":
 		var root3 := inst as Control
-		root3._play_reveal("高星特写演示", reveal.split(","), "光环爆发 + 单张放大")
+		root3._play_reveal("将牌新印", reveal.split(","), "旧纸套色 · 连环画人物")
 		if instant:
 			root3._reveal._reveal_all()
 
@@ -298,7 +408,23 @@ func _ready() -> void:
 	if open_city:
 		var root5 := inst as Control
 		root5._open_city()
+		if building_combo:
+			root5._city._on_slot(2)
+			if fusion_demo:
+				root5._city._on_tab("合成")
 		for i in range(4):
+			await get_tree().process_frame
+
+	if section != "":
+		if section == "shop":
+			inst._open_shop()
+		elif section == "base":
+			inst._open_city()
+		elif section == "map":
+			inst._on_home_map()
+		else:
+			inst._home.open_section(section)
+		for i in range(6):
 			await get_tree().process_frame
 
 	if pack >= 0:
@@ -312,6 +438,40 @@ func _ready() -> void:
 			var first = rv._slots[0]
 			print("[dbg] slot0 wrap=", first["wrap"].size, " back=", first["back"].size,
 				" front=", first["front"].size, " front_min=", first["front"].get_combined_minimum_size())
+
+	if section == "upgrade" and upgrade_scroll > 0:
+		inst._home._upgrade_page.scroll_vertical = upgrade_scroll
+		for i in range(3):
+			await get_tree().process_frame
+
+	if not menu and not open_home and not open_city and not open_map:
+		if camera_zoom > 0: inst._set_camera_zoom(camera_zoom, inst._table.size * 0.5)
+		if camera_target.x >= 0: inst._navigate_minimap(camera_target)
+		if minimap_gui_demo:
+			if not await _exercise_minimap_gui(inst):
+				get_tree().quit(1)
+				return
+		if minimap_collapsed: inst._minimap.set_expanded(false)
+		if aim_card >= 0 and aim_card < inst._cards.size():
+			var card: Dictionary = inst._cards[aim_card]
+			aim = card.rest_pos + card.size * 0.5
+		if aim.x >= 0:
+			inst._cursor_preview = inst._world_to_screen(aim)
+			if area_click:
+				# 非无头下通过真实GUI输入派发，验证视口坐标转换与单击绑定。
+				var screen_point: Vector2 = inst._table.global_position + inst._cursor_preview
+				var press := InputEventMouseButton.new()
+				press.button_index = MOUSE_BUTTON_LEFT
+				press.pressed = true
+				press.position = screen_point
+				press.global_position = screen_point
+				get_viewport().push_input(press)
+				var release := InputEventMouseButton.new()
+				release.button_index = MOUSE_BUTTON_LEFT
+				release.position = screen_point
+				release.global_position = screen_point
+				get_viewport().push_input(release)
+				print("[area-input] slaps=%d damage=%s income=%s" % [GameState.round_slaps, GameState.run_damage, GameState.run_gold])
 
 	if dump:
 		var rootD := inst as Control
@@ -349,7 +509,23 @@ func _ready() -> void:
 
 	# 拖拽/开包后多等一会儿，让动画跑完（否则截到的是动画中途）
 	var wait := 6
-	if drag != "":
+	if capture_impact and GameState.in_battle:
+		# 测试档把连击置于触发前，走真实拍击管线捕捉新墨痕。
+		var target := -1
+		var highest_hp := 0.0
+		for i in range(GameState.battle.size()):
+			if float(GameState.battle[i]["hp"]) > highest_hp:
+				highest_hp = float(GameState.battle[i]["hp"])
+				target = i
+		if target >= 0:
+			GameState.combo = maxi(0, GameState.combo_threshold() - GameState.combo_gain() * 2)
+			var card: Dictionary = inst._cards[target]
+			var center: Vector2 = card["node"].position + card["size"] * 0.5
+			inst._slap(target, true, center)
+			print("[impact] ", GameState.last_slap)
+			await get_tree().create_timer(0.10).timeout
+		wait = 1
+	elif drag != "":
 		wait = 45
 	elif cleared:
 		wait = 24
@@ -364,6 +540,62 @@ func _ready() -> void:
 	print("[screenshot] %s -> %s (%dx%d)" % [
 		"OK" if err == OK else "FAIL(%d)" % err, out, img.get_width(), img.get_height()])
 	get_tree().quit()
+
+func _gui_click(point: Vector2) -> void:
+	var press := InputEventMouseButton.new()
+	press.button_index = MOUSE_BUTTON_LEFT
+	press.pressed = true
+	press.position = point
+	press.global_position = point
+	get_viewport().push_input(press)
+	var release := InputEventMouseButton.new()
+	release.button_index = MOUSE_BUTTON_LEFT
+	release.position = point
+	release.global_position = point
+	get_viewport().push_input(release)
+
+func _exercise_minimap_gui(main) -> bool:
+	var mini = main._minimap
+	var slaps: int = GameState.round_slaps
+	var gold: float = GameState.gold
+	var key := InputEventKey.new()
+	key.keycode = KEY_M
+	key.pressed = true
+	get_viewport().push_input(key)
+	await get_tree().process_frame
+	var collapsed: bool = not mini.expanded
+	key.pressed = false
+	get_viewport().push_input(key)
+	key.pressed = true
+	get_viewport().push_input(key)
+	await get_tree().process_frame
+	var expanded: bool = mini.expanded
+	key.pressed = false
+	get_viewport().push_input(key)
+	_gui_click(mini.global_position + Vector2(38, 18))
+	await get_tree().process_frame
+	var title_works: bool = not mini.expanded
+	_gui_click(mini.toggle_button.get_global_rect().get_center())
+	await get_tree().process_frame
+	var button_works: bool = mini.expanded
+	var destination: Vector2 = main._world_size * 0.5 + Vector2(80, 70)
+	var point: Vector2 = mini.global_position + mini.world_to_minimap(destination)
+	_gui_click(point)
+	await get_tree().process_frame
+	var navigation: bool = main._screen_to_world(main._table.size * 0.5).distance_to(destination) < 0.1
+	var before_zoom: float = main._camera_zoom
+	var wheel := InputEventMouseButton.new()
+	wheel.button_index = MOUSE_BUTTON_WHEEL_UP
+	wheel.pressed = true
+	wheel.position = point
+	wheel.global_position = point
+	get_viewport().push_input(wheel)
+	await get_tree().process_frame
+	var guarded: bool = GameState.round_slaps == slaps and GameState.gold == gold and is_equal_approx(main._camera_zoom, before_zoom)
+	print("[minimap-gui] M-collapse=%s M-expand=%s title=%s button=%s navigate=%s no-slap-or-zoom=%s" % [collapsed, expanded, title_works, button_works, navigation, guarded])
+	var ok := collapsed and expanded and title_works and button_works and navigation and guarded
+	if not ok: push_error("小地图真实GUI交互验证未通过")
+	return ok
 
 
 ## 底部上阵条 / 卡池：用**真实鼠标事件**驱动 Godot 的 GUI 拖放。

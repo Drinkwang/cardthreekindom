@@ -1,0 +1,121 @@
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+[GameData] 卡牌 169 / 区域 21 / 路线 4 / 卡包 9 / 建筑 30
+[GameState] 引擎版本 4.7.1-stable (official) ✓
+ERROR: 装配示例组合 B06
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] check (res://tests/building_combo_test.gd:10)
+       [1] equip_chain (res://tests/building_combo_test.gd:24)
+       [2] _ready (res://tests/building_combo_test.gd:38)
+ERROR: 装配示例组合 B08
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] check (res://tests/building_combo_test.gd:10)
+       [1] equip_chain (res://tests/building_combo_test.gd:24)
+       [2] _ready (res://tests/building_combo_test.gd:38)
+ERROR: 装配示例组合 B11
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] check (res://tests/building_combo_test.gd:10)
+       [1] equip_chain (res://tests/building_combo_test.gd:24)
+       [2] _ready (res://tests/building_combo_test.gd:38)
+ERROR: 装配示例组合 B12
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] check (res://tests/building_combo_test.gd:10)
+       [1] equip_chain (res://tests/building_combo_test.gd:24)
+       [2] _ready (res://tests/building_combo_test.gd:38)
+ERROR: 示例组合60金币/分
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] check (res://tests/building_combo_test.gd:10)
+       [1] _ready (res://tests/building_combo_test.gd:39)
+ERROR: 第一次6金币
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] check (res://tests/building_combo_test.gd:10)
+       [1] _ready (res://tests/building_combo_test.gd:41)
+ERROR: 第二次6金币
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] check (res://tests/building_combo_test.gd:10)
+       [1] _ready (res://tests/building_combo_test.gd:42)
+ERROR: 第三次6基础+12追加
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] check (res://tests/building_combo_test.gd:10)
+       [1] _ready (res://tests/building_combo_test.gd:43)
+ERROR: 整小时精确结算
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] check (res://tests/building_combo_test.gd:10)
+       [1] _ready (res://tests/building_combo_test.gd:47)
+ERROR: 离线效率作用于完整组合
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] check (res://tests/building_combo_test.gd:10)
+       [1] _ready (res://tests/building_combo_test.gd:56)
+ERROR: 无金币成本且材料精确
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] check (res://tests/building_combo_test.gd:10)
+       [1] _ready (res://tests/building_combo_test.gd:73)
+ERROR: 装配卡未被消费
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] check (res://tests/building_combo_test.gd:10)
+       [1] _ready (res://tests/building_combo_test.gd:74)
+ERROR: 可放指定第六槽
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] check (res://tests/building_combo_test.gd:10)
+       [1] _ready (res://tests/building_combo_test.gd:84)
+ERROR: 空槽与品相正确对齐
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] check (res://tests/building_combo_test.gd:10)
+       [1] _ready (res://tests/building_combo_test.gd:85)
+ERROR: 已装配建筑可交换槽位
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] check (res://tests/building_combo_test.gd:10)
+       [1] _ready (res://tests/building_combo_test.gd:88)
+ERROR: 交换保留双方卡与品相
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] check (res://tests/building_combo_test.gd:10)
+       [1] _ready (res://tests/building_combo_test.gd:89)
+ERROR: 全局唯一效果取最强品相而不重复叠加
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] check (res://tests/building_combo_test.gd:10)
+       [1] _ready (res://tests/building_combo_test.gd:100)
+ERROR: 装配示例组合 B06
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] check (res://tests/building_combo_test.gd:10)
+       [1] equip_chain (res://tests/building_combo_test.gd:24)
+       [2] _ready (res://tests/building_combo_test.gd:102)
+ERROR: 装配示例组合 B08
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] check (res://tests/building_combo_test.gd:10)
+       [1] equip_chain (res://tests/building_combo_test.gd:24)
+       [2] _ready (res://tests/building_combo_test.gd:102)
+ERROR: 装配示例组合 B11
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] check (res://tests/building_combo_test.gd:10)
+       [1] equip_chain (res://tests/building_combo_test.gd:24)
+       [2] _ready (res://tests/building_combo_test.gd:102)
+ERROR: 装配示例组合 B12
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] check (res://tests/building_combo_test.gd:10)
+       [1] equip_chain (res://tests/building_combo_test.gd:24)
+       [2] _ready (res://tests/building_combo_test.gd:102)
+SCRIPT ERROR: Out of bounds get index '2' (on base: 'Dictionary')
+   at: _ready (res://tests/building_combo_test.gd:111)
+   GDScript backtrace (most recent call first):
+       [0] _ready (res://tests/building_combo_test.gd:111)

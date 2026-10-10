@@ -1,0 +1,181 @@
+{
+  "project": "拍案三国",
+  "date": "2026-10-03",
+  "status": "concept references, not integrated",
+  "reference_count": 8,
+  "references": [
+    {
+      "file": "references/01_retro_print.png",
+      "title": "01 怀旧印刷",
+      "source": "C:\\Users\\wzp\\.codex\\generated_images\\01a1015f-16fd-7261-8df5-2d3a8bd0058f\\exec-4539f164-119b-4d47-ad94-79bfd97aff40.png",
+      "kind": "style-screen",
+      "generated_with": "built-in imagegen",
+      "revision": null,
+      "size": [
+        1586,
+        992
+      ],
+      "mode": "RGB",
+      "bytes": 3023289,
+      "sha256": "5110e030eaf7d2d9cf0c9c6ee17368fda5bc46892831f52b38da9792051f3635"
+    },
+    {
+      "file": "references/02_pixel_16bit.png",
+      "title": "02 16位像素",
+      "source": "C:\\Users\\wzp\\.codex\\generated_images\\01a1015f-16fd-7261-8df5-2d3a8bd0058f\\exec-fdd78c5e-393f-4ead-a598-88f8d3141224.png",
+      "kind": "style-screen",
+      "generated_with": "built-in imagegen",
+      "revision": null,
+      "size": [
+        1586,
+        992
+      ],
+      "mode": "RGB",
+      "bytes": 2350647,
+      "sha256": "bde36c6af017dac47176553c1d82fcb3ee723f1c559aacf10ca62f9d01a023fe"
+    },
+    {
+      "file": "references/03_ink_gongbi.png",
+      "title": "03 水墨工笔",
+      "source": "C:\\Users\\wzp\\.codex\\generated_images\\01a1015f-16fd-7261-8df5-2d3a8bd0058f\\exec-582e8fa2-ad31-489d-afe9-0b30b6253f28.png",
+      "kind": "style-screen",
+      "generated_with": "built-in imagegen",
+      "revision": null,
+      "size": [
+        1586,
+        992
+      ],
+      "mode": "RGB",
+      "bytes": 2784454,
+      "sha256": "e77e38756a251e819d21034cf3883705769e20de5191da75cb11828a9e6344bb"
+    },
+    {
+      "file": "references/04_woodcut.png",
+      "title": "04 木刻版画",
+      "source": "C:\\Users\\wzp\\.codex\\generated_images\\01a1015f-16fd-7261-8df5-2d3a8bd0058f\\exec-a9fa7bd5-ff57-4f71-8e36-c67a61981a73.png",
+      "kind": "style-screen",
+      "generated_with": "built-in imagegen",
+      "revision": null,
+      "size": [
+        1586,
+        992
+      ],
+      "mode": "RGB",
+      "bytes": 2976040,
+      "sha256": "da1bfadc84a3ff5d753ca478febc32186a5a9de3f08b7ce7793bfd9bdd099919"
+    },
+    {
+      "file": "references/05_comic_cel.png",
+      "title": "05 漫画赛璐璐",
+      "source": "C:\\Users\\wzp\\.codex\\generated_images\\01a1015f-16fd-7261-8df5-2d3a8bd0058f\\exec-9fcb196b-5016-45c2-84d1-04fb134c99e3.png",
+      "kind": "style-screen",
+      "generated_with": "built-in imagegen",
+      "revision": null,
+      "size": [
+        1586,
+        992
+      ],
+      "mode": "RGB",
+      "bytes": 2813466,
+      "sha256": "3d5d7c5dd570922c2e98374d681e81295b6b0a5ff3369ecbbf27cb620b8a7ced"
+    },
+    {
+      "file": "references/06_paper_diorama.png",
+      "title": "06 纸雕微缩",
+      "source": "C:\\Users\\wzp\\.codex\\generated_images\\01a1015f-16fd-7261-8df5-2d3a8bd0058f\\exec-51e19465-132f-431e-ab52-9adc4ea89e1e.png",
+      "kind": "style-screen",
+      "generated_with": "built-in imagegen",
+      "revision": null,
+      "size": [
+        1586,
+        992
+      ],
+      "mode": "RGB",
+      "bytes": 2805005,
+      "sha256": "949b7adc6b45f9238f57763ccef61281cf5ec4ce090efe3df42bfacdde743a5e"
+    },
+    {
+      "file": "references/07_print_asset_board.png",
+      "title": "07 印刷资产样板",
+      "source": "C:\\Users\\wzp\\.codex\\generated_images\\01a1015f-16fd-7261-8df5-2d3a8bd0058f\\exec-a2c644ec-c48a-4a7c-80e5-c57b0e4fbdd0.png",
+      "kind": "asset-board",
+      "generated_with": "built-in imagegen",
+      "revision": "Zhang Fei weapon corrected",
+      "size": [
+        1586,
+        992
+      ],
+      "mode": "RGB",
+      "bytes": 2660275,
+      "sha256": "c65e029d186ae02e5875ace0811c97ac07469d1b09ac4464ffd11da504266d43"
+    },
+    {
+      "file": "references/08_pixel_asset_board.png",
+      "title": "08 像素资产样板",
+      "source": "C:\\Users\\wzp\\.codex\\generated_images\\01a1015f-16fd-7261-8df5-2d3a8bd0058f\\exec-079dea0c-d255-4e29-b04a-b3d59126c317.png",
+      "kind": "asset-board",
+      "generated_with": "built-in imagegen",
+      "revision": "Zhang Fei weapon corrected",
+      "size": [
+        1586,
+        992
+      ],
+      "mode": "RGB",
+      "bytes": 2098985,
+      "sha256": "30e782a3d39400cd73f26939515f1d6ec08d8f015c44775b211111eefbed8118"
+    }
+  ],
+  "baselines": [
+    {
+      "file": "baseline/table.png",
+      "title": "牌桌",
+      "size": [
+        1280,
+        800
+      ],
+      "kind": "actual-game-screenshot",
+      "engine": "Godot 4.7.1"
+    },
+    {
+      "file": "baseline/home.png",
+      "title": "大本营",
+      "size": [
+        1280,
+        800
+      ],
+      "kind": "actual-game-screenshot",
+      "engine": "Godot 4.7.1"
+    },
+    {
+      "file": "baseline/city.png",
+      "title": "城建",
+      "size": [
+        1280,
+        800
+      ],
+      "kind": "actual-game-screenshot",
+      "engine": "Godot 4.7.1"
+    },
+    {
+      "file": "baseline/map.png",
+      "title": "荆州舆图",
+      "size": [
+        1280,
+        800
+      ],
+      "kind": "actual-game-screenshot",
+      "engine": "Godot 4.7.1"
+    }
+  ],
+  "prompts": "prompts.json",
+  "plan": "美术迭代计划案.md",
+  "plan_preview": "plan.html",
+  "gallery": "index.html",
+  "gallery_preview": "gallery-preview.jpg",
+  "qa": {
+    "images": "all final images decoded and dimensions verified",
+    "references_review": "six style screens and two corrected asset boards visually reviewed",
+    "gallery": "filtering, image enlargement and two-image comparison checked in browser",
+    "runtime_changes": false
+  }
+}

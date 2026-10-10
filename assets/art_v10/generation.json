@@ -1,0 +1,17 @@
+{
+  "version": "v2.2",
+  "date": "2026-10-09",
+  "generator": "Built-in image_gen.imagegen",
+  "assets": [
+    {
+      "id": "city_courtyard",
+      "path": "res://assets/art_v10/city_courtyard.png",
+      "prompt": "Use case: stylized-concept. Production art asset for an ancient Chinese Three Kingdoms incremental card slapping Godot game. Match nostalgic Chinese illustrated paper cards: fine dark brown ink outlines, woodcut-like hatching, muted vintage cinnabar red, teal, ochre, warm parchment grain. Opaque illustration, no text, no lettering, no logos, no modern objects, no modern clothing, no school, no UI controls, no cards baked into the main playable ground, not photorealistic, not 3D. Create a very wide landscape top-down orthographic game playfield, 16:9 composition. Ancient walled city courtyard at midday, as an old richly drawn printed map. Large quiet warm light ochre rectangular beaten-earth and stone courtyard occupies central 75% of canvas, subtle floor seams only, spacious clear center for dynamic paper cards to be placed over it. Along the far TOP EDGE a modest ancient Chinese Han-style city gate tower and low defensive wall, realistic dark tiled roofs. Along far left and right margins a few awnings, wooden crates, bronze urn, bamboo scrolls and sparse tree foliage, kept small and peripheral. A couple tiny red banners near tower without writing. Shallow overhead perspective, court seen directly from above, not an isometric board. Beautiful restrained painterly ink, soft hand printed shadows, center markedly low contrast so UI cards read clearly. No people in center, no weapons in center, no drawn circles, no cards anywhere, no giant empty paper border."
+    },
+    {
+      "id": "upgrade_radius",
+      "path": "res://assets/art_v10/upgrade_radius.png",
+      "prompt": "Use case: stylized-concept. Production art asset for an ancient Chinese Three Kingdoms incremental card slapping Godot game. Match nostalgic Chinese illustrated paper cards: fine dark brown ink outlines, woodcut-like hatching, muted vintage cinnabar red, teal, ochre, warm parchment grain. Opaque illustration, no text, no lettering, no logos, no modern objects, no modern clothing, no school, no UI controls, no cards baked into the main playable ground, not photorealistic, not 3D. Create a square opaque warm ivory parchment illustration for a slap-range upgrade card. Close top-down view of exactly one anatomically correct open hand in a plain ancient teal cloth sleeve, a graceful wide circular cinnabar palm-wave ring around it (about 70 percent of canvas). Within the ring are six distinct illustrated ancient general paper cards spread on a subtle old wooden table, some flipping up; two further small cards outside the ring remain flat. Bold visual metaphor: a larger circular slap area catches more cards at once. One solid hand, natural five fingers only, attached sleeve from top right, no face. Strong readable circle and large paper cards; restrained teal and red printed pigments. Keep all essential content within central 80 percent, no numbers or arrows, no border."
+    }
+  ]
+}

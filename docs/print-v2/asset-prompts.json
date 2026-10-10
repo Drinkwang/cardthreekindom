@@ -1,0 +1,1451 @@
+{
+  "project": "拍案三国",
+  "version": "1.2",
+  "mode": "built-in imagegen",
+  "assets": [
+    {
+      "key": "heroes_1",
+      "cols": 4,
+      "rows": 4,
+      "cards": [
+        {
+          "id": "I01",
+          "name": "新野之主",
+          "type": "初始武将",
+          "subtype": "主角卡",
+          "faction": "新野",
+          "star": 2
+        },
+        {
+          "id": "G28",
+          "name": "关羽",
+          "type": "武将",
+          "subtype": "终局BOSS",
+          "faction": "蜀",
+          "star": 6
+        },
+        {
+          "id": "G26",
+          "name": "张飞",
+          "type": "武将",
+          "subtype": "名将",
+          "faction": "蜀",
+          "star": 6
+        },
+        {
+          "id": "G27",
+          "name": "赵云",
+          "type": "武将",
+          "subtype": "名将",
+          "faction": "蜀",
+          "star": 6
+        },
+        {
+          "id": "G49",
+          "name": "甘宁",
+          "type": "武将",
+          "subtype": "名将",
+          "faction": "吴",
+          "star": 5
+        },
+        {
+          "id": "G13",
+          "name": "张辽",
+          "type": "武将",
+          "subtype": "名将",
+          "faction": "魏",
+          "star": 6
+        },
+        {
+          "id": "G16",
+          "name": "曹仁",
+          "type": "武将",
+          "subtype": "关底BOSS",
+          "faction": "魏",
+          "star": 6
+        },
+        {
+          "id": "G51",
+          "name": "鲁肃",
+          "type": "武将",
+          "subtype": "关底BOSS",
+          "faction": "吴",
+          "star": 6
+        },
+        {
+          "id": "G52",
+          "name": "吕蒙",
+          "type": "武将",
+          "subtype": "名将",
+          "faction": "吴",
+          "star": 6
+        },
+        {
+          "id": "G15",
+          "name": "夏侯惇",
+          "type": "武将",
+          "subtype": "名将",
+          "faction": "魏",
+          "star": 5
+        },
+        {
+          "id": "G14",
+          "name": "许褚",
+          "type": "武将",
+          "subtype": "名将",
+          "faction": "魏",
+          "star": 5
+        },
+        {
+          "id": "G10",
+          "name": "徐晃",
+          "type": "武将",
+          "subtype": "名将",
+          "faction": "魏",
+          "star": 5
+        },
+        {
+          "id": "G12",
+          "name": "庞德",
+          "type": "武将",
+          "subtype": "名将",
+          "faction": "魏",
+          "star": 5
+        },
+        {
+          "id": "G46",
+          "name": "太史慈",
+          "type": "武将",
+          "subtype": "名将",
+          "faction": "吴",
+          "star": 5
+        },
+        {
+          "id": "G47",
+          "name": "黄忠",
+          "type": "武将",
+          "subtype": "名将",
+          "faction": "吴",
+          "star": 5
+        },
+        {
+          "id": "G50",
+          "name": "沙摩柯",
+          "type": "武将",
+          "subtype": "关底BOSS",
+          "faction": "群雄",
+          "star": 5
+        }
+      ],
+      "category": "portraits",
+      "prompt": "Use case: illustration-story. Asset type: shipping game illustration ATLAS, not a concept board or UI mockup.\nGenerate ONE 4:4 aspect-ratio canvas arranged as an EXACT 4 columns × 4 rows regular contact sheet with 16 equal rectangular cells. All vertical divisions at exact multiples of 1/4 canvas width, all horizontal divisions at exact multiples of 1/4 canvas height. No header or footer, no visible grid lines, no labels, NO TEXT, NO NUMBERS, no star symbols, no card frames, no ornaments around the sheet.\nEvery cell has the SAME plain light ivory (#F1E6CA) background. Each subject is fully contained in its own cell with at least 10% padding on all four sides, including weapons and silhouettes; no artwork crosses a cell boundary. The entire outer canvas is filled by these cells with no outside margin.\nEach cell is one chest-up portrait, face near cell upper-middle, shoulders and a short identifying weapon segment, plain background, consistent portrait scale. Distinct faces and historical attire.\nOriginal nostalgic Chinese Three Kingdoms collectible-card / illustrated storybook lithographic printing. Bold expressive dark ink contours, flat muted mineral colors (cream ivory, cinnabar red, jade green, indigo, ochre), restrained halftone INSIDE the colored artwork only, subtle paper printing character. Clean forms and strong silhouette readable at 48–96 pixels. Not photorealistic, no anime franchise look, no soft painterly rendering, no heavy dirty paper.\nFaction color belongs to clothing where appropriate: Wei navy, Shu red/green, Wu teal, others ochre, neutral objects natural materials; no letters or faction emblems rendered.\nSubjects in exact row-major order, this ordering is critical:\nRow 1, column 1: young earnest frontier lord, simple rust-red cloak, neat tied hair, no beard, a modest sword hilt\nRow 1, column 2: Guan Yu: very long straight black beard, emerald green cloth headdress and robe, unmistakable large crescent guandao\nRow 1, column 3: Zhang Fei: broad dark bearded face, shaggy thick beard, red headband, muscular shoulders; slender wavy pointed snake SPEAR, not a crescent blade\nRow 1, column 4: Zhao Yun: young clean-shaven face, silver helmet and lamellar armor, white plume, straight silver spear\nRow 2, column 1: Gan Ning: headband and hanging bronze bells, open teal vest, charismatic naval warrior\nRow 2, column 2: Zhang Liao: mature mustached commander, dark blue armor, high angular helmet, polearm\nRow 2, column 3: Cao Ren: stern broad armored defender, navy mantle, squared iron helmet\nRow 2, column 4: Lu Su: middle-aged benevolent scholar, teal outer robe, cloth scholar cap, bamboo document roll\nRow 3, column 1: Lu Meng: younger intelligent mustached general, teal armor, scholar cloth cap, map scroll\nRow 3, column 2: Xiahou Dun: fierce navy armored general, one eye covered by dark patch\nRow 3, column 3: Xu Chu: very broad powerful heavy warrior, short dark beard, iron mace and navy armor\nRow 3, column 4: Xu Huang: mature general with red head wrap, very recognizable large axe\nRow 4, column 1: Pang De: determined cavalry general, cream helmet plume, dark beard and iron spear\nRow 4, column 2: Taishi Ci: tall athletic warrior, teal cuirass, short beard, bow across shoulder\nRow 4, column 3: Huang Zhong: older archer with white beard and bronze helmet, large bow, ochre cloak\nRow 4, column 4: Shamoke: fierce tribal warrior, dark curly beard, ochre feather headdress, spiked mace\nAll cells are populated once with the requested subjects.\nAvoid duplicate subjects, extra background characters, any text, frames, captions or accidental layout gaps. This is a production atlas whose exact equal-cell geometry matters more than decorative presentation."
+    },
+    {
+      "key": "heroes_2",
+      "cols": 4,
+      "rows": 4,
+      "cards": [
+        {
+          "id": "G00",
+          "name": "雷飞",
+          "type": "武将",
+          "subtype": "现实线",
+          "faction": "现实",
+          "star": 4
+        },
+        {
+          "id": "G56",
+          "name": "青梅竹马",
+          "type": "武将",
+          "subtype": "现实线",
+          "faction": "现实",
+          "star": 5
+        },
+        {
+          "id": "G01",
+          "name": "蔡瑁",
+          "type": "武将",
+          "subtype": "守将",
+          "faction": "魏",
+          "star": 3
+        },
+        {
+          "id": "G02",
+          "name": "张允",
+          "type": "武将",
+          "subtype": "守将",
+          "faction": "魏",
+          "star": 3
+        },
+        {
+          "id": "G03",
+          "name": "蒯越",
+          "type": "武将",
+          "subtype": "智将",
+          "faction": "魏",
+          "star": 3
+        },
+        {
+          "id": "G04",
+          "name": "朱灵",
+          "type": "武将",
+          "subtype": "武将",
+          "faction": "魏",
+          "star": 3
+        },
+        {
+          "id": "G05",
+          "name": "文聘",
+          "type": "武将",
+          "subtype": "名将",
+          "faction": "魏",
+          "star": 4
+        },
+        {
+          "id": "G06",
+          "name": "李典",
+          "type": "武将",
+          "subtype": "武将",
+          "faction": "魏",
+          "star": 3
+        },
+        {
+          "id": "G07",
+          "name": "乐进",
+          "type": "武将",
+          "subtype": "武将",
+          "faction": "魏",
+          "star": 4
+        },
+        {
+          "id": "G08",
+          "name": "于禁",
+          "type": "武将",
+          "subtype": "武将",
+          "faction": "魏",
+          "star": 4
+        },
+        {
+          "id": "G09",
+          "name": "曹洪",
+          "type": "武将",
+          "subtype": "武将",
+          "faction": "魏",
+          "star": 4
+        },
+        {
+          "id": "G11",
+          "name": "满宠",
+          "type": "武将",
+          "subtype": "智将",
+          "faction": "魏",
+          "star": 5
+        },
+        {
+          "id": "G17",
+          "name": "傅士仁",
+          "type": "武将",
+          "subtype": "守将",
+          "faction": "蜀",
+          "star": 2
+        },
+        {
+          "id": "G18",
+          "name": "糜芳",
+          "type": "武将",
+          "subtype": "守将",
+          "faction": "蜀",
+          "star": 2
+        },
+        {
+          "id": "G19",
+          "name": "廖化",
+          "type": "武将",
+          "subtype": "武将",
+          "faction": "蜀",
+          "star": 3
+        },
+        {
+          "id": "G20",
+          "name": "周仓",
+          "type": "武将",
+          "subtype": "武将",
+          "faction": "蜀",
+          "star": 3
+        }
+      ],
+      "category": "portraits",
+      "prompt": "Use case: illustration-story. Asset type: shipping game illustration ATLAS, not a concept board or UI mockup.\nGenerate ONE 4:4 aspect-ratio canvas arranged as an EXACT 4 columns × 4 rows regular contact sheet with 16 equal rectangular cells. All vertical divisions at exact multiples of 1/4 canvas width, all horizontal divisions at exact multiples of 1/4 canvas height. No header or footer, no visible grid lines, no labels, NO TEXT, NO NUMBERS, no star symbols, no card frames, no ornaments around the sheet.\nEvery cell has the SAME plain light ivory (#F1E6CA) background. Each subject is fully contained in its own cell with at least 10% padding on all four sides, including weapons and silhouettes; no artwork crosses a cell boundary. The entire outer canvas is filled by these cells with no outside margin.\nEach cell is one chest-up portrait, face near cell upper-middle, shoulders and a short identifying weapon segment, plain background, consistent portrait scale. Distinct faces and historical attire.\nOriginal nostalgic Chinese Three Kingdoms collectible-card / illustrated storybook lithographic printing. Bold expressive dark ink contours, flat muted mineral colors (cream ivory, cinnabar red, jade green, indigo, ochre), restrained halftone INSIDE the colored artwork only, subtle paper printing character. Clean forms and strong silhouette readable at 48–96 pixels. Not photorealistic, no anime franchise look, no soft painterly rendering, no heavy dirty paper.\nFaction color belongs to clothing where appropriate: Wei navy, Shu red/green, Wu teal, others ochre, neutral objects natural materials; no letters or faction emblems rendered.\nSubjects in exact row-major order, this ordering is critical:\nRow 1, column 1: young male guest warrior in historical tunic, distinctive short black hair and confident open expression\nRow 1, column 2: young female childhood friend, gentle smile, dark braided hair, vermilion hair ribbon and pale green traditional robe\nRow 1, column 3: 蔡瑁, faction 魏; historical warrior in lamellar armor with a distinct helmet, beard and weapon silhouette. Give this person a unique face and pose.\nRow 1, column 4: 张允, faction 魏; historical warrior in lamellar armor with a distinct helmet, beard and weapon silhouette. Give this person a unique face and pose.\nRow 2, column 1: 蒯越, faction 魏; scholar/official cloth cap and robe, scroll or fan. Give this person a unique face and pose.\nRow 2, column 2: 朱灵, faction 魏; historical warrior in lamellar armor with a distinct helmet, beard and weapon silhouette. Give this person a unique face and pose.\nRow 2, column 3: 文聘, faction 魏; historical warrior in lamellar armor with a distinct helmet, beard and weapon silhouette. Give this person a unique face and pose.\nRow 2, column 4: 李典, faction 魏; historical warrior in lamellar armor with a distinct helmet, beard and weapon silhouette. Give this person a unique face and pose.\nRow 3, column 1: 乐进, faction 魏; historical warrior in lamellar armor with a distinct helmet, beard and weapon silhouette. Give this person a unique face and pose.\nRow 3, column 2: 于禁, faction 魏; historical warrior in lamellar armor with a distinct helmet, beard and weapon silhouette. Give this person a unique face and pose.\nRow 3, column 3: 曹洪, faction 魏; historical warrior in lamellar armor with a distinct helmet, beard and weapon silhouette. Give this person a unique face and pose.\nRow 3, column 4: 满宠, faction 魏; scholar/official cloth cap and robe, scroll or fan. Give this person a unique face and pose.\nRow 4, column 1: 傅士仁, faction 蜀; historical warrior in lamellar armor with a distinct helmet, beard and weapon silhouette. Give this person a unique face and pose.\nRow 4, column 2: 糜芳, faction 蜀; historical warrior in lamellar armor with a distinct helmet, beard and weapon silhouette. Give this person a unique face and pose.\nRow 4, column 3: 廖化, faction 蜀; historical warrior in lamellar armor with a distinct helmet, beard and weapon silhouette. Give this person a unique face and pose.\nRow 4, column 4: 周仓, faction 蜀; historical warrior in lamellar armor with a distinct helmet, beard and weapon silhouette. Give this person a unique face and pose.\nAll cells are populated once with the requested subjects.\nAvoid duplicate subjects, extra background characters, any text, frames, captions or accidental layout gaps. This is a production atlas whose exact equal-cell geometry matters more than decorative presentation."
+    },
+    {
+      "key": "heroes_3",
+      "cols": 4,
+      "rows": 4,
+      "cards": [
+        {
+          "id": "G21",
+          "name": "王甫",
+          "type": "武将",
+          "subtype": "文官",
+          "faction": "蜀",
+          "star": 3
+        },
+        {
+          "id": "G22",
+          "name": "赵累",
+          "type": "武将",
+          "subtype": "武将",
+          "faction": "蜀",
+          "star": 3
+        },
+        {
+          "id": "G23",
+          "name": "关平",
+          "type": "武将",
+          "subtype": "名将",
+          "faction": "蜀",
+          "star": 4
+        },
+        {
+          "id": "G24",
+          "name": "马良",
+          "type": "武将",
+          "subtype": "智将",
+          "faction": "蜀",
+          "star": 4
+        },
+        {
+          "id": "G25",
+          "name": "蒋琬",
+          "type": "武将",
+          "subtype": "文官",
+          "faction": "蜀",
+          "star": 4
+        },
+        {
+          "id": "G29",
+          "name": "杨龄",
+          "type": "武将",
+          "subtype": "守将",
+          "faction": "吴",
+          "star": 2
+        },
+        {
+          "id": "G30",
+          "name": "韩玄",
+          "type": "武将",
+          "subtype": "关底BOSS",
+          "faction": "吴",
+          "star": 3
+        },
+        {
+          "id": "G31",
+          "name": "金旋",
+          "type": "武将",
+          "subtype": "关底BOSS",
+          "faction": "群雄",
+          "star": 3
+        },
+        {
+          "id": "G32",
+          "name": "刘度",
+          "type": "武将",
+          "subtype": "关底BOSS",
+          "faction": "群雄",
+          "star": 3
+        },
+        {
+          "id": "G33",
+          "name": "赵范",
+          "type": "武将",
+          "subtype": "关底BOSS",
+          "faction": "群雄",
+          "star": 3
+        },
+        {
+          "id": "G34",
+          "name": "邢道荣",
+          "type": "武将",
+          "subtype": "守将",
+          "faction": "群雄",
+          "star": 3
+        },
+        {
+          "id": "G35",
+          "name": "陈生",
+          "type": "武将",
+          "subtype": "武将",
+          "faction": "群雄",
+          "star": 3
+        },
+        {
+          "id": "G36",
+          "name": "张虎",
+          "type": "武将",
+          "subtype": "武将",
+          "faction": "群雄",
+          "star": 3
+        },
+        {
+          "id": "G37",
+          "name": "张羡",
+          "type": "武将",
+          "subtype": "关底BOSS",
+          "faction": "群雄",
+          "star": 3
+        },
+        {
+          "id": "G38",
+          "name": "王威",
+          "type": "武将",
+          "subtype": "武将",
+          "faction": "群雄",
+          "star": 3
+        },
+        {
+          "id": "G39",
+          "name": "巩志",
+          "type": "武将",
+          "subtype": "文官",
+          "faction": "群雄",
+          "star": 3
+        }
+      ],
+      "category": "portraits",
+      "prompt": "Use case: illustration-story. Asset type: shipping game illustration ATLAS, not a concept board or UI mockup.\nGenerate ONE 4:4 aspect-ratio canvas arranged as an EXACT 4 columns × 4 rows regular contact sheet with 16 equal rectangular cells. All vertical divisions at exact multiples of 1/4 canvas width, all horizontal divisions at exact multiples of 1/4 canvas height. No header or footer, no visible grid lines, no labels, NO TEXT, NO NUMBERS, no star symbols, no card frames, no ornaments around the sheet.\nEvery cell has the SAME plain light ivory (#F1E6CA) background. Each subject is fully contained in its own cell with at least 10% padding on all four sides, including weapons and silhouettes; no artwork crosses a cell boundary. The entire outer canvas is filled by these cells with no outside margin.\nEach cell is one chest-up portrait, face near cell upper-middle, shoulders and a short identifying weapon segment, plain background, consistent portrait scale. Distinct faces and historical attire.\nOriginal nostalgic Chinese Three Kingdoms collectible-card / illustrated storybook lithographic printing. Bold expressive dark ink contours, flat muted mineral colors (cream ivory, cinnabar red, jade green, indigo, ochre), restrained halftone INSIDE the colored artwork only, subtle paper printing character. Clean forms and strong silhouette readable at 48–96 pixels. Not photorealistic, no anime franchise look, no soft painterly rendering, no heavy dirty paper.\nFaction color belongs to clothing where appropriate: Wei navy, Shu red/green, Wu teal, others ochre, neutral objects natural materials; no letters or faction emblems rendered.\nSubjects in exact row-major order, this ordering is critical:\nRow 1, column 1: 王甫, faction 蜀; scholar/official cloth cap and robe, scroll or fan. Give this person a unique face and pose.\nRow 1, column 2: 赵累, faction 蜀; historical warrior in lamellar armor with a distinct helmet, beard and weapon silhouette. Give this person a unique face and pose.\nRow 1, column 3: 关平, faction 蜀; historical warrior in lamellar armor with a distinct helmet, beard and weapon silhouette. Give this person a unique face and pose.\nRow 1, column 4: 马良, faction 蜀; scholar/official cloth cap and robe, scroll or fan. Give this person a unique face and pose.\nRow 2, column 1: 蒋琬, faction 蜀; scholar/official cloth cap and robe, scroll or fan. Give this person a unique face and pose.\nRow 2, column 2: 杨龄, faction 吴; historical warrior in lamellar armor with a distinct helmet, beard and weapon silhouette. Give this person a unique face and pose.\nRow 2, column 3: 韩玄, faction 吴; historical warrior in lamellar armor with a distinct helmet, beard and weapon silhouette. Give this person a unique face and pose.\nRow 2, column 4: 金旋, faction 群雄; historical warrior in lamellar armor with a distinct helmet, beard and weapon silhouette. Give this person a unique face and pose.\nRow 3, column 1: 刘度, faction 群雄; historical warrior in lamellar armor with a distinct helmet, beard and weapon silhouette. Give this person a unique face and pose.\nRow 3, column 2: 赵范, faction 群雄; historical warrior in lamellar armor with a distinct helmet, beard and weapon silhouette. Give this person a unique face and pose.\nRow 3, column 3: 邢道荣, faction 群雄; historical warrior in lamellar armor with a distinct helmet, beard and weapon silhouette. Give this person a unique face and pose.\nRow 3, column 4: 陈生, faction 群雄; historical warrior in lamellar armor with a distinct helmet, beard and weapon silhouette. Give this person a unique face and pose.\nRow 4, column 1: 张虎, faction 群雄; historical warrior in lamellar armor with a distinct helmet, beard and weapon silhouette. Give this person a unique face and pose.\nRow 4, column 2: 张羡, faction 群雄; historical warrior in lamellar armor with a distinct helmet, beard and weapon silhouette. Give this person a unique face and pose.\nRow 4, column 3: 王威, faction 群雄; historical warrior in lamellar armor with a distinct helmet, beard and weapon silhouette. Give this person a unique face and pose.\nRow 4, column 4: 巩志, faction 群雄; scholar/official cloth cap and robe, scroll or fan. Give this person a unique face and pose.\nAll cells are populated once with the requested subjects.\nAvoid duplicate subjects, extra background characters, any text, frames, captions or accidental layout gaps. This is a production atlas whose exact equal-cell geometry matters more than decorative presentation."
+    },
+    {
+      "key": "heroes_4",
+      "cols": 4,
+      "rows": 4,
+      "cards": [
+        {
+          "id": "G40",
+          "name": "程普",
+          "type": "武将",
+          "subtype": "名将",
+          "faction": "吴",
+          "star": 4
+        },
+        {
+          "id": "G41",
+          "name": "韩当",
+          "type": "武将",
+          "subtype": "名将",
+          "faction": "吴",
+          "star": 4
+        },
+        {
+          "id": "G42",
+          "name": "周泰",
+          "type": "武将",
+          "subtype": "名将",
+          "faction": "吴",
+          "star": 4
+        },
+        {
+          "id": "G43",
+          "name": "黄盖",
+          "type": "武将",
+          "subtype": "名将",
+          "faction": "吴",
+          "star": 4
+        },
+        {
+          "id": "G44",
+          "name": "刘磐",
+          "type": "武将",
+          "subtype": "名将",
+          "faction": "群雄",
+          "star": 4
+        },
+        {
+          "id": "G45",
+          "name": "黄祖",
+          "type": "武将",
+          "subtype": "名将",
+          "faction": "群雄",
+          "star": 4
+        },
+        {
+          "id": "G48",
+          "name": "魏延",
+          "type": "武将",
+          "subtype": "名将",
+          "faction": "吴",
+          "star": 5
+        },
+        {
+          "id": "G53",
+          "name": "黄盖旧部",
+          "type": "武将",
+          "subtype": "守将",
+          "faction": "吴",
+          "star": 2
+        },
+        {
+          "id": "G54",
+          "name": "江夏水军统领",
+          "type": "武将",
+          "subtype": "守将",
+          "faction": "吴",
+          "star": 2
+        },
+        {
+          "id": "G55",
+          "name": "荆南校尉",
+          "type": "武将",
+          "subtype": "守将",
+          "faction": "吴",
+          "star": 2
+        }
+      ],
+      "category": "portraits",
+      "prompt": "Use case: illustration-story. Asset type: shipping game illustration ATLAS, not a concept board or UI mockup.\nGenerate ONE 4:4 aspect-ratio canvas arranged as an EXACT 4 columns × 4 rows regular contact sheet with 16 equal rectangular cells. All vertical divisions at exact multiples of 1/4 canvas width, all horizontal divisions at exact multiples of 1/4 canvas height. No header or footer, no visible grid lines, no labels, NO TEXT, NO NUMBERS, no star symbols, no card frames, no ornaments around the sheet.\nEvery cell has the SAME plain light ivory (#F1E6CA) background. Each subject is fully contained in its own cell with at least 10% padding on all four sides, including weapons and silhouettes; no artwork crosses a cell boundary. The entire outer canvas is filled by these cells with no outside margin.\nEach cell is one chest-up portrait, face near cell upper-middle, shoulders and a short identifying weapon segment, plain background, consistent portrait scale. Distinct faces and historical attire.\nOriginal nostalgic Chinese Three Kingdoms collectible-card / illustrated storybook lithographic printing. Bold expressive dark ink contours, flat muted mineral colors (cream ivory, cinnabar red, jade green, indigo, ochre), restrained halftone INSIDE the colored artwork only, subtle paper printing character. Clean forms and strong silhouette readable at 48–96 pixels. Not photorealistic, no anime franchise look, no soft painterly rendering, no heavy dirty paper.\nFaction color belongs to clothing where appropriate: Wei navy, Shu red/green, Wu teal, others ochre, neutral objects natural materials; no letters or faction emblems rendered.\nSubjects in exact row-major order, this ordering is critical:\nRow 1, column 1: 程普, faction 吴; historical warrior in lamellar armor with a distinct helmet, beard and weapon silhouette. Give this person a unique face and pose.\nRow 1, column 2: 韩当, faction 吴; historical warrior in lamellar armor with a distinct helmet, beard and weapon silhouette. Give this person a unique face and pose.\nRow 1, column 3: 周泰, faction 吴; historical warrior in lamellar armor with a distinct helmet, beard and weapon silhouette. Give this person a unique face and pose.\nRow 1, column 4: 黄盖, faction 吴; historical warrior in lamellar armor with a distinct helmet, beard and weapon silhouette. Give this person a unique face and pose.\nRow 2, column 1: 刘磐, faction 群雄; historical warrior in lamellar armor with a distinct helmet, beard and weapon silhouette. Give this person a unique face and pose.\nRow 2, column 2: 黄祖, faction 群雄; historical warrior in lamellar armor with a distinct helmet, beard and weapon silhouette. Give this person a unique face and pose.\nRow 2, column 3: 魏延, faction 吴; historical warrior in lamellar armor with a distinct helmet, beard and weapon silhouette. Give this person a unique face and pose.\nRow 2, column 4: 黄盖旧部, faction 吴; historical warrior in lamellar armor with a distinct helmet, beard and weapon silhouette. Give this person a unique face and pose.\nRow 3, column 1: 江夏水军统领, faction 吴; historical warrior in lamellar armor with a distinct helmet, beard and weapon silhouette. Give this person a unique face and pose.\nRow 3, column 2: 荆南校尉, faction 吴; historical warrior in lamellar armor with a distinct helmet, beard and weapon silhouette. Give this person a unique face and pose.\nCells 11 through 16, row-major, must remain completely empty plain ivory, no object.\nAvoid duplicate subjects, extra background characters, any text, frames, captions or accidental layout gaps. This is a production atlas whose exact equal-cell geometry matters more than decorative presentation."
+    },
+    {
+      "key": "soldiers",
+      "cols": 6,
+      "rows": 4,
+      "cards": [
+        {
+          "id": "S01",
+          "name": "新野乡勇",
+          "type": "士兵",
+          "subtype": "步兵",
+          "faction": "新野",
+          "star": 1
+        },
+        {
+          "id": "S02",
+          "name": "南阳枪兵",
+          "type": "士兵",
+          "subtype": "枪兵",
+          "faction": "新野",
+          "star": 1
+        },
+        {
+          "id": "S03",
+          "name": "荆州弓手",
+          "type": "士兵",
+          "subtype": "弓兵",
+          "faction": "新野",
+          "star": 1
+        },
+        {
+          "id": "S04",
+          "name": "黄巾残部",
+          "type": "士兵",
+          "subtype": "步兵",
+          "faction": "群雄",
+          "star": 1
+        },
+        {
+          "id": "S05",
+          "name": "流寇",
+          "type": "士兵",
+          "subtype": "步兵",
+          "faction": "群雄",
+          "star": 1
+        },
+        {
+          "id": "S06",
+          "name": "山越部曲",
+          "type": "士兵",
+          "subtype": "步兵",
+          "faction": "吴",
+          "star": 2
+        },
+        {
+          "id": "S07",
+          "name": "江东水卒",
+          "type": "士兵",
+          "subtype": "水军",
+          "faction": "吴",
+          "star": 2
+        },
+        {
+          "id": "S08",
+          "name": "樊城守卒",
+          "type": "士兵",
+          "subtype": "步兵",
+          "faction": "魏",
+          "star": 2
+        },
+        {
+          "id": "S09",
+          "name": "襄阳弩手",
+          "type": "士兵",
+          "subtype": "弓兵",
+          "faction": "魏",
+          "star": 2
+        },
+        {
+          "id": "S10",
+          "name": "益州刀手",
+          "type": "士兵",
+          "subtype": "步兵",
+          "faction": "蜀",
+          "star": 2
+        },
+        {
+          "id": "S11",
+          "name": "西凉铁骑",
+          "type": "士兵",
+          "subtype": "骑兵",
+          "faction": "群雄",
+          "star": 2
+        },
+        {
+          "id": "S12",
+          "name": "青州兵",
+          "type": "士兵",
+          "subtype": "步兵",
+          "faction": "魏",
+          "star": 3
+        },
+        {
+          "id": "S13",
+          "name": "魏武卒",
+          "type": "士兵",
+          "subtype": "步兵",
+          "faction": "魏",
+          "star": 3
+        },
+        {
+          "id": "S14",
+          "name": "解烦卫",
+          "type": "士兵",
+          "subtype": "步兵",
+          "faction": "吴",
+          "star": 3
+        },
+        {
+          "id": "S15",
+          "name": "锦帆营",
+          "type": "士兵",
+          "subtype": "水军",
+          "faction": "吴",
+          "star": 3
+        },
+        {
+          "id": "S16",
+          "name": "车下虎士",
+          "type": "士兵",
+          "subtype": "步兵",
+          "faction": "吴",
+          "star": 3
+        },
+        {
+          "id": "S17",
+          "name": "藤甲兵",
+          "type": "士兵",
+          "subtype": "步兵",
+          "faction": "群雄",
+          "star": 3
+        },
+        {
+          "id": "S18",
+          "name": "五溪蛮兵",
+          "type": "士兵",
+          "subtype": "蛮兵",
+          "faction": "群雄",
+          "star": 3
+        },
+        {
+          "id": "S19",
+          "name": "江陵守军",
+          "type": "士兵",
+          "subtype": "步兵",
+          "faction": "蜀",
+          "star": 3
+        },
+        {
+          "id": "S20",
+          "name": "许昌卫队",
+          "type": "士兵",
+          "subtype": "步兵",
+          "faction": "魏",
+          "star": 3
+        },
+        {
+          "id": "S21",
+          "name": "虎豹骑",
+          "type": "士兵",
+          "subtype": "骑兵",
+          "faction": "魏",
+          "star": 4
+        },
+        {
+          "id": "S22",
+          "name": "无当飞军",
+          "type": "士兵",
+          "subtype": "步兵",
+          "faction": "蜀",
+          "star": 4
+        },
+        {
+          "id": "S23",
+          "name": "白毦兵",
+          "type": "士兵",
+          "subtype": "步兵",
+          "faction": "蜀",
+          "star": 4
+        },
+        {
+          "id": "S24",
+          "name": "丹阳兵",
+          "type": "士兵",
+          "subtype": "步兵",
+          "faction": "吴",
+          "star": 4
+        }
+      ],
+      "category": "soldiers",
+      "prompt": "Use case: illustration-story. Asset type: shipping game illustration ATLAS, not a concept board or UI mockup.\nGenerate ONE 6:4 aspect-ratio canvas arranged as an EXACT 6 columns × 4 rows regular contact sheet with 24 equal rectangular cells. All vertical divisions at exact multiples of 1/6 canvas width, all horizontal divisions at exact multiples of 1/4 canvas height. No header or footer, no visible grid lines, no labels, NO TEXT, NO NUMBERS, no star symbols, no card frames, no ornaments around the sheet.\nEvery cell has the SAME plain light ivory (#F1E6CA) background. Each subject is fully contained in its own cell with at least 10% padding on all four sides, including weapons and silhouettes; no artwork crosses a cell boundary. The entire outer canvas is filled by these cells with no outside margin.\nEach cell is one chest-up portrait, face near cell upper-middle, shoulders and a short identifying weapon segment, plain background, consistent portrait scale. Distinct faces and historical attire.\nOriginal nostalgic Chinese Three Kingdoms collectible-card / illustrated storybook lithographic printing. Bold expressive dark ink contours, flat muted mineral colors (cream ivory, cinnabar red, jade green, indigo, ochre), restrained halftone INSIDE the colored artwork only, subtle paper printing character. Clean forms and strong silhouette readable at 48–96 pixels. Not photorealistic, no anime franchise look, no soft painterly rendering, no heavy dirty paper.\nFaction color belongs to clothing where appropriate: Wei navy, Shu red/green, Wu teal, others ochre, neutral objects natural materials; no letters or faction emblems rendered.\nSubjects in exact row-major order, this ordering is critical:\nRow 1, column 1: 新野乡勇, 步兵, faction 新野; infantry with cloth or lamellar tunic and sword/shield. \nRow 1, column 2: 南阳枪兵, 枪兵, faction 新野; infantry holding upright straight spear. \nRow 1, column 3: 荆州弓手, 弓兵, faction 新野; archer or crossbowman with clearly visible bow/crossbow. \nRow 1, column 4: 黄巾残部, 步兵, faction 群雄; infantry with cloth or lamellar tunic and sword/shield. Yellow headscarf is essential.\nRow 1, column 5: 流寇, 步兵, faction 群雄; infantry with cloth or lamellar tunic and sword/shield. \nRow 1, column 6: 山越部曲, 步兵, faction 吴; infantry with cloth or lamellar tunic and sword/shield. \nRow 2, column 1: 江东水卒, 水军, faction 吴; naval infantry with headband and short saber. \nRow 2, column 2: 樊城守卒, 步兵, faction 魏; infantry with cloth or lamellar tunic and sword/shield. \nRow 2, column 3: 襄阳弩手, 弓兵, faction 魏; archer or crossbowman with clearly visible bow/crossbow. \nRow 2, column 4: 益州刀手, 步兵, faction 蜀; infantry with cloth or lamellar tunic and sword/shield. \nRow 2, column 5: 西凉铁骑, 骑兵, faction 群雄; mounted cavalry with horse neck visible. \nRow 2, column 6: 青州兵, 步兵, faction 魏; infantry with cloth or lamellar tunic and sword/shield. \nRow 3, column 1: 魏武卒, 步兵, faction 魏; infantry with cloth or lamellar tunic and sword/shield. \nRow 3, column 2: 解烦卫, 步兵, faction 吴; infantry with cloth or lamellar tunic and sword/shield. \nRow 3, column 3: 锦帆营, 水军, faction 吴; naval infantry with headband and short saber. \nRow 3, column 4: 车下虎士, 步兵, faction 吴; infantry with cloth or lamellar tunic and sword/shield. \nRow 3, column 5: 藤甲兵, 步兵, faction 群雄; infantry with cloth or lamellar tunic and sword/shield. Woven rattan armor is essential.\nRow 3, column 6: 五溪蛮兵, 蛮兵, faction 群雄; tribal infantry with hide tunic. \nRow 4, column 1: 江陵守军, 步兵, faction 蜀; infantry with cloth or lamellar tunic and sword/shield. \nRow 4, column 2: 许昌卫队, 步兵, faction 魏; infantry with cloth or lamellar tunic and sword/shield. \nRow 4, column 3: 虎豹骑, 骑兵, faction 魏; mounted cavalry with horse neck visible. \nRow 4, column 4: 无当飞军, 步兵, faction 蜀; infantry with cloth or lamellar tunic and sword/shield. \nRow 4, column 5: 白毦兵, 步兵, faction 蜀; infantry with cloth or lamellar tunic and sword/shield. White feather decoration is essential.\nRow 4, column 6: 丹阳兵, 步兵, faction 吴; infantry with cloth or lamellar tunic and sword/shield. \nAll cells are populated once with the requested subjects.\nAvoid duplicate subjects, extra background characters, any text, frames, captions or accidental layout gaps. This is a production atlas whose exact equal-cell geometry matters more than decorative presentation."
+    },
+    {
+      "key": "equipment",
+      "cols": 6,
+      "rows": 6,
+      "cards": [
+        {
+          "id": "E01",
+          "name": "环首刀",
+          "type": "装备",
+          "subtype": "兵器",
+          "faction": "通用",
+          "star": 1
+        },
+        {
+          "id": "E02",
+          "name": "长矛",
+          "type": "装备",
+          "subtype": "兵器",
+          "faction": "通用",
+          "star": 1
+        },
+        {
+          "id": "E03",
+          "name": "铁戟",
+          "type": "装备",
+          "subtype": "兵器",
+          "faction": "魏",
+          "star": 2
+        },
+        {
+          "id": "E04",
+          "name": "双股剑",
+          "type": "装备",
+          "subtype": "兵器",
+          "faction": "蜀",
+          "star": 3
+        },
+        {
+          "id": "E05",
+          "name": "大斧",
+          "type": "装备",
+          "subtype": "兵器",
+          "faction": "魏",
+          "star": 3
+        },
+        {
+          "id": "E06",
+          "name": "铁脊蛇矛",
+          "type": "装备",
+          "subtype": "兵器",
+          "faction": "蜀",
+          "star": 4
+        },
+        {
+          "id": "E07",
+          "name": "古锭刀",
+          "type": "装备",
+          "subtype": "兵器",
+          "faction": "吴",
+          "star": 4
+        },
+        {
+          "id": "E08",
+          "name": "三尖两刃刀",
+          "type": "装备",
+          "subtype": "兵器",
+          "faction": "群雄",
+          "star": 4
+        },
+        {
+          "id": "E09",
+          "name": "龙胆亮银枪",
+          "type": "装备",
+          "subtype": "兵器",
+          "faction": "蜀",
+          "star": 5
+        },
+        {
+          "id": "E10",
+          "name": "丈八蛇矛",
+          "type": "装备",
+          "subtype": "兵器",
+          "faction": "蜀",
+          "star": 5
+        },
+        {
+          "id": "E11",
+          "name": "偃月刀",
+          "type": "装备",
+          "subtype": "兵器",
+          "faction": "蜀",
+          "star": 5
+        },
+        {
+          "id": "E12",
+          "name": "方天画戟",
+          "type": "装备",
+          "subtype": "兵器",
+          "faction": "群雄",
+          "star": 6
+        },
+        {
+          "id": "E13",
+          "name": "皮甲",
+          "type": "装备",
+          "subtype": "铠甲",
+          "faction": "通用",
+          "star": 1
+        },
+        {
+          "id": "E14",
+          "name": "铁甲",
+          "type": "装备",
+          "subtype": "铠甲",
+          "faction": "通用",
+          "star": 2
+        },
+        {
+          "id": "E15",
+          "name": "藤甲",
+          "type": "装备",
+          "subtype": "铠甲",
+          "faction": "群雄",
+          "star": 3
+        },
+        {
+          "id": "E16",
+          "name": "锁子甲",
+          "type": "装备",
+          "subtype": "铠甲",
+          "faction": "魏",
+          "star": 3
+        },
+        {
+          "id": "E17",
+          "name": "兽面吞头铠",
+          "type": "装备",
+          "subtype": "铠甲",
+          "faction": "魏",
+          "star": 4
+        },
+        {
+          "id": "E18",
+          "name": "明光铠",
+          "type": "装备",
+          "subtype": "铠甲",
+          "faction": "魏",
+          "star": 4
+        },
+        {
+          "id": "E19",
+          "name": "玄铁重铠",
+          "type": "装备",
+          "subtype": "铠甲",
+          "faction": "群雄",
+          "star": 5
+        },
+        {
+          "id": "E20",
+          "name": "西凉马",
+          "type": "装备",
+          "subtype": "坐骑",
+          "faction": "群雄",
+          "star": 2
+        },
+        {
+          "id": "E21",
+          "name": "白马",
+          "type": "装备",
+          "subtype": "坐骑",
+          "faction": "群雄",
+          "star": 3
+        },
+        {
+          "id": "E22",
+          "name": "乌骓",
+          "type": "装备",
+          "subtype": "坐骑",
+          "faction": "吴",
+          "star": 3
+        },
+        {
+          "id": "E23",
+          "name": "的卢",
+          "type": "装备",
+          "subtype": "坐骑",
+          "faction": "群雄",
+          "star": 4
+        },
+        {
+          "id": "E24",
+          "name": "爪黄飞电",
+          "type": "装备",
+          "subtype": "坐骑",
+          "faction": "魏",
+          "star": 5
+        },
+        {
+          "id": "E25",
+          "name": "绝影",
+          "type": "装备",
+          "subtype": "坐骑",
+          "faction": "魏",
+          "star": 5
+        },
+        {
+          "id": "E26",
+          "name": "赤兔",
+          "type": "装备",
+          "subtype": "坐骑",
+          "faction": "蜀",
+          "star": 6
+        },
+        {
+          "id": "E27",
+          "name": "三略",
+          "type": "装备",
+          "subtype": "兵书",
+          "faction": "通用",
+          "star": 3
+        },
+        {
+          "id": "E28",
+          "name": "将苑",
+          "type": "装备",
+          "subtype": "兵书",
+          "faction": "蜀",
+          "star": 3
+        },
+        {
+          "id": "E29",
+          "name": "六韬",
+          "type": "装备",
+          "subtype": "兵书",
+          "faction": "魏",
+          "star": 4
+        },
+        {
+          "id": "E30",
+          "name": "吴子",
+          "type": "装备",
+          "subtype": "兵书",
+          "faction": "吴",
+          "star": 4
+        },
+        {
+          "id": "E31",
+          "name": "孟德新书",
+          "type": "装备",
+          "subtype": "兵书",
+          "faction": "魏",
+          "star": 5
+        },
+        {
+          "id": "E32",
+          "name": "孙子兵法",
+          "type": "装备",
+          "subtype": "兵书",
+          "faction": "吴",
+          "star": 6
+        },
+        {
+          "id": "E33",
+          "name": "铜雀瓦",
+          "type": "装备",
+          "subtype": "宝物",
+          "faction": "魏",
+          "star": 4
+        },
+        {
+          "id": "E34",
+          "name": "荆州牧印",
+          "type": "装备",
+          "subtype": "宝物",
+          "faction": "蜀",
+          "star": 5
+        },
+        {
+          "id": "E35",
+          "name": "八阵图",
+          "type": "装备",
+          "subtype": "宝物",
+          "faction": "蜀",
+          "star": 5
+        },
+        {
+          "id": "E36",
+          "name": "传国玉玺",
+          "type": "装备",
+          "subtype": "宝物",
+          "faction": "群雄",
+          "star": 6
+        }
+      ],
+      "category": "equipment",
+      "prompt": "Use case: illustration-story. Asset type: shipping game illustration ATLAS, not a concept board or UI mockup.\nGenerate ONE 6:6 aspect-ratio canvas arranged as an EXACT 6 columns × 6 rows regular contact sheet with 36 equal rectangular cells. All vertical divisions at exact multiples of 1/6 canvas width, all horizontal divisions at exact multiples of 1/6 canvas height. No header or footer, no visible grid lines, no labels, NO TEXT, NO NUMBERS, no star symbols, no card frames, no ornaments around the sheet.\nEvery cell has the SAME plain light ivory (#F1E6CA) background. Each subject is fully contained in its own cell with at least 10% padding on all four sides, including weapons and silhouettes; no artwork crosses a cell boundary. The entire outer canvas is filled by these cells with no outside margin.\nEach cell is one isolated illustrated object or compact isometric landmark, same visual scale, no surrounding landscape.\nOriginal nostalgic Chinese Three Kingdoms collectible-card / illustrated storybook lithographic printing. Bold expressive dark ink contours, flat muted mineral colors (cream ivory, cinnabar red, jade green, indigo, ochre), restrained halftone INSIDE the colored artwork only, subtle paper printing character. Clean forms and strong silhouette readable at 48–96 pixels. Not photorealistic, no anime franchise look, no soft painterly rendering, no heavy dirty paper.\nFaction color belongs to clothing where appropriate: Wei navy, Shu red/green, Wu teal, others ochre, neutral objects natural materials; no letters or faction emblems rendered.\nSubjects in exact row-major order, this ordering is critical:\nRow 1, column 1: 环首刀 (兵器), ONE clearly identifiable object or compact landmark, centered.\nRow 1, column 2: 长矛 (兵器), ONE clearly identifiable object or compact landmark, centered.\nRow 1, column 3: 铁戟 (兵器), ONE clearly identifiable object or compact landmark, centered.\nRow 1, column 4: 双股剑 (兵器), ONE clearly identifiable object or compact landmark, centered.\nRow 1, column 5: 大斧 (兵器), ONE clearly identifiable object or compact landmark, centered.\nRow 1, column 6: 铁脊蛇矛 (兵器), ONE clearly identifiable object or compact landmark, centered.\nRow 2, column 1: 古锭刀 (兵器), ONE clearly identifiable object or compact landmark, centered.\nRow 2, column 2: 三尖两刃刀 (兵器), ONE clearly identifiable object or compact landmark, centered.\nRow 2, column 3: 龙胆亮银枪 (兵器), ONE clearly identifiable object or compact landmark, centered.\nRow 2, column 4: 丈八蛇矛 (兵器), ONE clearly identifiable object or compact landmark, centered.\nRow 2, column 5: 偃月刀 (兵器), ONE clearly identifiable object or compact landmark, centered.\nRow 2, column 6: 方天画戟 (兵器), ONE clearly identifiable object or compact landmark, centered.\nRow 3, column 1: 皮甲 (铠甲), ONE clearly identifiable object or compact landmark, centered.\nRow 3, column 2: 铁甲 (铠甲), ONE clearly identifiable object or compact landmark, centered.\nRow 3, column 3: 藤甲 (铠甲), ONE clearly identifiable object or compact landmark, centered.\nRow 3, column 4: 锁子甲 (铠甲), ONE clearly identifiable object or compact landmark, centered.\nRow 3, column 5: 兽面吞头铠 (铠甲), ONE clearly identifiable object or compact landmark, centered.\nRow 3, column 6: 明光铠 (铠甲), ONE clearly identifiable object or compact landmark, centered.\nRow 4, column 1: 玄铁重铠 (铠甲), ONE clearly identifiable object or compact landmark, centered.\nRow 4, column 2: 西凉马 (坐骑), ONE clearly identifiable object or compact landmark, centered.\nRow 4, column 3: 白马 (坐骑), ONE clearly identifiable object or compact landmark, centered.\nRow 4, column 4: 乌骓 (坐骑), ONE clearly identifiable object or compact landmark, centered.\nRow 4, column 5: 的卢 (坐骑), ONE clearly identifiable object or compact landmark, centered.\nRow 4, column 6: 爪黄飞电 (坐骑), ONE clearly identifiable object or compact landmark, centered.\nRow 5, column 1: 绝影 (坐骑), ONE clearly identifiable object or compact landmark, centered.\nRow 5, column 2: 赤兔 (坐骑), ONE clearly identifiable object or compact landmark, centered.\nRow 5, column 3: 三略 (兵书), ONE clearly identifiable object or compact landmark, centered.\nRow 5, column 4: 将苑 (兵书), ONE clearly identifiable object or compact landmark, centered.\nRow 5, column 5: 六韬 (兵书), ONE clearly identifiable object or compact landmark, centered.\nRow 5, column 6: 吴子 (兵书), ONE clearly identifiable object or compact landmark, centered.\nRow 6, column 1: 孟德新书 (兵书), ONE clearly identifiable object or compact landmark, centered.\nRow 6, column 2: 孙子兵法 (兵书), ONE clearly identifiable object or compact landmark, centered.\nRow 6, column 3: 铜雀瓦 (宝物), ONE clearly identifiable object or compact landmark, centered.\nRow 6, column 4: 荆州牧印 (宝物), ONE clearly identifiable object or compact landmark, centered.\nRow 6, column 5: 八阵图 (宝物), ONE clearly identifiable object or compact landmark, centered.\nRow 6, column 6: 传国玉玺 (宝物), ONE clearly identifiable object or compact landmark, centered.\nAll cells are populated once with the requested subjects.\nAvoid duplicate subjects, extra background characters, any text, frames, captions or accidental layout gaps. This is a production atlas whose exact equal-cell geometry matters more than decorative presentation."
+    },
+    {
+      "key": "buildings",
+      "cols": 6,
+      "rows": 5,
+      "cards": [
+        {
+          "id": "B01",
+          "name": "菜地",
+          "type": "建筑",
+          "subtype": "产出建筑",
+          "faction": "通用",
+          "star": 1
+        },
+        {
+          "id": "B02",
+          "name": "茅屋",
+          "type": "建筑",
+          "subtype": "产出建筑",
+          "faction": "通用",
+          "star": 1
+        },
+        {
+          "id": "B03",
+          "name": "土墙",
+          "type": "建筑",
+          "subtype": "产出建筑",
+          "faction": "通用",
+          "star": 1
+        },
+        {
+          "id": "B04",
+          "name": "木栅",
+          "type": "建筑",
+          "subtype": "产出建筑",
+          "faction": "通用",
+          "star": 1
+        },
+        {
+          "id": "B05",
+          "name": "小卖部",
+          "type": "建筑",
+          "subtype": "产出建筑",
+          "faction": "通用",
+          "star": 2
+        },
+        {
+          "id": "B06",
+          "name": "农田",
+          "type": "建筑",
+          "subtype": "产出建筑",
+          "faction": "通用",
+          "star": 2
+        },
+        {
+          "id": "B07",
+          "name": "木哨塔",
+          "type": "建筑",
+          "subtype": "产出建筑",
+          "faction": "通用",
+          "star": 2
+        },
+        {
+          "id": "B08",
+          "name": "水井",
+          "type": "建筑",
+          "subtype": "产出建筑",
+          "faction": "通用",
+          "star": 2
+        },
+        {
+          "id": "B09",
+          "name": "铁匠铺",
+          "type": "建筑",
+          "subtype": "产出建筑",
+          "faction": "通用",
+          "star": 3
+        },
+        {
+          "id": "B10",
+          "name": "校场",
+          "type": "建筑",
+          "subtype": "产出建筑",
+          "faction": "通用",
+          "star": 3
+        },
+        {
+          "id": "B11",
+          "name": "粮仓",
+          "type": "建筑",
+          "subtype": "产出建筑",
+          "faction": "通用",
+          "star": 3
+        },
+        {
+          "id": "B12",
+          "name": "驿站",
+          "type": "建筑",
+          "subtype": "产出建筑",
+          "faction": "通用",
+          "star": 3
+        },
+        {
+          "id": "B13",
+          "name": "望楼",
+          "type": "建筑",
+          "subtype": "产出建筑",
+          "faction": "通用",
+          "star": 4
+        },
+        {
+          "id": "B14",
+          "name": "水寨",
+          "type": "建筑",
+          "subtype": "产出建筑",
+          "faction": "通用",
+          "star": 4
+        },
+        {
+          "id": "B15",
+          "name": "学舍",
+          "type": "建筑",
+          "subtype": "产出建筑",
+          "faction": "通用",
+          "star": 4
+        },
+        {
+          "id": "B16",
+          "name": "钱庄",
+          "type": "建筑",
+          "subtype": "产出建筑",
+          "faction": "通用",
+          "star": 4
+        },
+        {
+          "id": "B17",
+          "name": "都督府",
+          "type": "建筑",
+          "subtype": "产出建筑",
+          "faction": "通用",
+          "star": 5
+        },
+        {
+          "id": "B18",
+          "name": "铜雀台",
+          "type": "建筑",
+          "subtype": "产出建筑",
+          "faction": "通用",
+          "star": 5
+        },
+        {
+          "id": "B19",
+          "name": "水军大寨",
+          "type": "建筑",
+          "subtype": "产出建筑",
+          "faction": "通用",
+          "star": 5
+        },
+        {
+          "id": "B20",
+          "name": "兵器库",
+          "type": "建筑",
+          "subtype": "产出建筑",
+          "faction": "通用",
+          "star": 5
+        },
+        {
+          "id": "B21",
+          "name": "王城",
+          "type": "建筑",
+          "subtype": "产出建筑",
+          "faction": "通用",
+          "star": 6
+        },
+        {
+          "id": "B22",
+          "name": "天坛",
+          "type": "建筑",
+          "subtype": "产出建筑",
+          "faction": "通用",
+          "star": 6
+        },
+        {
+          "id": "B23",
+          "name": "点将台",
+          "type": "建筑",
+          "subtype": "功能建筑",
+          "faction": "通用",
+          "star": 4
+        },
+        {
+          "id": "B24",
+          "name": "藏经阁",
+          "type": "建筑",
+          "subtype": "功能建筑",
+          "faction": "通用",
+          "star": 4
+        },
+        {
+          "id": "B25",
+          "name": "烽火台",
+          "type": "建筑",
+          "subtype": "功能建筑",
+          "faction": "通用",
+          "star": 4
+        },
+        {
+          "id": "B26",
+          "name": "演武场",
+          "type": "建筑",
+          "subtype": "功能建筑",
+          "faction": "通用",
+          "star": 4
+        },
+        {
+          "id": "B27",
+          "name": "聚宝盆",
+          "type": "建筑",
+          "subtype": "功能建筑",
+          "faction": "通用",
+          "star": 5
+        },
+        {
+          "id": "B28",
+          "name": "军械坊",
+          "type": "建筑",
+          "subtype": "功能建筑",
+          "faction": "通用",
+          "star": 5
+        },
+        {
+          "id": "B29",
+          "name": "招贤馆",
+          "type": "建筑",
+          "subtype": "功能建筑",
+          "faction": "通用",
+          "star": 6
+        },
+        {
+          "id": "B30",
+          "name": "讲武堂",
+          "type": "建筑",
+          "subtype": "功能建筑",
+          "faction": "通用",
+          "star": 6
+        }
+      ],
+      "category": "buildings",
+      "prompt": "Use case: illustration-story. Asset type: shipping game illustration ATLAS, not a concept board or UI mockup.\nGenerate ONE 6:5 aspect-ratio canvas arranged as an EXACT 6 columns × 5 rows regular contact sheet with 30 equal rectangular cells. All vertical divisions at exact multiples of 1/6 canvas width, all horizontal divisions at exact multiples of 1/5 canvas height. No header or footer, no visible grid lines, no labels, NO TEXT, NO NUMBERS, no star symbols, no card frames, no ornaments around the sheet.\nEvery cell has the SAME plain light ivory (#F1E6CA) background. Each subject is fully contained in its own cell with at least 10% padding on all four sides, including weapons and silhouettes; no artwork crosses a cell boundary. The entire outer canvas is filled by these cells with no outside margin.\nEach cell is one isolated illustrated object or compact isometric landmark, same visual scale, no surrounding landscape.\nOriginal nostalgic Chinese Three Kingdoms collectible-card / illustrated storybook lithographic printing. Bold expressive dark ink contours, flat muted mineral colors (cream ivory, cinnabar red, jade green, indigo, ochre), restrained halftone INSIDE the colored artwork only, subtle paper printing character. Clean forms and strong silhouette readable at 48–96 pixels. Not photorealistic, no anime franchise look, no soft painterly rendering, no heavy dirty paper.\nFaction color belongs to clothing where appropriate: Wei navy, Shu red/green, Wu teal, others ochre, neutral objects natural materials; no letters or faction emblems rendered.\nSubjects in exact row-major order, this ordering is critical:\nRow 1, column 1: 菜地 (产出建筑), ONE clearly identifiable object or compact landmark, centered.\nRow 1, column 2: 茅屋 (产出建筑), ONE clearly identifiable object or compact landmark, centered.\nRow 1, column 3: 土墙 (产出建筑), ONE clearly identifiable object or compact landmark, centered.\nRow 1, column 4: 木栅 (产出建筑), ONE clearly identifiable object or compact landmark, centered.\nRow 1, column 5: 小卖部 (产出建筑), ONE clearly identifiable object or compact landmark, centered.\nRow 1, column 6: 农田 (产出建筑), ONE clearly identifiable object or compact landmark, centered.\nRow 2, column 1: 木哨塔 (产出建筑), ONE clearly identifiable object or compact landmark, centered.\nRow 2, column 2: 水井 (产出建筑), ONE clearly identifiable object or compact landmark, centered.\nRow 2, column 3: 铁匠铺 (产出建筑), ONE clearly identifiable object or compact landmark, centered.\nRow 2, column 4: 校场 (产出建筑), ONE clearly identifiable object or compact landmark, centered.\nRow 2, column 5: 粮仓 (产出建筑), ONE clearly identifiable object or compact landmark, centered.\nRow 2, column 6: 驿站 (产出建筑), ONE clearly identifiable object or compact landmark, centered.\nRow 3, column 1: 望楼 (产出建筑), ONE clearly identifiable object or compact landmark, centered.\nRow 3, column 2: 水寨 (产出建筑), ONE clearly identifiable object or compact landmark, centered.\nRow 3, column 3: 学舍 (产出建筑), ONE clearly identifiable object or compact landmark, centered.\nRow 3, column 4: 钱庄 (产出建筑), ONE clearly identifiable object or compact landmark, centered.\nRow 3, column 5: 都督府 (产出建筑), ONE clearly identifiable object or compact landmark, centered.\nRow 3, column 6: 铜雀台 (产出建筑), ONE clearly identifiable object or compact landmark, centered.\nRow 4, column 1: 水军大寨 (产出建筑), ONE clearly identifiable object or compact landmark, centered.\nRow 4, column 2: 兵器库 (产出建筑), ONE clearly identifiable object or compact landmark, centered.\nRow 4, column 3: 王城 (产出建筑), ONE clearly identifiable object or compact landmark, centered.\nRow 4, column 4: 天坛 (产出建筑), ONE clearly identifiable object or compact landmark, centered.\nRow 4, column 5: 点将台 (功能建筑), ONE clearly identifiable object or compact landmark, centered.\nRow 4, column 6: 藏经阁 (功能建筑), ONE clearly identifiable object or compact landmark, centered.\nRow 5, column 1: 烽火台 (功能建筑), ONE clearly identifiable object or compact landmark, centered.\nRow 5, column 2: 演武场 (功能建筑), ONE clearly identifiable object or compact landmark, centered.\nRow 5, column 3: 聚宝盆 (功能建筑), ONE clearly identifiable object or compact landmark, centered.\nRow 5, column 4: 军械坊 (功能建筑), ONE clearly identifiable object or compact landmark, centered.\nRow 5, column 5: 招贤馆 (功能建筑), ONE clearly identifiable object or compact landmark, centered.\nRow 5, column 6: 讲武堂 (功能建筑), ONE clearly identifiable object or compact landmark, centered.\nAll cells are populated once with the requested subjects.\nAvoid duplicate subjects, extra background characters, any text, frames, captions or accidental layout gaps. This is a production atlas whose exact equal-cell geometry matters more than decorative presentation."
+    },
+    {
+      "key": "cities",
+      "cols": 7,
+      "rows": 3,
+      "cards": [
+        {
+          "id": "C01",
+          "name": "新野",
+          "type": "城池",
+          "subtype": "起点",
+          "faction": "新野",
+          "star": 1
+        },
+        {
+          "id": "C02",
+          "name": "樊城",
+          "type": "城池",
+          "subtype": "据点",
+          "faction": "魏",
+          "star": 1
+        },
+        {
+          "id": "C03",
+          "name": "中庐",
+          "type": "城池",
+          "subtype": "据点",
+          "faction": "魏",
+          "star": 1
+        },
+        {
+          "id": "C04",
+          "name": "宜城",
+          "type": "城池",
+          "subtype": "据点",
+          "faction": "魏",
+          "star": 2
+        },
+        {
+          "id": "C05",
+          "name": "宛城",
+          "type": "城池",
+          "subtype": "关底城池",
+          "faction": "魏",
+          "star": 2
+        },
+        {
+          "id": "C06",
+          "name": "襄阳",
+          "type": "城池",
+          "subtype": "关底城池",
+          "faction": "魏",
+          "star": 3
+        },
+        {
+          "id": "C07",
+          "name": "当阳",
+          "type": "城池",
+          "subtype": "据点",
+          "faction": "蜀",
+          "star": 3
+        },
+        {
+          "id": "C08",
+          "name": "夏口",
+          "type": "城池",
+          "subtype": "关底城池",
+          "faction": "吴",
+          "star": 4
+        },
+        {
+          "id": "C09",
+          "name": "夷陵",
+          "type": "城池",
+          "subtype": "据点",
+          "faction": "蜀",
+          "star": 4
+        },
+        {
+          "id": "C10",
+          "name": "武昌",
+          "type": "城池",
+          "subtype": "据点",
+          "faction": "吴",
+          "star": 4
+        },
+        {
+          "id": "C11",
+          "name": "沅陵",
+          "type": "城池",
+          "subtype": "据点",
+          "faction": "群雄",
+          "star": 5
+        },
+        {
+          "id": "C12",
+          "name": "公安",
+          "type": "城池",
+          "subtype": "据点",
+          "faction": "蜀",
+          "star": 5
+        },
+        {
+          "id": "C13",
+          "name": "汉寿",
+          "type": "城池",
+          "subtype": "据点",
+          "faction": "吴",
+          "star": 5
+        },
+        {
+          "id": "C14",
+          "name": "临沅",
+          "type": "城池",
+          "subtype": "关底城池",
+          "faction": "群雄",
+          "star": 5
+        },
+        {
+          "id": "C15",
+          "name": "攸县",
+          "type": "城池",
+          "subtype": "据点",
+          "faction": "吴",
+          "star": 5
+        },
+        {
+          "id": "C16",
+          "name": "临湘",
+          "type": "城池",
+          "subtype": "关底城池",
+          "faction": "吴",
+          "star": 6
+        },
+        {
+          "id": "C17",
+          "name": "耒阳",
+          "type": "城池",
+          "subtype": "据点",
+          "faction": "吴",
+          "star": 6
+        },
+        {
+          "id": "C18",
+          "name": "郴县",
+          "type": "城池",
+          "subtype": "关底城池",
+          "faction": "吴",
+          "star": 6
+        },
+        {
+          "id": "C19",
+          "name": "观阳",
+          "type": "城池",
+          "subtype": "据点",
+          "faction": "吴",
+          "star": 6
+        },
+        {
+          "id": "C20",
+          "name": "泉陵",
+          "type": "城池",
+          "subtype": "关底城池",
+          "faction": "吴",
+          "star": 6
+        },
+        {
+          "id": "C21",
+          "name": "江陵",
+          "type": "城池",
+          "subtype": "终局",
+          "faction": "蜀",
+          "star": 6
+        }
+      ],
+      "category": "cities",
+      "prompt": "Use case: illustration-story. Asset type: shipping game illustration ATLAS, not a concept board or UI mockup.\nGenerate ONE 7:3 aspect-ratio canvas arranged as an EXACT 7 columns × 3 rows regular contact sheet with 21 equal rectangular cells. All vertical divisions at exact multiples of 1/7 canvas width, all horizontal divisions at exact multiples of 1/3 canvas height. No header or footer, no visible grid lines, no labels, NO TEXT, NO NUMBERS, no star symbols, no card frames, no ornaments around the sheet.\nEvery cell has the SAME plain light ivory (#F1E6CA) background. Each subject is fully contained in its own cell with at least 10% padding on all four sides, including weapons and silhouettes; no artwork crosses a cell boundary. The entire outer canvas is filled by these cells with no outside margin.\nEach cell is one isolated illustrated object or compact isometric landmark, same visual scale, no surrounding landscape.\nOriginal nostalgic Chinese Three Kingdoms collectible-card / illustrated storybook lithographic printing. Bold expressive dark ink contours, flat muted mineral colors (cream ivory, cinnabar red, jade green, indigo, ochre), restrained halftone INSIDE the colored artwork only, subtle paper printing character. Clean forms and strong silhouette readable at 48–96 pixels. Not photorealistic, no anime franchise look, no soft painterly rendering, no heavy dirty paper.\nFaction color belongs to clothing where appropriate: Wei navy, Shu red/green, Wu teal, others ochre, neutral objects natural materials; no letters or faction emblems rendered.\nSubjects in exact row-major order, this ordering is critical:\nRow 1, column 1: 新野 (起点), ONE clearly identifiable object or compact landmark, centered.\nRow 1, column 2: 樊城 (据点), ONE clearly identifiable object or compact landmark, centered.\nRow 1, column 3: 中庐 (据点), ONE clearly identifiable object or compact landmark, centered.\nRow 1, column 4: 宜城 (据点), ONE clearly identifiable object or compact landmark, centered.\nRow 1, column 5: 宛城 (关底城池), ONE clearly identifiable object or compact landmark, centered.\nRow 1, column 6: 襄阳 (关底城池), ONE clearly identifiable object or compact landmark, centered.\nRow 1, column 7: 当阳 (据点), ONE clearly identifiable object or compact landmark, centered.\nRow 2, column 1: 夏口 (关底城池), ONE clearly identifiable object or compact landmark, centered.\nRow 2, column 2: 夷陵 (据点), ONE clearly identifiable object or compact landmark, centered.\nRow 2, column 3: 武昌 (据点), ONE clearly identifiable object or compact landmark, centered.\nRow 2, column 4: 沅陵 (据点), ONE clearly identifiable object or compact landmark, centered.\nRow 2, column 5: 公安 (据点), ONE clearly identifiable object or compact landmark, centered.\nRow 2, column 6: 汉寿 (据点), ONE clearly identifiable object or compact landmark, centered.\nRow 2, column 7: 临沅 (关底城池), ONE clearly identifiable object or compact landmark, centered.\nRow 3, column 1: 攸县 (据点), ONE clearly identifiable object or compact landmark, centered.\nRow 3, column 2: 临湘 (关底城池), ONE clearly identifiable object or compact landmark, centered.\nRow 3, column 3: 耒阳 (据点), ONE clearly identifiable object or compact landmark, centered.\nRow 3, column 4: 郴县 (关底城池), ONE clearly identifiable object or compact landmark, centered.\nRow 3, column 5: 观阳 (据点), ONE clearly identifiable object or compact landmark, centered.\nRow 3, column 6: 泉陵 (关底城池), ONE clearly identifiable object or compact landmark, centered.\nRow 3, column 7: 江陵 (终局), ONE clearly identifiable object or compact landmark, centered.\nAll cells are populated once with the requested subjects.\nAvoid duplicate subjects, extra background characters, any text, frames, captions or accidental layout gaps. This is a production atlas whose exact equal-cell geometry matters more than decorative presentation."
+    },
+    {
+      "key": "table",
+      "category": "background",
+      "prompt": "Use case: stylized-concept. Asset type: shipping game TABLE BACKGROUND, not an interface. Original nostalgic Chinese Three Kingdoms collectible-card / illustrated storybook lithographic printing. Bold expressive dark ink contours, flat muted mineral colors (cream ivory, cinnabar red, jade green, indigo, ochre), restrained halftone INSIDE the colored artwork only, subtle paper printing character. Clean forms and strong silhouette readable at 48–96 pixels. Not photorealistic, no anime franchise look, no soft painterly rendering, no heavy dirty paper. Tactile quiet printed desk atmosphere, front-facing orthographic overhead, landscape 16:10. No UI, no cards, no text, no labels or logos. Edges can have restrained props but the center 85% must be clear for interactive interface. Dark warm walnut tabletop with broad soft wood grain. Uniform subdued central surface, no bright scratches or stains in center. A sliver of folded cream map at bottom-left edge, a cropped inkpot at extreme top-right and warm candle light just outside top-left edge. Props take less than 8% total area. Brightest region must NOT be a background prop. Matte wood, nostalgic 1990s playing-card desk."
+    },
+    {
+      "key": "home",
+      "category": "background",
+      "prompt": "Use case: stylized-concept. Asset type: shipping game HOME CAMP BACKGROUND. Original nostalgic Chinese Three Kingdoms collectible-card / illustrated storybook lithographic printing. Bold expressive dark ink contours, flat muted mineral colors (cream ivory, cinnabar red, jade green, indigo, ochre), restrained halftone INSIDE the colored artwork only, subtle paper printing character. Clean forms and strong silhouette readable at 48–96 pixels. Not photorealistic, no anime franchise look, no soft painterly rendering, no heavy dirty paper. Tactile quiet printed desk atmosphere, front-facing orthographic overhead, landscape 16:10. No UI, no cards, no text, no labels or logos. Edges can have restrained props but the center 85% must be clear for interactive interface. An old walnut writing desk, a flat cream military stationery sheet spanning central 86% as an understated low-detail light paper field. Only far outer corners have small curled paper stacks and subtle red seal pad; no ink words, no painted characters, no books covering center. The screen will receive three clear paper columns and controls over it."
+    },
+    {
+      "key": "city",
+      "category": "background",
+      "prompt": "Use case: stylized-concept. Asset type: shipping game CITY MANAGEMENT BACKGROUND. Original nostalgic Chinese Three Kingdoms collectible-card / illustrated storybook lithographic printing. Bold expressive dark ink contours, flat muted mineral colors (cream ivory, cinnabar red, jade green, indigo, ochre), restrained halftone INSIDE the colored artwork only, subtle paper printing character. Clean forms and strong silhouette readable at 48–96 pixels. Not photorealistic, no anime franchise look, no soft painterly rendering, no heavy dirty paper. Tactile quiet printed desk atmosphere, front-facing orthographic overhead, landscape 16:10. No UI, no cards, no text, no labels or logos. Edges can have restrained props but the center 85% must be clear for interactive interface. Very pale ivory printed paper, with delicate sepia woodcut silhouettes of Han-era city rooftops and tiled city wall along the extreme upper and lower edges only. Center 85% almost plain, high-key warm neutral paper, extremely low contrast print marks, small cinnabar seal-like geometric mark at bottom corner WITHOUT text. No large town or objects in center."
+    },
+    {
+      "key": "map",
+      "category": "background",
+      "prompt": "Use case: stylized-concept. Asset type: shipping game MAP PARCHMENT BACKGROUND. Original nostalgic Chinese Three Kingdoms collectible-card / illustrated storybook lithographic printing. Bold expressive dark ink contours, flat muted mineral colors (cream ivory, cinnabar red, jade green, indigo, ochre), restrained halftone INSIDE the colored artwork only, subtle paper printing character. Clean forms and strong silhouette readable at 48–96 pixels. Not photorealistic, no anime franchise look, no soft painterly rendering, no heavy dirty paper. Tactile quiet printed desk atmosphere, front-facing orthographic overhead, landscape 16:10. No UI, no cards, no text, no labels or logos. Edges can have restrained props but the center 85% must be clear for interactive interface. A very quiet pale ivory old printed map sheet, subtle fold seams, tiny sparse ink hill hatching near outer margins, fine border rule at edges. Center 90% essentially empty neutral warm paper. NO rivers, coastlines, terrain outlines, roads, city markers or text: actual geographic features and nodes will be drawn by the game. Avoid dirty noise and strong folds crossing center."
+    }
+  ]
+}

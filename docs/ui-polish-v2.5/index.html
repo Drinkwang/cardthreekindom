@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>拍案三国 · v2.5 UI 表现强化</title>
+<style>
+:root{color-scheme:light;--paper:#f4e9ce;--light:#fff7e6;--ink:#30251b;--dim:#78684f;--red:#a33e2d;--rule:#b9a177;--gold:#927029;--teal:#22685d}
+*{box-sizing:border-box}body{margin:0;background:#ded0b5;color:var(--ink);font-family:"Microsoft YaHei",sans-serif;line-height:1.75}main{max-width:1500px;margin:24px auto;padding:26px;background:var(--paper);border:2px solid var(--ink);outline:1px solid var(--gold);outline-offset:-7px}header{border-bottom:2px solid var(--red);padding-bottom:18px}h1,h2{font-family:KaiTi,"STKaiti",serif;font-weight:normal}h1{font-size:40px;margin:2px 0 8px}h2{font-size:27px;margin:28px 0 10px}p{margin:8px 0}a{color:var(--red)}.tag{font-size:13px;letter-spacing:2px;color:var(--red)}nav,.switches,.points{display:flex;gap:10px 18px;flex-wrap:wrap}nav{font-size:14px;margin-top:12px}.switches{margin-top:18px;gap:8px}button{cursor:pointer;font:inherit;font-size:14px;padding:8px 14px;color:var(--ink);background:var(--light);border:1px solid var(--gold);box-shadow:0 2px 0 #a89573}button:hover{border-color:var(--red);color:var(--red)}button[aria-pressed="true"]{background:var(--red);color:var(--light);border-color:var(--ink)}button:focus-visible{outline:3px solid var(--teal);outline-offset:3px}figure{margin:14px 0}img{display:block;width:100%;height:auto;border:1px solid var(--ink);box-shadow:0 3px 10px #34251724}figcaption,.small{font-size:14px;color:var(--dim)}figcaption{margin-top:8px}.points{padding:16px 18px;border:1px solid var(--rule);background:var(--light)}.points span{flex:1 1 240px}.points strong{color:var(--red)}.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;background:var(--light);font-size:14px}th,td{text-align:left;padding:11px;vertical-align:top;border:1px solid var(--rule)}th{color:var(--red)}details{margin:14px 0;padding:12px 15px;border:1px solid var(--rule)}summary{cursor:pointer;color:var(--red)}footer{border-top:1px solid var(--rule);margin-top:25px;padding-top:12px;color:var(--dim);font-size:13px}kbd{font:inherit;border:1px solid var(--rule);background:var(--light);padding:1px 5px}
+@media(max-width:760px){main{margin:0;padding:16px;outline-offset:-5px}h1{font-size:30px}h2{font-size:25px}button{padding:7px 9px}.points span{flex-basis:100%}}@media print{main{max-width:none;margin:0;border:0;outline:0;padding:0}nav,.switches{display:none}figure,table{break-inside:avoid}}
+</style>
+</head>
+<body><main>
+<header><div class="tag">拍案三国 · v2.5 · 2026.10.10</div><h1>UI 表现强化 · 题匾、纸签与朱砂按钮</h1>
+<p>把已确认效果图中的古典界面语言落到实机：加强主界面的信息层级、边框与按钮反馈，重新整理升级页，让当前等级、升级收益和购买状态一眼可读。</p>
+<nav><a href="#screens">实机查看</a><a href="#changes">UI 改动</a><a href="#checks">验证记录</a><a href="实施说明.md">实施说明</a></nav></header>
+<section id="screens"><h2>实机画面 · 点击切换</h2>
+<div class="switches" role="group" aria-label="切换 UI 实机截图">
+<button type="button" data-shot="play" aria-pressed="true">新版主界面</button><button type="button" data-shot="before" aria-pressed="false">v2.4 主界面</button><button type="button" data-shot="upgrade" aria-pressed="false">升级页</button><button type="button" data-shot="unaffordable" aria-pressed="false">金币不足</button><button type="button" data-shot="folded" aria-pressed="false">收起地图</button><button type="button" data-shot="pool" aria-pressed="false">卡池拖放上阵</button><button type="button" data-shot="play720" aria-pressed="false">720 高度主界面</button><button type="button" data-shot="upgrade720" aria-pressed="false">720 高度升级页</button><button type="button" data-shot="unaffordable720" aria-pressed="false">720 高度金币不足</button>
+</div>
+<figure><a id="shot-link" href="play.png"><img id="shot" src="play.png" alt="v2.5主界面，墨色题匾、城名签、铜钱与大金币数字、朱砂升级按钮、墨金纸框和上阵卡槽"></a><figcaption id="shot-caption" aria-live="polite">新版主界面，1280×800：题匾、城名、金币、倒计时与升级按钮各有层级；上下纸框、相机控件、小地图和上阵槽采用统一装饰。</figcaption></figure>
+<p class="small">均为 Godot 实机截图，点击大图查看原尺寸。v2.4 截图为金币 0、剩余 29.7 秒；新版主界面为金币 268、剩余 30.0 秒。两张用于比较 UI 样式，游戏状态并不完全相同。收起地图图还展示了不同镜头位置与升级后的范围数值。</p></section>
+<section id="changes"><h2>本轮强化的 UI</h2>
+<div class="points"><span><strong>先看清正在发生什么</strong><br>黑墨题匾与城名签建立层级，铜钱配大金币数字，倒计时独立分组，朱砂按钮直达升级。</span><span><strong>纸框有统一质感</strong><br>纸纹、墨金双框、角饰与投影贯穿上下栏、相机控件、小地图和营地窗口。</span><span><strong>升级收益直接可读</strong><br>插画、等级签与纸券数据分组呈现；收益前后、价格、选中状态与购买条件明确。</span></div>
+<div class="table-wrap"><table><thead><tr><th>界面部位</th><th>表现与状态</th></tr></thead><tbody>
+<tr><td>主 HUD</td><td>标题改为墨色题匾与朱砂印章，城名独立纸签；金币和剩余时间提升字号与对比，增加直达升级入口。</td></tr>
+<tr><td>边框与按钮</td><td>复用纸纹与代码绘制的双线角饰，统一墨线、金线和阴影。按钮区分正常、悬停、按压、禁用与焦点状态。</td></tr>
+<tr><td>上阵栏与卡池</td><td>紧凑卡槽增加纸框、角饰与悬停反馈，卡池入口跟随统一皮肤；保留肖像、名字和状态。</td></tr>
+<tr><td>升级四卡</td><td>插画顶部放等级签，当前选中项用朱砂框与标签；可升级、金币不足、待解锁、满级使用清晰状态。纸券展示当前值、升级后值与收益，底部按钮展示价格或金币缺口。</td></tr>
+<tr><td>营地窗口</td><td>外框、标题和继续拍击按钮统一样式。升级页移除底部重复的“去升级”入口。</td></tr>
+<tr><td>右上角小地图</td><td>强化题签、朱砂图印和折叠入口状态；保持 220×185 展开、86×34 收起。<kbd>M</kbd>、标题与按钮继续控制收放，点击或拖动定位。</td></tr>
+</tbody></table></div>
+<p class="small">这轮围绕 UI 实装，复用既有插画与 art_v3 纸纹；没有新生成图片。城池背景、拍击伤害、冷却、金币收益与升级价格沿用现有数值。</p>
+<p><a href="../ui-concepts/city-exploration-v2/01-normal.png">参考效果图</a> · <a href="../../scripts/ui/ui_skin.gd">统一界面皮肤</a> · <a href="../../scripts/ui/paper_chrome.gd">纸框与装饰绘制</a></p></section>
+<section id="checks"><h2>验证记录</h2>
+<div class="table-wrap"><table><thead><tr><th>检查</th><th>结果</th><th>记录</th></tr></thead><tbody id="checks-body">
+<tr><td>1280×800 实际 UI 交互</td><td>27 / 27</td><td><a href="gui.log">GUI 日志</a></td></tr>
+<tr><td>1280×720 实际 UI 交互</td><td>27 / 27</td><td><a href="gui-720.log">GUI 日志</a></td></tr>
+<tr><td>升级页回归</td><td>160 / 160</td><td><a href="upgrade.log">升级日志</a></td></tr>
+<tr><td>城池探索回归</td><td>208 / 208</td><td><a href="exploration.log">探索日志</a></td></tr>
+<tr><td>增量循环回归</td><td>438 / 438</td><td><a href="incremental.log">增量日志</a></td></tr>
+<tr><td>印刷美术回归</td><td>5569 / 5569</td><td><a href="print.log">印刷日志</a></td></tr>
+<tr><td>真实卡池拖放</td><td>G13 成功上阵</td><td><a href="drag.log">拖放日志</a></td></tr>
+</tbody></table></div>
+<p class="small">四组回归共 6375 项，失败 0 项；800 与 720 高度的实际 UI 交互各 27 项通过，包含确认升级页隐藏重复入口。实机截图与输入验证使用独立测试存档，文字、控件、价格与状态均已目视复核。</p>
+<details><summary>历史 HubTest 的兼容情况</summary><p class="small">旧版 v1.4 HubTest 共 49 项检查，其中 11 项失败。使用本轮修改前的 main / home 文件重新运行后，仍是相同 11 项失败；旧测试依赖败战与通关地图流程，与当前增量拍卡循环不相容。这些失败并非本轮 UI 修改新增。</p><p class="small"><a href="hub-legacy.log">本轮旧测试日志</a> · <a href="hub-baseline.log">修改前基线复跑日志</a></p></details>
+</section><footer>Godot 4.7.1 · v2.5.0 · 本地截图查看页 · UI 实装与独立测试存档验证</footer></main>
+<script>
+const shots={
+play:{src:'play.png',alt:'v2.5主界面，墨色题匾、城名签、铜钱与大金币数字、朱砂升级按钮、墨金纸框和上阵卡槽',caption:'新版主界面，1280×800：题匾、城名、金币、倒计时与升级按钮各有层级；上下纸框、相机控件、小地图和上阵槽采用统一装饰。'},
+before:{src:'before-play.png',alt:'v2.4主界面，红色标题区与较简单的纸框和按钮',caption:'v2.4主界面，1280×800：比较原有标题、金币与时间排布、相机按钮、上阵卡槽和界面边框。截图金币0、剩余29.7秒，与新版样例状态不同。'},
+upgrade:{src:'upgrade.png',alt:'v2.5升级页，拍力拍速范围时长四张插画升级卡，等级、收益、价格与选中状态清晰',caption:'升级页，1280×800：四张升级卡以插画、等级签、纸券数据和朱砂购买按钮分组，范围当前选中。'},
+unaffordable:{src:'upgrade-unaffordable.png',alt:'v2.5升级页的金币不足状态，按钮显示价格与还差金币，范围已升级为Lv.1',caption:'金币不足状态，1280×800：范围升级到Lv.1后，当前值与下一等级收益同步更新；按钮显示价格和还差金币。'},
+folded:{src:'folded.png',alt:'v2.5主界面，右上角仅保留带朱砂图印的地图M入口',caption:'小地图收起状态：右上角保留朱砂图印与地图M入口。此图镜头位置与默认主界面不同，范围已经升到40。'},
+pool:{src:'pool-drag.png',alt:'v2.5卡池展开，真实拖放G13后张辽已经进入上阵卡槽',caption:'真实卡池拖放：G13成功进入上阵槽，卡池纸框与上阵位统一皮肤；打开卡池时显示暂停状态，关闭后继续。'},
+play720:{src:'720/play.png',alt:'v2.5在1280×720窗口的主界面布局',caption:'1280×720主界面：金币、倒计时、主导航、上阵卡槽与右上角小地图保持完整可见。'},
+upgrade720:{src:'720/upgrade.png',alt:'v2.5在1280×720窗口的升级四卡布局',caption:'1280×720升级页：四张升级卡的等级、状态、收益与购买按钮完整可见，进阶内容向下滚动查看。'},
+unaffordable720:{src:'720/upgrade-unaffordable.png',alt:'v2.5在1280×720窗口的金币不足升级状态',caption:'1280×720金币不足：价格与金币缺口仍清楚可读，当前选中范围卡保留朱砂边框与等级标记。'}
+};
+const buttons=[...document.querySelectorAll('[data-shot]')],picture=document.querySelector('#shot'),caption=document.querySelector('#shot-caption'),link=document.querySelector('#shot-link');
+function choose(key){const item=shots[key];if(!item)return;buttons.forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.shot===key)));picture.src=item.src;picture.alt=item.alt;caption.textContent=item.caption;link.href=item.src;}
+buttons.forEach(button=>button.addEventListener('click',()=>choose(button.dataset.shot)));
+</script></body></html>

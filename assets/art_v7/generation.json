@@ -1,0 +1,72 @@
+{
+  "date": "2026-10-07",
+  "tool": "Built-in ImageGen",
+  "reference": "codex-clipboard-2a733878-f98b-40b8-8101-54d2191751f5.png (style reference)",
+  "assets": [
+    {
+      "name": "buildings_a",
+      "path": "assets/art_v7/buildings_a.png",
+      "prompt": "Use case: stylized-concept. Input image is a STYLE REFERENCE only, not an edit target. Create production illustration assets for a Chinese Three Kingdoms card game. Match the reference's beautiful old Chinese illustrated print: expressive fine dark ink outlines, subtle crosshatching, warm antique ivory paper, muted vermilion architecture, jade vegetation, indigo roof tiles, warm harvest gold. Rich human hand drawn scene detail, coherent traditional buildings, tactile old print texture. No photorealism, no 3D game renders, no text, no letters, no numbers, no labels, no UI. Each scene must fill its whole cell with a picturesque environment, not a tiny floating icon. Clear recognizable central building, eye-level 3/4 perspective, delicate landscape distance. All cells equally sized, strict rectangular grid with NO gutters and NO rounded corners, no padding outside grid. Each scene is an independent illustration with a thin light ivory edge. Entire canvas landscape; exact cell alignment is required because software will sample each cell. Asset type: atlas of exactly TWELVE landscape building illustrations in 4 columns and 3 rows. Row-major order: row1 (1 vegetable garden with bamboo fence, 2 humble straw cottage, 3 rammed earth wall around village, 4 wooden palisade); row2 (5 old grandmother's neighborhood card shop with small tiled roof, 6 golden wheat farmland with tiny farm hut and distant mountains, 7 wooden watchtower with hanging pennant, 8 stone water well with bucket pulley and rustic fence); row3 (9 open forge with anvil and glowing hearth, 10 military training yard with spear racks and straw targets, 11 paired thatched granaries with grain sacks and crates, 12 elegant road relay station with blue tiled roof and horse cart). Make TWELVE distinct scenes, no combined buildings spanning cells. Prefer 2048x1536 canvas, each cell 512x512 may be slightly landscape if needed.",
+      "output_hint": "Generated images are saved to C:\\Users\\wzp\\.codex\\generated_images\\01a1015f-16fd-7261-8df5-2d3a8bd0058f as C:\\Users\\wzp\\.codex\\generated_images\\01a1015f-16fd-7261-8df5-2d3a8bd0058f\\exec-1fdbb8eb-00b7-4e1e-b542-755ab5e8e81e.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+    },
+    {
+      "name": "buildings_b",
+      "path": "assets/art_v7/buildings_b.png",
+      "prompt": "Use case: stylized-concept. Input image is a STYLE REFERENCE only, not an edit target. Create production illustration assets for a Chinese Three Kingdoms card game. Match the reference's beautiful old Chinese illustrated print: expressive fine dark ink outlines, subtle crosshatching, warm antique ivory paper, muted vermilion architecture, jade vegetation, indigo roof tiles, warm harvest gold. Rich human hand drawn scene detail, coherent traditional buildings, tactile old print texture. No photorealism, no 3D game renders, no text, no letters, no numbers, no labels, no UI. Each scene must fill its whole cell with a picturesque environment, not a tiny floating icon. Clear recognizable central building, eye-level 3/4 perspective, delicate landscape distance. All cells equally sized, strict rectangular grid with NO gutters and NO rounded corners, no padding outside grid. Each scene is an independent illustration with a thin light ivory edge. Entire canvas landscape; exact cell alignment is required because software will sample each cell. Asset type: atlas of exactly TWELVE building scenes, 4 columns and 3 rows. Row-major order: row1 (1 tall red and indigo observation tower, 2 small river harbor wooden water fortress with boats, 3 Confucian school courtyard with books and old tree, 4 merchant bank with bronze coins and red counter); row2 (5 grand governor headquarters courtyard and banner poles, 6 ornate Bronze Sparrow terrace with carved balconies, 7 great naval shipyard with river fleet, 8 armory warehouse with spears shields and weapon racks); row3 (9 monumental royal walled city palace, 10 circular altar of heaven on terraces, 11 general rally command platform with drums and standards, 12 classical scripture library with open books visible). TWELVE distinct scenic building illustrations exactly, filling cells. Prefer 2048x1536 canvas.",
+      "output_hint": "Generated images are saved to C:\\Users\\wzp\\.codex\\generated_images\\01a1015f-16fd-7261-8df5-2d3a8bd0058f as C:\\Users\\wzp\\.codex\\generated_images\\01a1015f-16fd-7261-8df5-2d3a8bd0058f\\exec-7d91aa5a-c3b8-4513-8ded-5e39bccad286.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+    },
+    {
+      "name": "buildings_c",
+      "path": "assets/art_v7/buildings_c.png",
+      "prompt": "Use case: stylized-concept. Input image is a STYLE REFERENCE only, not an edit target. Create production illustration assets for a Chinese Three Kingdoms card game. Match the reference's beautiful old Chinese illustrated print: expressive fine dark ink outlines, subtle crosshatching, warm antique ivory paper, muted vermilion architecture, jade vegetation, indigo roof tiles, warm harvest gold. Rich human hand drawn scene detail, coherent traditional buildings, tactile old print texture. No photorealism, no 3D game renders, no text, no letters, no numbers, no labels, no UI. Each scene must fill its whole cell with a picturesque environment, not a tiny floating icon. Clear recognizable central building, eye-level 3/4 perspective, delicate landscape distance. All cells equally sized, strict rectangular grid with NO gutters and NO rounded corners, no padding outside grid. Each scene is an independent illustration with a thin light ivory edge. Entire canvas landscape; exact cell alignment is required because software will sample each cell. Asset type: atlas of exactly SIX building scenes, 3 columns and 2 rows. Row-major order: row1 (1 fortified beacon fire signal tower on ridge, 2 martial drill dojo courtyard with weapons and targets, 3 magical prosperity shrine with a huge bronze coin bowl filled with coins); row2 (4 military weapon crafting workshop with anvil and crossbows, 5 recruitment hall with large red gate and invitation scrolls, 6 military academy with strategists' lecture hall, maps and training standards). All SIX scenic tiles same scale, fine detailed old print style. Prefer 1536x1024 canvas.",
+      "output_hint": "Generated images are saved to C:\\Users\\wzp\\.codex\\generated_images\\01a1015f-16fd-7261-8df5-2d3a8bd0058f as C:\\Users\\wzp\\.codex\\generated_images\\01a1015f-16fd-7261-8df5-2d3a8bd0058f\\exec-ba002f33-a588-48de-a725-1f5a3cdc385e.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+    },
+    {
+      "name": "heroes",
+      "path": "assets/art_v7/heroes.png",
+      "prompt": "Use case: stylized-concept. Reference image is style reference, not edit target. Asset type: exact SIX unique Three Kingdoms general portrait illustrations for an actual card game, strict uniform 3-column 2-row atlas, no gutters, no labels, no text, no typography, no UI. Canvas square, each cell a tall 2:3 portrait. Match the warm antique Chinese illustrated-print style of the reference: deep fine black ink outlines and hatching, parchment fiber, flat muted pigment, lively expressive human faces and costume details, extremely polished traditional book illustration. Half-body heroic portraits fill the cell with scenic ink landscape behind, face sharp and readable, weapons within bounds. Row-major: 1 Zhu Ling, stern clean-shaven Wei officer in dark indigo lamellar armor, blue cloak, spear, delicate violet lightning ink behind; 2 Wen Pin, broad battle-seasoned mustached Wei veteran in dark steel armor, powerful gauntleted fist and heavy blade, storm clouds; 3 Han Xuan, older red-robed administrator with small black official hat, thin beard, burning amber ink paper motif; row2: 4 Cheng Pu, gray-bearded Wu veteran in dark jade armor, strong spear and swirling flame/wind ink; 5 Zhou Cang, burly rough dark bearded warrior, green head cloth, sturdy black and green robes, pole blade, red strike ink; 6 Ma Liang, calm scholar with distinctive pale eyebrows, teal green robe, feather fan, delicate white feather ink pattern. Distinct varied faces, not the same person recolored. Subtle thin cream print edge around every cell, no card name banners, no star graphics. High detail expressive portraits, all SIX in the correct order.",
+      "output_hint": "Generated images are saved to C:\\Users\\wzp\\.codex\\generated_images\\01a1015f-16fd-7261-8df5-2d3a8bd0058f as C:\\Users\\wzp\\.codex\\generated_images\\01a1015f-16fd-7261-8df5-2d3a8bd0058f\\exec-65b8d065-3437-4e9d-ba20-68931c1832d9.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+    },
+    {
+      "name": "deck_scene",
+      "path": "assets/art_v7/deck_scene.png",
+      "prompt": "Use case: illustration-story. Asset type: wide landscape banner illustration for a Three Kingdoms card deck-building screen. Reference image is style reference only. Same refined nostalgic old Chinese printed storybook style: sharp fine ink contour, woodcut crosshatching, grainy muted vermilion indigo jade and ochre pigments, warm antique paper. A close view of a wooden schoolboy's card-making desk: on the LEFT two thirds, six hand printed Three Kingdoms general portrait cards emerging from a dark vermilion lacquered card box, wax seals, a rolled strategic map, small soldier cards, ink brush and military book, beautifully detailed paper edges and illustration faces. A small soft jade and blue ancient hills wash recedes toward the RIGHT third, which is deliberately spacious LIGHT parchment negative space for live interface content. No text, no letters, no words, no readable labels, no star symbols, no UI, no controls. Flat illustrated print rather than photoreal or 3D. Crisp main subject, nuanced textured pigment. Entire canvas wide 3:1 landscape, no framing as a complete game screenshot.",
+      "output_hint": "Generated images are saved to C:\\Users\\wzp\\.codex\\generated_images\\01a1015f-16fd-7261-8df5-2d3a8bd0058f as C:\\Users\\wzp\\.codex\\generated_images\\01a1015f-16fd-7261-8df5-2d3a8bd0058f\\exec-03379e1a-e38e-47db-869e-9998aa6e6975.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+    },
+    {
+      "name": "paper",
+      "path": "assets/art_v7/paper.png",
+      "prompt": "Use case: stylized-concept. Asset type: quiet game UI parchment paper background texture with subtle Chinese ink landscape. Reference image is style reference only. Wide 16:10 landscape sheet of elegant antique warm ivory rice paper, very faint tiny fibers and soft natural age variation. Center and upper-center almost completely blank bright cream suitable behind readable dark interface labels. Around bottom and far-right edges only, ghosted pale sepia Chinese mountain silhouettes, clouds, a distant small city gate and old pine bough, extremely faint at 8 percent ink intensity. Restrained low contrast, refined tactile print, no dark stains, no tears, no grungy dots, no dramatic weathering. No text, no letters, no symbols, no border, no UI and no actual objects on the paper. Smooth pleasant ivory surface, lightly warm, decorative imagery stays pale and near edges.",
+      "output_hint": "Generated images are saved to C:\\Users\\wzp\\.codex\\generated_images\\01a1015f-16fd-7261-8df5-2d3a8bd0058f as C:\\Users\\wzp\\.codex\\generated_images\\01a1015f-16fd-7261-8df5-2d3a8bd0058f\\exec-5cd1dc53-6ae1-4096-a48d-c4a748fbbe6b.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+    }
+  ],
+  "mapping": {
+    "buildings_a": {
+      "columns": 4,
+      "rows": 3,
+      "ids": "B01-B12"
+    },
+    "buildings_b": {
+      "columns": 4,
+      "rows": 3,
+      "ids": "B13-B24"
+    },
+    "buildings_c": {
+      "columns": 3,
+      "rows": 2,
+      "ids": "B25-B30"
+    },
+    "heroes": {
+      "columns": 3,
+      "rows": 2,
+      "ids": [
+        "G04",
+        "G05",
+        "G30",
+        "G40",
+        "G20",
+        "G24"
+      ]
+    }
+  }
+}

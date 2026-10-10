@@ -1,0 +1,23 @@
+127.0.0.1 - - [05/Oct/2026 19:46:21] "GET /docs/art-v5/index.html HTTP/1.1" 200 -
+127.0.0.1 - - [05/Oct/2026 19:46:22] "GET /docs/art-v5/index.html HTTP/1.1" 200 -
+127.0.0.1 - - [05/Oct/2026 19:46:22] "GET /docs/art-v5/deck.png HTTP/1.1" 200 -
+127.0.0.1 - - [05/Oct/2026 19:46:22] code 404, message File not found
+127.0.0.1 - - [05/Oct/2026 19:46:22] "GET /favicon.ico HTTP/1.1" 404 -
+127.0.0.1 - - [05/Oct/2026 21:01:32] "GET /docs/art-v5/base.png HTTP/1.1" 200 -
+127.0.0.1 - - [05/Oct/2026 21:01:33] "GET /assets/art_v5/deck_scene.png HTTP/1.1" 200 -
+127.0.0.1 - - [05/Oct/2026 21:01:36] "GET /assets/art_v5/base_scene.png HTTP/1.1" 200 -
+127.0.0.1 - - [05/Oct/2026 21:01:38] "GET /docs/art-v5/deck.png HTTP/1.1" 304 -
+127.0.0.1 - - [06/Oct/2026 09:53:43] "HEAD /docs/art-v5/index.html HTTP/1.1" 200 -
+127.0.0.1 - - [06/Oct/2026 09:53:43] "HEAD /docs/art-v5/deck-reference-v1.png HTTP/1.1" 200 -
+127.0.0.1 - - [06/Oct/2026 09:53:43] "HEAD /docs/art-v5/base-reference-v1.png HTTP/1.1" 200 -
+127.0.0.1 - - [06/Oct/2026 09:53:44] "GET /docs/art-v5/index.html?references=20261006 HTTP/1.1" 200 -
+127.0.0.1 - - [06/Oct/2026 09:53:44] "GET /docs/art-v5/deck-reference-v1.png HTTP/1.1" 200 -
+127.0.0.1 - - [06/Oct/2026 10:12:47] "HEAD /docs/%E6%9E%84%E7%AD%91%E6%96%B9%E6%A1%88/index.html HTTP/1.1" 200 -
+127.0.0.1 - - [06/Oct/2026 10:12:47] "HEAD /docs/%E6%9E%84%E7%AD%91%E6%96%B9%E6%A1%88/preview.js HTTP/1.1" 200 -
+127.0.0.1 - - [06/Oct/2026 10:12:49] "GET /docs/%E6%9E%84%E7%AD%91%E6%96%B9%E6%A1%88/index.html HTTP/1.1" 200 -
+127.0.0.1 - - [06/Oct/2026 10:12:49] "GET /docs/%E6%9E%84%E7%AD%91%E6%96%B9%E6%A1%88/preview.css HTTP/1.1" 200 -
+127.0.0.1 - - [06/Oct/2026 10:12:49] "GET /docs/%E6%9E%84%E7%AD%91%E6%96%B9%E6%A1%88/preview.js HTTP/1.1" 200 -
+127.0.0.1 - - [06/Oct/2026 11:08:56] "GET /docs/%E5%85%A8%E5%8D%A1%E6%9E%84%E7%AD%91%E7%AD%96%E5%88%92/index.html HTTP/1.1" 200 -
+127.0.0.1 - - [06/Oct/2026 11:08:56] "GET /docs/%E5%85%A8%E5%8D%A1%E6%9E%84%E7%AD%91%E7%AD%96%E5%88%92/catalog.css HTTP/1.1" 200 -
+127.0.0.1 - - [06/Oct/2026 11:08:56] "GET /docs/%E5%85%A8%E5%8D%A1%E6%9E%84%E7%AD%91%E7%AD%96%E5%88%92/catalog-data.js HTTP/1.1" 200 -
+127.0.0.1 - - [06/Oct/2026 11:08:56] "GET /docs/%E5%85%A8%E5%8D%A1%E6%9E%84%E7%AD%91%E7%AD%96%E5%88%92/catalog.js HTTP/1.1" 200 -

@@ -403,9 +403,9 @@ func _test_city_idle() -> void:
 			eff0 * 100.0, GameState.offline_efficiency() * 100.0, GameState.offline_cap_hours()])
 	GameState.up["idle"] = 0
 	var slots := GameState.city_slots(6)
-	for k in range(slots + 3):
-		GameState.owned["B02"] = 99
-		GameState.place_building(6, "B02")
+	for id in ["B02", "B03", "B04", "B05", "B06", "B08"]:
+		GameState.owned[id] = 1
+		GameState.place_building(6, id)
 	_check("放置不会超过槽位上限", GameState.city_buildings(6).size() == slots,
 		"%d/%d" % [GameState.city_buildings(6).size(), slots])
 	GameState.remove_building(6, 0)
@@ -487,7 +487,7 @@ func _test_routes_and_bonds() -> void:
 		"掉金 ×%.2f" % GameState.fortune_mult())
 	if GameState.SAVE_ENABLED:
 		GameState.save_game()
-		_check("存档文件已生成", FileAccess.file_exists("user://save_paan.json"))
+		_check("存档文件已生成", FileAccess.file_exists(GameState.save_path()))
 	else:
 		# v1.0 关档：save_game() 必须静默无效，load_game() 必须恒返回 false
 		GameState.save_game()
@@ -1253,46 +1253,26 @@ func _test_v11_troops() -> void:
 
 
 func _test_v09_city_build() -> void:
-	print("\n[18] v0.9 城池建造：建筑升级 + 建筑合成")
+	print("\n[18] 建筑装配、品相合成")
 	GameState.new_game()
-	GameState.gold = 10000000.0
-	GameState.region_state[2] = "cleared"
-	GameState.region_state[3] = "cleared"
-	GameState.region_state[4] = "cleared"
-	_check("克服 3 处后城建解锁", GameState.city_unlocked())
-	GameState.owned["B01"] = 1     # 菜地 ★1 prod=5
-	GameState.place_building(2, "B01")
-	_check("放置建筑成功（等级从 0 开始）",
-		GameState.city_buildings(2).size() == 1 and GameState.building_lv(2, 0) == 0)
-	_check("Lv.0 产出 = 基础产出 5", is_equal_approx(GameState.building_output(2, 0), 5.0),
-		"%.1f" % GameState.building_output(2, 0))
-	var bc0 := GameState.building_lv_cost(2, 0)
-	_check("建筑强化有价", bc0 > 0, "首级 %d 金币" % bc0)
-	GameState.upgrade_building(2, 0)
-	_check("强化 → Lv.1 且产出 +15%",
-		GameState.building_lv(2, 0) == 1 and is_equal_approx(GameState.building_output(2, 0), 5.75),
-		"Lv.%d 产出 %.2f" % [GameState.building_lv(2, 0), GameState.building_output(2, 0)])
-	_check("强化价格逐级上涨", GameState.building_lv_cost(2, 0) > bc0)
-	_check("挂机总产出计入强化", GameState.gold_per_hour() > 5.0,
-		"%.1f /小时" % GameState.gold_per_hour())
-	for i in range(20):
-		GameState.upgrade_building(2, 0)
-	_check("强化封顶 Lv.10", GameState.building_lv(2, 0) == 10, "Lv.%d" % GameState.building_lv(2, 0))
-	_check("满级后强化无效", not GameState.upgrade_building(2, 0))
-	_check("放置中的建筑不占仓库（卡已从仓库消耗）", _count_type("建筑") == 0)
+	GameState.gold = 100000
+	for idx in [2, 3, 4]:
+		GameState.region_state[idx] = "cleared"
+	GameState.owned["B01"] = 4
+	_check("克服3处解锁六槽城市", GameState.city_unlocked() and GameState.city_slots(2) == 6)
+	_check("建筑装配成功", GameState.place_building(2, "B01", 0))
+	_check("原版菜地每10秒1金币", is_equal_approx(GameState.building_output(2, 0), 360))
+	_check("建筑不再金币练级", not GameState.upgrade_building(2, 0))
+	var gold_before := GameState.gold
+	_check("3同名原版合成精制", GameState.fuse_building("B01") == "B01" and GameState.building_stock("B01", 1) == 1)
+	_check("合成不扣金币且保护已装配卡", GameState.gold == gold_before and GameState.city_buildings(2) == ["B01"])
 	GameState.remove_building(2, 0)
-	_check("拆除后槽位空出、卡回仓库",
-		GameState.city_buildings(2).is_empty() and _count_type("建筑") == 1)
-
-	# ---- 建筑合成 ----
-	GameState.owned = {"I01": 1, "B01": 3}
-	GameState.gold = 100000.0
-	GameState.synth_buildings(1)
-	_check("3 张 ★1 建筑 -> 1 张 ★2 建筑",
-		_count_type("建筑") == 1 and _count_star(2) >= 1,
-		"建筑 %d 张（★2 %d 张）" % [_count_type("建筑"), _count_star(2)])
-	GameState.owned["B09"] = 3
-	_check("★6 无法再合成", GameState.synth_buildings(6) == "")
+	_check("卸下返还原版", GameState.building_stock("B01", 0) == 1)
+	GameState.place_building(2, "B01", 1)
+	_check("精制收益提高35%", is_equal_approx(GameState.gold_per_hour(), 486))
+	GameState.remove_building(2, 0)
+	_check("精制卸下保留品相", GameState.building_stock("B01", 1) == 1)
+	_check("材料不足不可混名混品相", GameState.fuse_building("B01") == "")
 
 
 func _test_v09_city_view() -> void:
@@ -1314,6 +1294,7 @@ func _test_v09_city_view() -> void:
 	GameState.region_state[4] = "cleared"
 	GameState.owned["B01"] = 1
 	GameState.place_building(2, "B01")
+	GameState.owned["B02"] = 1
 
 	# 互斥：三个全屏覆盖层同一时刻只该有一个可见
 	inst._open_home()
@@ -1327,17 +1308,17 @@ func _test_v09_city_view() -> void:
 	inst._open_map()
 	_check("打开舆图 → 收起城建（互斥）", not cv.visible)
 
-	# 再打开一次，直接验证三栏内容
+	# 再打开一次，验证城册、建设区与独立仓库/合成页签
 	inst._open_city()
 	_check("默认选中第一处已克服城池", cv._sel == 2, "sel=%d" % cv._sel)
-	_check("左栏列出城池（标题 + 分郡 + 城池行）", cv._list_box.get_child_count() >= 6,
-		"%d 个节点" % cv._list_box.get_child_count())
-	_check("中栏有城池标题卡 + 槽位区", cv._detail_box.get_child_count() >= 3,
-		"%d 个节点" % cv._detail_box.get_child_count())
-	_check("中栏含「强化」按钮（建筑已放）", _find_button_contains(cv._detail_box, "强化"))
-	_check("右栏有产出总览", _find_label_contains(cv._side_box, "产出总览"))
-	_check("右栏有建筑合成", _find_label_contains(cv._side_box, "建筑合成"))
-	_check("右栏仓库列出建筑卡", _find_label_contains(cv._side_box, "仓库里的建筑"))
+	_check("城池使用选择器", cv._list_box.get_child_count() == 1)
+	_check("建设区有六槽卡牌区", cv._detail_box.get_child_count() >= 3)
+	_check("选中建筑可卸下", _find_button_contains(cv, "卸下"))
+	_check("页首显示全城产出", _find_label_contains(cv, "全城产出"))
+	cv._on_tab("合成")
+	_check("同名合成显示品相规则", _find_label_contains(cv, "3张同名同品相"))
+	cv._on_tab("仓库")
+	_check("仓库列出真实持有的建筑卡", _find_label_contains(cv._side_box, GameData.card_name("B02")))
 
 	# 切换选中城池 → 中栏随之刷新
 	cv._on_pick(3)

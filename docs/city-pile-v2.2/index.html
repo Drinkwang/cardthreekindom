@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>拍案三国 · 城池牌堆与范围拍击</title>
+<style>
+:root{color-scheme:light;--paper:#f2e6ca;--ink:#2b211a;--red:#9d3d2e;--rule:#b8a078}*{box-sizing:border-box}
+body{margin:0;background:#e2d0ae;color:var(--ink);font-family:"Microsoft YaHei",sans-serif;line-height:1.7}
+main{max-width:1240px;margin:28px auto;padding:28px;background:var(--paper);border:1px solid var(--rule)}
+header{border-bottom:2px solid var(--red);padding-bottom:18px}h1,h2{font-family:KaiTi,serif;font-weight:normal}
+h1{font-size:40px;margin:0}h2{font-size:29px;margin:28px 0 12px}p{margin:10px 0}a{color:var(--red)}
+.tag{color:var(--red);letter-spacing:2px;font-size:13px}nav{display:flex;flex-wrap:wrap;gap:18px;font-size:14px}
+figure{margin:16px 0}img{display:block;width:100%;border:1px solid var(--rule)}figcaption{font-size:14px;color:#74654f;margin-top:7px}
+.controls,.results{display:flex;gap:18px;flex-wrap:wrap;padding:14px;border:1px solid var(--rule);background:#f8f0dc}
+kbd{background:#f8f0dc;border:1px solid var(--rule);padding:2px 7px;margin-right:5px}
+.compare-nav{display:flex;gap:10px;margin:14px 0}button{font:inherit;cursor:pointer;border:1px solid var(--red);padding:8px 18px;background:#f8f0dc;color:var(--red)}
+button[aria-pressed=true]{background:var(--red);color:#f8f0dc}.asset-grid{display:grid;grid-template-columns:2fr 1fr;gap:18px}
+.asset-grid img{height:320px;object-fit:contain;background:#f8f0dc}details{margin:18px 0}summary{cursor:pointer;color:var(--red)}
+footer{margin-top:30px;padding-top:12px;border-top:1px solid var(--rule);color:#74654f;font-size:13px}
+@media(max-width:760px){main{margin:0;padding:18px}h1{font-size:30px}.asset-grid{grid-template-columns:1fr}}
+</style><main>
+<header><div class="tag">拍案三国 · v2.2 · 2026.10.09 · 已实装</div><h1>一座城池，一堆牌，一圈掌风</h1>
+<p>小圆圈跟随鼠标，单击同时拍中覆盖的牌。滚轮缩放、中键平移；金币可升级范围，让下一掌拍更多牌。</p>
+<nav><a href="#play">城池牌堆</a><a href="#compare">扩圈对比</a><a href="#upgrade">范围升级</a><a href="#art">生成素材</a><a href="实施说明.md">玩法与验证说明</a></nav></header>
+<section id="play"><h2>整城牌堆 · 缩放与瞄准</h2><div class="controls"><span><kbd>左键</kbd>圆圈内多牌共用一掌</span><span><kbd>滚轮</kbd>鼠标位置缩放</span><span><kbd>中键拖动</kbd>平移</span><span><kbd>归中</kbd>恢复完整视野</span></div>
+<figure><img src="city-pile.png" alt="新野城池中21张牌同时铺出，小圆圈显示覆盖4张"><figcaption>新野首轮同时铺出21张牌。清段保留剩余牌；整堆清完才补牌。</figcaption></figure>
+<details><summary>查看 1280×720 的城池玩法</summary><figure><img src="city-pile-720.png" loading="lazy" alt="720高度城池牌堆"><figcaption>135%镜头下，小圆圈、牌堆与缩放控件可正常使用。</figcaption></figure></details></section>
+<section id="compare"><h2>同一镜头 · 小圆圈与扩圈后</h2><p>下面两张画面均为180%镜头、同一瞄准点。缩放不改变实际范围；升级才会扩大覆盖。点击切换查看。</p>
+<div class="compare-nav"><button id="small" aria-pressed="true">初始半径34 · 4张</button><button id="large" aria-pressed="false">范围Lv.5 · 半径64 · 8张</button></div>
+<figure><img id="comparison" src="city-zoom.png" alt="180%镜头下初始小圆圈覆盖4张"><figcaption id="compare-caption">初始范围：在同一个瞄准点覆盖4张。圆与牌边相交即可命中。</figcaption></figure>
+<p>扩圈画面通过真实Godot鼠标单击触发：一次拍中8张，只计一掌，产生15.2伤害和6.84金币。范围等级使用截图测试档展示。</p></section>
+<section id="upgrade"><h2>四项核心升级 · 范围立即生效</h2><p>拍力、拍速、范围、时长一起展示当前值到下一级。范围首次24金币，半径34→40，覆盖面积约+38.4%；每级+6，最多20级。</p>
+<figure><img src="upgrade.png" loading="lazy" alt="实际圆圈拍击完整一轮后进入升级页"><figcaption>通过当前圆圈拍击流程完成一轮后回营，范围卡执行真实购买与存档。</figcaption></figure>
+<details><summary>查看 720 高度升级页</summary><figure><img src="upgrade-720.png" loading="lazy" alt="720高度四核心升级"><figcaption>包含范围的四张核心卡均可操作。此测试档金币为0，按钮按实际余额显示缺口。</figcaption></figure></details></section>
+<section id="art"><h2>新生成素材 · 已接入游戏</h2><div class="asset-grid">
+<figure><a href="../../assets/art_v10/city_courtyard.png"><img src="../../assets/art_v10/city_courtyard.png" loading="lazy" alt="古代城池院场原图"></a><figcaption>城门与集市场地。中央留白供实时牌堆使用，随镜头缩放和平移。</figcaption></figure>
+<figure><a href="../../assets/art_v10/upgrade_radius.png"><img src="../../assets/art_v10/upgrade_radius.png" loading="lazy" alt="扩圈掌风升级原图"></a><figcaption>范围升级：一圈掌风覆盖多张将牌。</figcaption></figure></div>
+<p>由内置ImageGen生成，原图保存到 assets/art_v10；<a href="../../assets/art_v10/generation.json">最终完整提示词与路径清单</a>。</p></section>
+<h2>验证完成</h2><div class="results"><span>牌堆与镜头 <strong>230 / 230</strong></span><span>赚钱循环 <strong>438 / 438</strong></span><span>升级页 <strong>160 / 160</strong></span><span>卡牌美术 <strong>5569 / 5569</strong></span><span>建筑组合 <strong>88 / 88</strong></span></div>
+<footer>Godot 4.7.1实机渲染，全部测试使用独立存档。未完成段在下一轮重铺，已连续清完的城池进度与成长保留。</footer>
+</main>
+<script>
+const small=document.querySelector('#small'),large=document.querySelector('#large'),picture=document.querySelector('#comparison'),caption=document.querySelector('#compare-caption');
+function choose(expanded){small.setAttribute('aria-pressed',String(!expanded));large.setAttribute('aria-pressed',String(expanded));picture.src=expanded?'city-range.png':'city-zoom.png';picture.alt=expanded?'同一镜头下扩圈后覆盖8张':'同一镜头下小圆圈覆盖4张';caption.textContent=expanded?'范围Lv.5：半径64，一次鼠标单击实际拍中8张，共用一次冷却。':'初始范围：在同一个瞄准点覆盖4张。圆与牌边相交即可命中。'}
+small.onclick=()=>choose(false);large.onclick=()=>choose(true);
+</script></html>

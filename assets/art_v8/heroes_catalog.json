@@ -1,0 +1,825 @@
+{
+  "version": "print-v8-unified-heroes",
+  "style": "nostalgic-lithographic",
+  "card_count": 58,
+  "order": "row-major, G00 through G56 in numeric ID order, then I01; final 2 cells are unmapped paper",
+  "notes": "Portrait artwork only. Gameplay names, stars and effects remain sourced from data/cards.json. Source atlas dimensions are inspected after generation and recorded in generation.json; invalid or absent files fall back to earlier artwork.",
+  "atlases": [
+    {
+      "path": "res://assets/art_v8/heroes_01.png",
+      "columns": 4,
+      "rows": 3,
+      "count": 12,
+      "first_id": "G00",
+      "last_id": "G11",
+      "actual_width": 1448,
+      "actual_height": 1086,
+      "cell_width": 362,
+      "cell_height": 362
+    },
+    {
+      "path": "res://assets/art_v8/heroes_02.png",
+      "columns": 4,
+      "rows": 3,
+      "count": 12,
+      "first_id": "G12",
+      "last_id": "G23",
+      "actual_width": 1448,
+      "actual_height": 1086,
+      "cell_width": 362,
+      "cell_height": 362
+    },
+    {
+      "path": "res://assets/art_v8/heroes_03.png",
+      "columns": 4,
+      "rows": 3,
+      "count": 12,
+      "first_id": "G24",
+      "last_id": "G35",
+      "actual_width": 1448,
+      "actual_height": 1086,
+      "cell_width": 362,
+      "cell_height": 362
+    },
+    {
+      "path": "res://assets/art_v8/heroes_04.png",
+      "columns": 4,
+      "rows": 3,
+      "count": 12,
+      "first_id": "G36",
+      "last_id": "G47",
+      "actual_width": 1448,
+      "actual_height": 1086,
+      "cell_width": 362,
+      "cell_height": 362
+    },
+    {
+      "path": "res://assets/art_v8/heroes_05.png",
+      "columns": 4,
+      "rows": 3,
+      "count": 10,
+      "first_id": "G48",
+      "last_id": "I01",
+      "actual_width": 1448,
+      "actual_height": 1086,
+      "cell_width": 362,
+      "cell_height": 362
+    }
+  ],
+  "cards": {
+    "G00": {
+      "name": "雷飞",
+      "atlas": "res://assets/art_v8/heroes_01.png",
+      "columns": 4,
+      "rows": 3,
+      "index": 0,
+      "inset": 0.015,
+      "icon_focus": [
+        0.5,
+        0.49
+      ],
+      "icon_scale": 0.94
+    },
+    "G01": {
+      "name": "蔡瑁",
+      "atlas": "res://assets/art_v8/heroes_01.png",
+      "columns": 4,
+      "rows": 3,
+      "index": 1,
+      "inset": 0.015,
+      "icon_focus": [
+        0.5,
+        0.49
+      ],
+      "icon_scale": 0.94
+    },
+    "G02": {
+      "name": "张允",
+      "atlas": "res://assets/art_v8/heroes_01.png",
+      "columns": 4,
+      "rows": 3,
+      "index": 2,
+      "inset": 0.015,
+      "icon_focus": [
+        0.5,
+        0.49
+      ],
+      "icon_scale": 0.94
+    },
+    "G03": {
+      "name": "蒯越",
+      "atlas": "res://assets/art_v8/heroes_01.png",
+      "columns": 4,
+      "rows": 3,
+      "index": 3,
+      "inset": 0.015,
+      "icon_focus": [
+        0.5,
+        0.49
+      ],
+      "icon_scale": 0.94
+    },
+    "G04": {
+      "name": "朱灵",
+      "atlas": "res://assets/art_v8/heroes_01.png",
+      "columns": 4,
+      "rows": 3,
+      "index": 4,
+      "inset": 0.015,
+      "icon_focus": [
+        0.5,
+        0.49
+      ],
+      "icon_scale": 0.94
+    },
+    "G05": {
+      "name": "文聘",
+      "atlas": "res://assets/art_v8/heroes_01.png",
+      "columns": 4,
+      "rows": 3,
+      "index": 5,
+      "inset": 0.015,
+      "icon_focus": [
+        0.5,
+        0.49
+      ],
+      "icon_scale": 0.94
+    },
+    "G06": {
+      "name": "李典",
+      "atlas": "res://assets/art_v8/heroes_01.png",
+      "columns": 4,
+      "rows": 3,
+      "index": 6,
+      "inset": 0.015,
+      "icon_focus": [
+        0.5,
+        0.49
+      ],
+      "icon_scale": 0.94
+    },
+    "G07": {
+      "name": "乐进",
+      "atlas": "res://assets/art_v8/heroes_01.png",
+      "columns": 4,
+      "rows": 3,
+      "index": 7,
+      "inset": 0.015,
+      "icon_focus": [
+        0.5,
+        0.49
+      ],
+      "icon_scale": 0.94
+    },
+    "G08": {
+      "name": "于禁",
+      "atlas": "res://assets/art_v8/heroes_01.png",
+      "columns": 4,
+      "rows": 3,
+      "index": 8,
+      "inset": 0.015,
+      "icon_focus": [
+        0.5,
+        0.49
+      ],
+      "icon_scale": 0.94
+    },
+    "G09": {
+      "name": "曹洪",
+      "atlas": "res://assets/art_v8/heroes_01.png",
+      "columns": 4,
+      "rows": 3,
+      "index": 9,
+      "inset": 0.015,
+      "icon_focus": [
+        0.5,
+        0.49
+      ],
+      "icon_scale": 0.94
+    },
+    "G10": {
+      "name": "徐晃",
+      "atlas": "res://assets/art_v8/heroes_01.png",
+      "columns": 4,
+      "rows": 3,
+      "index": 10,
+      "inset": 0.015,
+      "icon_focus": [
+        0.5,
+        0.49
+      ],
+      "icon_scale": 0.94
+    },
+    "G11": {
+      "name": "满宠",
+      "atlas": "res://assets/art_v8/heroes_01.png",
+      "columns": 4,
+      "rows": 3,
+      "index": 11,
+      "inset": 0.015,
+      "icon_focus": [
+        0.5,
+        0.49
+      ],
+      "icon_scale": 0.94
+    },
+    "G12": {
+      "name": "庞德",
+      "atlas": "res://assets/art_v8/heroes_02.png",
+      "columns": 4,
+      "rows": 3,
+      "index": 0,
+      "inset": 0.015,
+      "icon_focus": [
+        0.5,
+        0.49
+      ],
+      "icon_scale": 0.94
+    },
+    "G13": {
+      "name": "张辽",
+      "atlas": "res://assets/art_v8/heroes_02.png",
+      "columns": 4,
+      "rows": 3,
+      "index": 1,
+      "inset": 0.015,
+      "icon_focus": [
+        0.5,
+        0.49
+      ],
+      "icon_scale": 0.94
+    },
+    "G14": {
+      "name": "许褚",
+      "atlas": "res://assets/art_v8/heroes_02.png",
+      "columns": 4,
+      "rows": 3,
+      "index": 2,
+      "inset": 0.015,
+      "icon_focus": [
+        0.5,
+        0.49
+      ],
+      "icon_scale": 0.94
+    },
+    "G15": {
+      "name": "夏侯惇",
+      "atlas": "res://assets/art_v8/heroes_02.png",
+      "columns": 4,
+      "rows": 3,
+      "index": 3,
+      "inset": 0.015,
+      "icon_focus": [
+        0.5,
+        0.49
+      ],
+      "icon_scale": 0.94
+    },
+    "G16": {
+      "name": "曹仁",
+      "atlas": "res://assets/art_v8/heroes_02.png",
+      "columns": 4,
+      "rows": 3,
+      "index": 4,
+      "inset": 0.015,
+      "icon_focus": [
+        0.5,
+        0.49
+      ],
+      "icon_scale": 0.94
+    },
+    "G17": {
+      "name": "傅士仁",
+      "atlas": "res://assets/art_v8/heroes_02.png",
+      "columns": 4,
+      "rows": 3,
+      "index": 5,
+      "inset": 0.015,
+      "icon_focus": [
+        0.5,
+        0.49
+      ],
+      "icon_scale": 0.94
+    },
+    "G18": {
+      "name": "糜芳",
+      "atlas": "res://assets/art_v8/heroes_02.png",
+      "columns": 4,
+      "rows": 3,
+      "index": 6,
+      "inset": 0.015,
+      "icon_focus": [
+        0.5,
+        0.49
+      ],
+      "icon_scale": 0.94
+    },
+    "G19": {
+      "name": "廖化",
+      "atlas": "res://assets/art_v8/heroes_02.png",
+      "columns": 4,
+      "rows": 3,
+      "index": 7,
+      "inset": 0.015,
+      "icon_focus": [
+        0.5,
+        0.49
+      ],
+      "icon_scale": 0.94
+    },
+    "G20": {
+      "name": "周仓",
+      "atlas": "res://assets/art_v8/heroes_02.png",
+      "columns": 4,
+      "rows": 3,
+      "index": 8,
+      "inset": 0.015,
+      "icon_focus": [
+        0.5,
+        0.49
+      ],
+      "icon_scale": 0.94
+    },
+    "G21": {
+      "name": "王甫",
+      "atlas": "res://assets/art_v8/heroes_02.png",
+      "columns": 4,
+      "rows": 3,
+      "index": 9,
+      "inset": 0.015,
+      "icon_focus": [
+        0.5,
+        0.49
+      ],
+      "icon_scale": 0.94
+    },
+    "G22": {
+      "name": "赵累",
+      "atlas": "res://assets/art_v8/heroes_02.png",
+      "columns": 4,
+      "rows": 3,
+      "index": 10,
+      "inset": 0.015,
+      "icon_focus": [
+        0.5,
+        0.49
+      ],
+      "icon_scale": 0.94
+    },
+    "G23": {
+      "name": "关平",
+      "atlas": "res://assets/art_v8/heroes_02.png",
+      "columns": 4,
+      "rows": 3,
+      "index": 11,
+      "inset": 0.015,
+      "icon_focus": [
+        0.5,
+        0.49
+      ],
+      "icon_scale": 0.94
+    },
+    "G24": {
+      "name": "马良",
+      "atlas": "res://assets/art_v8/heroes_03.png",
+      "columns": 4,
+      "rows": 3,
+      "index": 0,
+      "inset": 0.015,
+      "icon_focus": [
+        0.5,
+        0.49
+      ],
+      "icon_scale": 0.94
+    },
+    "G25": {
+      "name": "蒋琬",
+      "atlas": "res://assets/art_v8/heroes_03.png",
+      "columns": 4,
+      "rows": 3,
+      "index": 1,
+      "inset": 0.015,
+      "icon_focus": [
+        0.5,
+        0.49
+      ],
+      "icon_scale": 0.94
+    },
+    "G26": {
+      "name": "张飞",
+      "atlas": "res://assets/art_v8/heroes_03.png",
+      "columns": 4,
+      "rows": 3,
+      "index": 2,
+      "inset": 0.015,
+      "icon_focus": [
+        0.5,
+        0.49
+      ],
+      "icon_scale": 0.94
+    },
+    "G27": {
+      "name": "赵云",
+      "atlas": "res://assets/art_v8/heroes_03.png",
+      "columns": 4,
+      "rows": 3,
+      "index": 3,
+      "inset": 0.015,
+      "icon_focus": [
+        0.5,
+        0.49
+      ],
+      "icon_scale": 0.94
+    },
+    "G28": {
+      "name": "关羽",
+      "atlas": "res://assets/art_v8/heroes_03.png",
+      "columns": 4,
+      "rows": 3,
+      "index": 4,
+      "inset": 0.015,
+      "icon_focus": [
+        0.5,
+        0.49
+      ],
+      "icon_scale": 0.94
+    },
+    "G29": {
+      "name": "杨龄",
+      "atlas": "res://assets/art_v8/heroes_03.png",
+      "columns": 4,
+      "rows": 3,
+      "index": 5,
+      "inset": 0.015,
+      "icon_focus": [
+        0.5,
+        0.49
+      ],
+      "icon_scale": 0.94
+    },
+    "G30": {
+      "name": "韩玄",
+      "atlas": "res://assets/art_v8/heroes_03.png",
+      "columns": 4,
+      "rows": 3,
+      "index": 6,
+      "inset": 0.015,
+      "icon_focus": [
+        0.5,
+        0.49
+      ],
+      "icon_scale": 0.94
+    },
+    "G31": {
+      "name": "金旋",
+      "atlas": "res://assets/art_v8/heroes_03.png",
+      "columns": 4,
+      "rows": 3,
+      "index": 7,
+      "inset": 0.015,
+      "icon_focus": [
+        0.5,
+        0.49
+      ],
+      "icon_scale": 0.94
+    },
+    "G32": {
+      "name": "刘度",
+      "atlas": "res://assets/art_v8/heroes_03.png",
+      "columns": 4,
+      "rows": 3,
+      "index": 8,
+      "inset": 0.015,
+      "icon_focus": [
+        0.5,
+        0.49
+      ],
+      "icon_scale": 0.94
+    },
+    "G33": {
+      "name": "赵范",
+      "atlas": "res://assets/art_v8/heroes_03.png",
+      "columns": 4,
+      "rows": 3,
+      "index": 9,
+      "inset": 0.015,
+      "icon_focus": [
+        0.5,
+        0.49
+      ],
+      "icon_scale": 0.94
+    },
+    "G34": {
+      "name": "邢道荣",
+      "atlas": "res://assets/art_v8/heroes_03.png",
+      "columns": 4,
+      "rows": 3,
+      "index": 10,
+      "inset": 0.015,
+      "icon_focus": [
+        0.5,
+        0.49
+      ],
+      "icon_scale": 0.94
+    },
+    "G35": {
+      "name": "陈生",
+      "atlas": "res://assets/art_v8/heroes_03.png",
+      "columns": 4,
+      "rows": 3,
+      "index": 11,
+      "inset": 0.015,
+      "icon_focus": [
+        0.5,
+        0.49
+      ],
+      "icon_scale": 0.94
+    },
+    "G36": {
+      "name": "张虎",
+      "atlas": "res://assets/art_v8/heroes_04.png",
+      "columns": 4,
+      "rows": 3,
+      "index": 0,
+      "inset": 0.015,
+      "icon_focus": [
+        0.5,
+        0.49
+      ],
+      "icon_scale": 0.94
+    },
+    "G37": {
+      "name": "张羡",
+      "atlas": "res://assets/art_v8/heroes_04.png",
+      "columns": 4,
+      "rows": 3,
+      "index": 1,
+      "inset": 0.015,
+      "icon_focus": [
+        0.5,
+        0.49
+      ],
+      "icon_scale": 0.94
+    },
+    "G38": {
+      "name": "王威",
+      "atlas": "res://assets/art_v8/heroes_04.png",
+      "columns": 4,
+      "rows": 3,
+      "index": 2,
+      "inset": 0.015,
+      "icon_focus": [
+        0.5,
+        0.49
+      ],
+      "icon_scale": 0.94
+    },
+    "G39": {
+      "name": "巩志",
+      "atlas": "res://assets/art_v8/heroes_04.png",
+      "columns": 4,
+      "rows": 3,
+      "index": 3,
+      "inset": 0.015,
+      "icon_focus": [
+        0.5,
+        0.49
+      ],
+      "icon_scale": 0.94
+    },
+    "G40": {
+      "name": "程普",
+      "atlas": "res://assets/art_v8/heroes_04.png",
+      "columns": 4,
+      "rows": 3,
+      "index": 4,
+      "inset": 0.015,
+      "icon_focus": [
+        0.5,
+        0.49
+      ],
+      "icon_scale": 0.94
+    },
+    "G41": {
+      "name": "韩当",
+      "atlas": "res://assets/art_v8/heroes_04.png",
+      "columns": 4,
+      "rows": 3,
+      "index": 5,
+      "inset": 0.015,
+      "icon_focus": [
+        0.5,
+        0.49
+      ],
+      "icon_scale": 0.94
+    },
+    "G42": {
+      "name": "周泰",
+      "atlas": "res://assets/art_v8/heroes_04.png",
+      "columns": 4,
+      "rows": 3,
+      "index": 6,
+      "inset": 0.015,
+      "icon_focus": [
+        0.5,
+        0.49
+      ],
+      "icon_scale": 0.94
+    },
+    "G43": {
+      "name": "黄盖",
+      "atlas": "res://assets/art_v8/heroes_04.png",
+      "columns": 4,
+      "rows": 3,
+      "index": 7,
+      "inset": 0.015,
+      "icon_focus": [
+        0.5,
+        0.49
+      ],
+      "icon_scale": 0.94
+    },
+    "G44": {
+      "name": "刘磐",
+      "atlas": "res://assets/art_v8/heroes_04.png",
+      "columns": 4,
+      "rows": 3,
+      "index": 8,
+      "inset": 0.015,
+      "icon_focus": [
+        0.5,
+        0.49
+      ],
+      "icon_scale": 0.94
+    },
+    "G45": {
+      "name": "黄祖",
+      "atlas": "res://assets/art_v8/heroes_04.png",
+      "columns": 4,
+      "rows": 3,
+      "index": 9,
+      "inset": 0.015,
+      "icon_focus": [
+        0.5,
+        0.49
+      ],
+      "icon_scale": 0.94
+    },
+    "G46": {
+      "name": "太史慈",
+      "atlas": "res://assets/art_v8/heroes_04.png",
+      "columns": 4,
+      "rows": 3,
+      "index": 10,
+      "inset": 0.015,
+      "icon_focus": [
+        0.5,
+        0.49
+      ],
+      "icon_scale": 0.94
+    },
+    "G47": {
+      "name": "黄忠",
+      "atlas": "res://assets/art_v8/heroes_04.png",
+      "columns": 4,
+      "rows": 3,
+      "index": 11,
+      "inset": 0.015,
+      "icon_focus": [
+        0.5,
+        0.49
+      ],
+      "icon_scale": 0.94
+    },
+    "G48": {
+      "name": "魏延",
+      "atlas": "res://assets/art_v8/heroes_05.png",
+      "columns": 4,
+      "rows": 3,
+      "index": 0,
+      "inset": 0.015,
+      "icon_focus": [
+        0.5,
+        0.49
+      ],
+      "icon_scale": 0.94
+    },
+    "G49": {
+      "name": "甘宁",
+      "atlas": "res://assets/art_v8/heroes_05.png",
+      "columns": 4,
+      "rows": 3,
+      "index": 1,
+      "inset": 0.015,
+      "icon_focus": [
+        0.5,
+        0.49
+      ],
+      "icon_scale": 0.94
+    },
+    "G50": {
+      "name": "沙摩柯",
+      "atlas": "res://assets/art_v8/heroes_05.png",
+      "columns": 4,
+      "rows": 3,
+      "index": 2,
+      "inset": 0.015,
+      "icon_focus": [
+        0.5,
+        0.49
+      ],
+      "icon_scale": 0.94
+    },
+    "G51": {
+      "name": "鲁肃",
+      "atlas": "res://assets/art_v8/heroes_05.png",
+      "columns": 4,
+      "rows": 3,
+      "index": 3,
+      "inset": 0.015,
+      "icon_focus": [
+        0.5,
+        0.49
+      ],
+      "icon_scale": 0.94
+    },
+    "G52": {
+      "name": "吕蒙",
+      "atlas": "res://assets/art_v8/heroes_05.png",
+      "columns": 4,
+      "rows": 3,
+      "index": 4,
+      "inset": 0.015,
+      "icon_focus": [
+        0.5,
+        0.49
+      ],
+      "icon_scale": 0.94
+    },
+    "G53": {
+      "name": "黄盖旧部",
+      "atlas": "res://assets/art_v8/heroes_05.png",
+      "columns": 4,
+      "rows": 3,
+      "index": 5,
+      "inset": 0.015,
+      "icon_focus": [
+        0.5,
+        0.49
+      ],
+      "icon_scale": 0.94
+    },
+    "G54": {
+      "name": "江夏水军统领",
+      "atlas": "res://assets/art_v8/heroes_05.png",
+      "columns": 4,
+      "rows": 3,
+      "index": 6,
+      "inset": 0.015,
+      "icon_focus": [
+        0.5,
+        0.49
+      ],
+      "icon_scale": 0.94
+    },
+    "G55": {
+      "name": "荆南校尉",
+      "atlas": "res://assets/art_v8/heroes_05.png",
+      "columns": 4,
+      "rows": 3,
+      "index": 7,
+      "inset": 0.015,
+      "icon_focus": [
+        0.5,
+        0.49
+      ],
+      "icon_scale": 0.94
+    },
+    "G56": {
+      "name": "青梅竹马",
+      "atlas": "res://assets/art_v8/heroes_05.png",
+      "columns": 4,
+      "rows": 3,
+      "index": 8,
+      "inset": 0.015,
+      "icon_focus": [
+        0.5,
+        0.49
+      ],
+      "icon_scale": 0.94
+    },
+    "I01": {
+      "name": "新野之主",
+      "atlas": "res://assets/art_v8/heroes_05.png",
+      "columns": 4,
+      "rows": 3,
+      "index": 9,
+      "inset": 0.015,
+      "icon_focus": [
+        0.5,
+        0.49
+      ],
+      "icon_scale": 0.94
+    }
+  }
+}

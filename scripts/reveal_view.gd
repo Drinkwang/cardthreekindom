@@ -1,5 +1,6 @@
 class_name PaanReveal
 extends Control
+const Art = preload("res://scripts/ui/print_art.gd")
 ## 翻牌揭示覆盖层 —— 开卡包 / 合成 / 招降 共用同一套特效。
 ##
 ## 流程：卡背朝上摆一排 → 逐张翻转揭示（稀有度越高，光效越亮）→
@@ -16,26 +17,19 @@ signal finished
 
 # 星级 -> 稀有度配色。S5 起改用**印刷版**色（与 game/assets/ui/cardface_*.png 的印框同色），
 # 这样揭示出来的卡和桌上卡框的星级颜色是同一套，不会"揭晓时一个色、落桌后另一个色"。
-const RARITY := {
-	1: Color(0.58, 0.58, 0.55),
-	2: Color(0.26, 0.47, 0.28),
-	3: Color(0.21, 0.36, 0.55),
-	4: Color(0.41, 0.28, 0.55),
-	5: Color(0.68, 0.52, 0.20),
-	6: Color(0.69, 0.28, 0.44),
-}
+const RARITY := Art.RARITY
 
-const BG_DIR := "res://assets/bg/"
+const BG_DIR := "res://assets/art_v2/backgrounds/"
 const CARD_DIR := "res://assets/cards/"
 
-const CARD := Vector2(152, 212)
+const CARD := Vector2(184, 278)
 const CARD_BG := Color(0.945, 0.925, 0.878)
 const CARD_INK := Color(0.13, 0.12, 0.11)
 const CARD_DIM := Color(0.42, 0.40, 0.37)
 const SHOWCASE_MIN_STAR := 4          # 达到这个星级才做单张特写
 
 # 揭示层不是"黑幕"：同一张课桌的延续，灯光暗下来而已
-const DIM_COLOR := Color(0.11, 0.08, 0.05, 0.72)
+const DIM_COLOR := Color(0.13, 0.08, 0.04, 0.64)
 
 
 func _tex(path: String) -> Texture2D:
@@ -67,6 +61,7 @@ static func rarity_color(star: int) -> Color:
 
 
 func _ready() -> void:
+	theme = Art.theme()
 	set_anchors_preset(Control.PRESET_FULL_RECT)
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	visible = false
@@ -118,7 +113,7 @@ func _build() -> void:
 	_slots.clear()
 
 	# 桌面底图：牌是摊在同一张课桌上的，不是浮在黑幕里
-	var bt := _tex(BG_DIR + "table.png")
+	var bt := Art.background("table")
 	if bt != null:
 		var bg := TextureRect.new()
 		bg.texture = bt
@@ -138,24 +133,30 @@ func _build() -> void:
 	_root_box = VBoxContainer.new()
 	_root_box.set_anchors_preset(Control.PRESET_FULL_RECT)
 	_root_box.alignment = BoxContainer.ALIGNMENT_CENTER
-	_root_box.add_theme_constant_override("separation", 14)
+	_root_box.add_theme_constant_override("separation", 20)
 	_root_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(_root_box)
 
+	var heading := HBoxContainer.new()
+	heading.alignment = BoxContainer.ALIGNMENT_CENTER
+	heading.add_theme_constant_override("separation", 14)
+	_root_box.add_child(heading)
+	heading.add_child(Art.stamp("开", Vector2(40, 44)))
 	var t := Label.new()
 	t.text = _title
 	t.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	t.add_theme_font_size_override("font_size", 26)
+	t.add_theme_font_size_override("font_size", 34)
+	t.add_theme_font_override("font", Art.title_font())
 	t.add_theme_color_override("font_color", Color(0.97, 0.95, 0.88))
 	t.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_root_box.add_child(t)
+	heading.add_child(t)
 
 	if _sub != "":
 		var s := Label.new()
 		s.text = _sub
 		s.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		s.add_theme_font_size_override("font_size", 14)
-		s.add_theme_color_override("font_color", Color(0.66, 0.67, 0.70))
+		s.add_theme_color_override("font_color", Color(0.87, 0.78, 0.61))
 		s.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		_root_box.add_child(s)
 
@@ -163,7 +164,7 @@ func _build() -> void:
 	wrap.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_root_box.add_child(wrap)
 	_row = HBoxContainer.new()
-	_row.add_theme_constant_override("separation", 12)
+	_row.add_theme_constant_override("separation", 24)
 	_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	wrap.add_child(_row)
 
@@ -173,10 +174,10 @@ func _build() -> void:
 		_row.add_child(slot["wrap"])
 
 	_hint = Label.new()
-	_hint.text = "点击推进　·　「全部翻开」直接亮完"
+	_hint.text = "翻开旧纸，收下一段新征程。　·　点击推进"
 	_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_hint.add_theme_font_size_override("font_size", 13)
-	_hint.add_theme_color_override("font_color", Color(0.70, 0.71, 0.74))
+	_hint.add_theme_font_size_override("font_size", 14)
+	_hint.add_theme_color_override("font_color", Color(0.91, 0.84, 0.70))
 	_hint.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_root_box.add_child(_hint)
 
@@ -186,10 +187,16 @@ func _build() -> void:
 	_root_box.add_child(btns)
 	_btn_all = Button.new()
 	_btn_all.text = "全部翻开"
+	_btn_all.custom_minimum_size = Vector2(150, 44)
+	for state in ["normal", "hover", "pressed"]:
+		_btn_all.add_theme_stylebox_override(state, Art.panel(Art.RED, 12, Art.RED, 1))
+	for state in ["font_color", "font_hover_color", "font_pressed_color"]:
+		_btn_all.add_theme_color_override(state, Art.PAPER_LIGHT)
 	_btn_all.pressed.connect(_reveal_all)
 	btns.add_child(_btn_all)
 	var bskip := Button.new()
-	bskip.text = "跳过"
+	bskip.text = "收好卡牌"
+	bskip.custom_minimum_size = Vector2(130, 44)
 	bskip.pressed.connect(_close)
 	btns.add_child(bskip)
 
@@ -210,7 +217,7 @@ func _mk_slot(card_id: String) -> Dictionary:
 
 	# 卡背直接用美术资源（512×712 RGBA，四角已抠透明）
 	var back := _mk_face(Color(0.62, 0.52, 0.36), Color(0.36, 0.26, 0.14), 2,
-		CARD_DIR + "cardback.png")
+		"res://assets/art_v2/cardback.svg")
 	var bl := Label.new()
 	bl.text = "拍"
 	bl.set_anchors_preset(Control.PRESET_FULL_RECT)
@@ -218,7 +225,7 @@ func _mk_slot(card_id: String) -> Dictionary:
 	bl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	bl.add_theme_font_size_override("font_size", 34)
 	# 卡背正中是一枚浅色圆牌，字落在圆牌上 —— 用墨色才看得见
-	bl.add_theme_color_override("font_color", Color(0.30, 0.22, 0.10))
+	bl.add_theme_color_override("font_color", Art.PAPER_LIGHT)
 	bl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	back.add_child(bl)
 	wrap.add_child(back)
@@ -239,8 +246,9 @@ func _mk_slot(card_id: String) -> Dictionary:
 	nm.text = str(c.get("name", "?"))
 	nm.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	# autowrap 的 Label 必须给明确宽度，否则容器会把它算成"每行一个字"的超高最小值
-	nm.custom_minimum_size = Vector2(132, 22)
+	nm.custom_minimum_size = Vector2(154, 22)
 	nm.add_theme_font_size_override("font_size", 17)
+	nm.add_theme_font_override("font", Art.title_font())
 	nm.add_theme_color_override("font_color", CARD_INK)
 	nm.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	fv.add_child(nm)
@@ -259,16 +267,16 @@ func _mk_slot(card_id: String) -> Dictionary:
 	tp.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	fv.add_child(tp)
 
-	var sp := Control.new()
+	var sp := Art.image(card_id, Vector2(0, 128))
 	sp.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	sp.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	fv.add_child(sp)
 
 	var eff := Label.new()
-	eff.text = str(c.get("effect", ""))
+	eff.text = GameData.effect_text(c)
 	eff.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	eff.custom_minimum_size = Vector2(0, 52)
-	eff.add_theme_font_size_override("font_size", 11)
+	eff.custom_minimum_size = Vector2(0, 32)
+	eff.add_theme_font_size_override("font_size", 12)
 	eff.add_theme_color_override("font_color", CARD_DIM)
 	eff.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	fv.add_child(eff)
@@ -300,11 +308,7 @@ func _mk_face(bg: Color, border: Color, bw: int, tex_path: String = "") -> Panel
 		p.add_theme_stylebox_override("panel", st)
 		return p
 
-	var sb := StyleBoxFlat.new()
-	sb.bg_color = bg
-	sb.border_color = border
-	sb.set_border_width_all(bw)
-	sb.set_corner_radius_all(9)
+	var sb := Art.panel(bg, 10, border, bw)
 	sb.content_margin_left = 10
 	sb.content_margin_right = 10
 	sb.content_margin_top = 9
@@ -360,7 +364,7 @@ func _flip_slot(slot: Dictionary, on_done: Callable) -> void:
 		(slot["back"] as Control).visible = false
 		(slot["front"] as Control).visible = true
 		if star >= SHOWCASE_MIN_STAR:
-			_burst(wrap, accent, 2.6))
+			_burst(wrap, accent, 1.55))
 	tw.tween_property(wrap, "scale:x", 1.0, 0.19).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 	tw.tween_callback(on_done)
 
@@ -372,7 +376,7 @@ func _burst(anchor: Control, col: Color, mult: float = 2.0) -> void:
 	sb.bg_color = Color(0, 0, 0, 0)
 	sb.border_color = Color(col.r, col.g, col.b, 0.95)
 	sb.set_border_width_all(3)
-	sb.set_corner_radius_all(int(CARD.x * 0.5))
+	sb.set_corner_radius_all(3)
 	ring.add_theme_stylebox_override("panel", sb)
 	ring.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(ring)
@@ -436,8 +440,8 @@ func _run_showcase(i: int) -> void:
 
 	# 该卡放大、上浮、发光
 	var tw := wrap.create_tween()
-	tw.tween_property(wrap, "scale", Vector2(1.42, 1.42), 0.30).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-	tw.parallel().tween_property(wrap, "position:y", wrap.position.y - 26.0, 0.30)
+	tw.tween_property(wrap, "scale", Vector2(1.14, 1.14), 0.30).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tw.parallel().tween_property(wrap, "position:y", wrap.position.y - 18.0, 0.30)
 	tw.tween_callback(func():
 		_flash(accent))
 	tw.tween_interval(0.85)
@@ -445,26 +449,32 @@ func _run_showcase(i: int) -> void:
 
 
 func _flash(col: Color) -> void:
-	_dim.color = Color(col.r * 0.28, col.g * 0.24, col.b * 0.18, 0.88)
-	for k in range(3):
-		var ring := Panel.new()
-		var sb := StyleBoxFlat.new()
-		sb.bg_color = Color(0, 0, 0, 0)
-		sb.border_color = Color(col.r, col.g, col.b, 0.9 - float(k) * 0.25)
-		sb.set_border_width_all(4)
-		sb.set_corner_radius_all(320)
-		ring.add_theme_stylebox_override("panel", sb)
-		ring.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		add_child(ring)
-		ring.size = Vector2(200, 200)
-		ring.position = size * 0.5 - Vector2(100, 100)
-		ring.pivot_offset = Vector2(100, 100)
-		var tw := ring.create_tween()
-		tw.tween_interval(0.10 * float(k))
-		tw.set_parallel(true)
-		tw.tween_property(ring, "scale", Vector2(4.2, 4.2), 0.70)
-		tw.tween_property(ring, "modulate:a", 0.0, 0.70)
-		tw.chain().tween_callback(ring.queue_free)
+	# 高星揭晓用短墨线与套色印痕，避免整屏霓虹光环盖住牌面。
+	var strokes := InkRays.new()
+	strokes.ink = col.lerp(Art.PAPER_LIGHT, 0.30)
+	strokes.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	strokes.size = Vector2(160, 160)
+	strokes.position = size * 0.5 - strokes.size * 0.5
+	strokes.pivot_offset = strokes.size * 0.5
+	add_child(strokes)
+	var tw := strokes.create_tween()
+	tw.set_parallel(true)
+	tw.tween_property(strokes, "scale", Vector2(3.5, 3.5), 0.6).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tw.tween_property(strokes, "modulate:a", 0.0, 0.6)
+	tw.chain().tween_callback(strokes.queue_free)
+
+
+class InkRays extends Control:
+	var ink := Color.WHITE
+	func _draw() -> void:
+		var center := size * 0.5
+		for i in range(18):
+			var angle := float(i) * TAU / 18.0
+			var direction := Vector2.RIGHT.rotated(angle)
+			var start := center + direction * (28.0 + float(i % 3) * 4.0)
+			var finish := center + direction * (54.0 + float(i % 4) * 3.0)
+			draw_line(start, finish, ink, 1.8 if i % 3 == 0 else 0.8, true)
+			draw_circle(finish + direction * 4.0, 0.65, ink)
 
 
 # =====================================================================

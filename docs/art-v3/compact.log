@@ -1,0 +1,9 @@
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+OpenGL API 3.3.0 NVIDIA 572.47 - Compatibility - Using Device: NVIDIA - NVIDIA GeForce RTX 3050 Ti Laptop GPU
+
+[GameData] 卡牌 169 / 区域 21 / 路线 4 / 卡包 9 / 建筑 30
+[GameState] 引擎版本 4.7.1-stable (official) ✓
+[pool] 卡池展开=true  内容=["G13", "G16", "G26", "G27"]
+[dbg] root=(1422.0, 800.0) table=(1422.0, 393.0) table_pos=(0.0, 86.0)
+[dbg] drawer vis/size=false/(433.0, 39.2)  map vis/size=false/(1422.0, 800.0)  home vis/size=false/(0.0, 0.0)  city vis/size=false/(0.0, 0.0)  reveal vis/size=false/(0.0, 0.0)
+[screenshot] OK -> D:/Pro/cardthreekindom/docs/art-v3/shots/compact.png (1280x720)
