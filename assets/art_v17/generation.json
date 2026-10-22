@@ -1,0 +1,59 @@
+{
+  "version": "v17",
+  "date": "2026-10-18",
+  "generator": "built-in image_gen",
+  "selected_style_reference": "docs/art-direction/terrain-style-options-v16/06-cel-animation.png",
+  "scope": "Terrain only; retain gameplay geometry, card art, HUD and RTS input.",
+  "assets": [
+    {
+      "file": "terrain_ground_atlas.png",
+      "dimensions": [
+        2172,
+        724
+      ],
+      "grid": [
+        3,
+        1
+      ],
+      "materials": [
+        "warm limestone",
+        "smooth ochre earth",
+        "cool blue-grey flagstone"
+      ],
+      "source": "/Users/arthurwang/.codex/generated_images/01a148ad-f3ee-7241-b34a-f88e50a4b09d/exec-6a699c59-e7fb-4b3f-a348-1ff8851d9a54.png",
+      "prompt_initial": "Use case: stylized-concept. Asset type: game-ready GROUND TEXTURE ATLAS, no interface, no cards, no objects.\nCreate exactly THREE seamless square ground textures side by side in ONE horizontal 3-column by 1-row atlas. Canvas 1536 x 512 pixels, each cell 512 x 512. No gutter, no visible frame, no labels, no border. Entire image opaque.\nLeft cell: clean warm pale-grey limestone courtyard paving, broad irregular rectangular stone slabs, elegant thin understated joints, only a handful of extremely soft worn markings, almost no cracks, no leaves, no plants. Medium-large slabs, no central motif or road crossing.\nMiddle cell: calm light ochre compacted-earth surface with a sparse few smooth broad flat stones naturally embedded flush in it, clean walking surface, no pebbly confetti, no grass or weeds, no footsteps or cart ruts.\nRight cell: clean soft blue-grey damp flagstones, broader orderly slabs with a very gentle jade-cool cast, delicate shallow joints, only subtle moisture shading, no puddles, no moss carpet, no leaves.\nAll three must share ONE premium 2D Chinese historical hand-painted CEL-ANIMATION art direction: clean confident restrained contour work, two or three softly blended tones per slab, sophisticated warm diffuse daylight from upper left, tasteful painterly material texture. Detailed enough to feel crafted, quiet enough for portrait cards placed on top. NOT flat color placeholder, NOT photorealistic, NOT 3D, NOT low-poly, NOT pixel art, NOT heavily outlined comic cobbles.\nSTRICT tiling: each cell separately tiles seamlessly across its opposite left/right edges AND opposite top/bottom edges. Match edge color and slab flow. No edge darkening, no vignette, no lighting hotspot, no horizon, no perspective convergence, no shadows of trees, no oversized cracks, no decorative square medallions. Camera is straight-down orthographic ground texture. Keep material contrast LOW and natural; preserve beautiful spacious clean surfaces instead of noisy micro-detail.",
+      "prompt_cleanup": "Edit this production terrain material atlas only. Preserve exactly its 3:1 overall canvas, three equally sized square material cells in one horizontal row, their order and material identities. Left: warm pale grey limestone slabs. Middle: light warm ochre compacted earth with a few embedded flat stones. Right: cool blue-grey damp flagstones. Make all three dramatically cleaner and calmer, matching premium hand-painted Chinese historical cel-animation game scenery: remove roughly 80 percent of the dark cracks, mottled stains, speckling, weathering and gritty texture. Broad quiet matte slab interiors, delicate low-contrast joints, restrained two-tone painted shading, gentle warm daylight. Earth should be mostly smooth clean ochre with just a few understated embedded stones, not noisy pebbles. Retain attractive drawn material definition, do not turn into flat featureless colors. Colors and details must be uniform along each cell's borders for repeat-friendly gameplay flooring. Orthographic overhead materials with no perspective, no objects, no buildings, no plants, no foliage, no text, no UI, no cards, no grid dividers. Center battle grounds need unobtrusive visual texture so cards read clearly. Preserve the three square cell boundaries and composition exactly.",
+      "prompt_final": "Production flooring atlas refinement. Keep exact canvas aspect 3:1 and exactly three square cells across one row: warm pale limestone paving LEFT, light ochre compacted-earth CENTER, cool blue-grey flagstone paving RIGHT. Keep same hand-drawn cel-animation aesthetic. IMPORTANT center-cell revision: REMOVE EVERY embedded stone, pebble, rock, crack, recognizable spot or repeating symbol; center is entirely continuous very clean smooth light ochre earth, with ONLY extremely subtle broad hand-painted tonal modulation. Not mottled watercolor, no grain, no noise, no individual marks; this will tile across a strategy game, so any big recognizable mark is bad. Stone cells: simplify to clean quiet slab interiors and thin low-contrast soft joints, reduce painterly blotches, avoid recognizable stains and cracks entirely, no deep black seams. Gentle matte two-tone shaded surfaces, refined beautiful illustrative material, high readability behind cards. Matching tone along all four edges WITHIN EACH square for seamless or mirrored repeating, no border, no margin, no divider between material cells. Strict orthographic top-down flat ground, no perspective, no objects/plants/buildings/UI/text. Do not add anything beyond these three flooring materials.",
+      "transparent_background": false
+    },
+    {
+      "file": "terrain_edge_atlas.png",
+      "dimensions": [
+        1536,
+        1024
+      ],
+      "grid": [
+        2,
+        3
+      ],
+      "strips": [
+        "township frontage",
+        "fortified gate",
+        "official courtyard",
+        "river quay",
+        "bamboo and rock",
+        "farmstead"
+      ],
+      "source": "/Users/arthurwang/.codex/generated_images/01a148ad-f3ee-7241-b34a-f88e50a4b09d/exec-306423eb-0cc8-46fd-8276-35bfd2ba8e5e.png",
+      "prompt": "Use case: stylized-concept. Asset type: game-ready TRANSPARENT SCENIC EDGE STRIP ATLAS for a Chinese Three Kingdoms card-map game.\nCreate ONE 1536 x 1024 transparent PNG atlas, EXACTLY TWO columns by THREE rows, six separated invisible cells. Each cell is a WIDE SHORT strip about 768 x 341 pixels, aspect 2.25:1. Every strip is a complete connected little panoramic piece of scenery with a clear silhouette, not isolated random props. All objects must remain comfortably inside the inner 80% width and 76% height of their own cell, with genuine transparent margin on all four sides. No sprite crosses a cell boundary. No visible grid.\nCell row1 left (0): quiet country-town street frontage: TWO connected modest blue-grey tiled timber shop roofs and one golden ginkgo canopy. Only one beige awning and a few neatly placed baskets. Beautiful complete roof silhouettes.\nCell row1 right (1): restrained fortified wall frontage: one complete short grey stone city gate with modest side walls and ONE little vermilion flag; a neatly grouped spear rack. No giant towers, no battles, no troops.\nCell row2 left (2): modest official courtyard frontage: one connected red-brown timber colonnade under dark blue tiles, a broad pale-stone stair entrance, two small clipped pines. Refined but simple, not imperial fantasy.\nCell row2 right (3): coherent quiet river landing: one short timber quay connected to a small pale-stone embankment and a tiny restrained roofed waiting pavilion, one moored little wooden boat, a clean small jade-water inlet with naturally tapering organic shoreline. All water ends softly and organically into transparency, NEVER a rectangular blue ground patch.\nCell row3 left (4): coherent bamboo-and-rock edge: a low weathered bamboo fence linking a compact cluster of tall fine-leaved bamboo on one side with a few broad pale layered rocks and ONE small wild pine on the other. No buildings. One elegant connected silhouette, not a row of random stickers.\nCell row3 right (5): quiet farmstead edge: a modest connected straw-roof shed and low timber granary, a short neat fence with a small restrained band of rice plants; no dozens of props or crops.\nONE consistent art direction matching a premium Chinese historical hand-painted cel-animation courtyard: crisp elegant linework, carefully painted natural materials, slate blue roofs, warm ivory stone, restrained ochre timber, dusty jade foliage and golden ginkgo. Sophisticated gentle warm daylight, not saturated toy colors. Camera is a HIGH near-top-down orthographic RTS view with only shallow south-facing wall planes visible, identical on every strip. Not eye-level or photoreal 3D. Short very soft contact shadows ONLY, contained in the cell.\nCritical: SCENERY ONLY, clean translucent silhouette cutouts, no surrounding rectangular earth/stone floor backing, no opaque sky or paper, no white background, no checkerboard, no frames, no text, no labels, no cards, no interface, no characters. Do not turn these strips into six complete enclosed rooms. Reduce tiny weeds, speckled leaves and busy cobble scatter. The assets frame a large clean playable courtyard rather than filling its center.",
+      "transparent_background": true
+    }
+  ],
+  "notes": [
+    "Actual image dimensions override requested prompt dimensions.",
+    "21 city-specific profiles combine 3 ground materials and 6 perimeter strips, not 21 separately painted city backgrounds.",
+    "Flooring is mirrored in world-space; independent per-cell textures prevent cross-material mipmap bleeding.",
+    "Generated edge content can exceed nominal cells; runtime safe source rectangles isolate the intended silhouettes.",
+    "The separate four full-screen city mockups are concepts, not production textures or runtime screenshots."
+  ]
+}

@@ -56,11 +56,11 @@ func _ready() -> void:
 	shopfront.custom_minimum_size.x = 340
 	shopfront.add_theme_constant_override("separation", 14)
 	row.add_child(shopfront)
-	var grandma := Art.label("奶奶的卡铺", 30, Art.RED)
-	grandma.add_theme_font_override("font", Art.title_font())
-	shopfront.add_child(grandma)
+	var shop_name := Art.label("军需卡铺", 30, Art.RED)
+	shop_name.add_theme_font_override("font", Art.title_font())
+	shopfront.add_child(shop_name)
 	var picture := TextureRect.new()
-	var atlas_path := "res://assets/art_v4/camp_atlas.png"
+	var atlas_path := "res://assets/art_v14/camp_atlas.png"
 	if ResourceLoader.exists(atlas_path):
 		var atlas := load(atlas_path) as Texture2D
 		var tex := AtlasTexture.new()
@@ -76,12 +76,6 @@ func _ready() -> void:
 	picture.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	picture.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	shopfront.add_child(picture)
-	var tip := Art.label("买一包新牌，接着去拍。\n卡包随征服区域解锁。", 19)
-	tip.add_theme_font_override("font", Art.title_font())
-	shopfront.add_child(tip)
-	var hint := Art.label("新牌可在构筑中上阵。\n同星牌可合成，俘获的武将可招降。", 14, Art.DIM)
-	hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	shopfront.add_child(hint)
 	content = PanelContainer.new()
 	content.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	content.add_theme_stylebox_override("panel", Art.panel(Art.PAPER_LIGHT, 10, Art.RULE, 0))
@@ -89,6 +83,7 @@ func _ready() -> void:
 	refresh()
 
 func open_shop() -> void:
+	if GameState.in_battle: return
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	visible = true
 	refresh()

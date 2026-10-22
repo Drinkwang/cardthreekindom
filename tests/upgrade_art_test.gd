@@ -37,14 +37,14 @@ func _ready() -> void:
 	check(not main._home._section_page.visible, "旧升级树不叠在新页上")
 	check(GameState.UPGRADES.size() == 13 and page.cards.size() == 13, "全部13项升级均有实际卡片")
 	check(main._home._primary_action != null, "升级时仍保留下一轮入口")
-	check(GameState.upgrade_level("radius") == 0 and is_equal_approx(GameState.slap_radius(), 34.0), "初始光标范围半径为34")
+	check(GameState.upgrade_level("radius") == 0 and is_equal_approx(GameState.slap_radius(), 40.0), "初始光标范围半径为40")
 	check(GameState.skill_req_met("radius") and not page.cards.radius.button.disabled, "范围升级从初始城池即可购买")
 	check(GameState.upgrade_cost("radius") == 24, "范围初始升级费用为24金币")
 	check(page._core_grid.get_child_count() == 4 and page._core_grid.columns == 4, "1280宽度首屏并列四项核心")
 	var initial_radius := GameState.upgrade_preview("radius")
-	check(is_equal_approx(float(initial_radius.current.radius), 34.0) and is_equal_approx(float(initial_radius.next.radius), 40.0), "范围预览使用真实半径34到40")
-	check(page.cards.radius.value.text.contains("34 → 40"), "范围卡显示真实半径变化")
-	check(page.cards.radius.gain.text.contains("68 → 80") and page.cards.radius.gain.text.contains("38.4%"), "范围卡显示直径与圆形面积增量")
+	check(is_equal_approx(float(initial_radius.current.radius), 40.0) and is_equal_approx(float(initial_radius.next.radius), 46.0), "范围预览使用真实半径40到46")
+	check(page.cards.radius.value.text.contains("40 → 46"), "范围卡显示真实半径变化")
+	check(page.cards.radius.gain.text.contains("80 → 92") and page.cards.radius.gain.text.contains("32.2%"), "范围卡显示直径与圆形面积增量")
 	page.select_upgrade("radius")
 	check(page._detail.text.contains("立即生效") and page._detail.text.contains("实际范围不变"), "范围说明即时扩圈且缩放不改变实际命中")
 	var node_ids := {}
@@ -117,7 +117,7 @@ func _ready() -> void:
 	GameState.up.radius = 20
 	GameState.up.stamina = 60
 	page.refresh()
-	check(is_equal_approx(GameState.slap_radius(), 154.0), "范围满20级实际半径为154")
+	check(is_equal_approx(GameState.slap_radius(), 160.0), "范围满20级实际半径为160")
 	for id in ["speed", "radius", "stamina"]:
 		check(page.cards[id].button.disabled and page.cards[id].button.text == "已满级", "满级状态准确 " + id)
 		var preview := GameState.upgrade_preview(id)

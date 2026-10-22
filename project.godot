@@ -15,9 +15,9 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 [application]
 
 config/name="拍案三国"
-config/description="古代三国增量拍卡：将牌分散在城池，滚轮缩放、靠边移动、右上小地图可收起；单击圆圈赚钱，升级范围。"
+config/description="古代三国增量拍卡：将牌分散在城池，滚轮缩放、靠边移动、右下小地图点击定位；单击圆圈赚钱，升级范围。"
 config/version="2.5.0"
-run/main_scene="res://scenes/MainMenu.tscn"
+run/main_scene="res://scenes/Main.tscn"
 config/features=PackedStringArray("4.7", "GL Compatibility")
 
 [autoload]

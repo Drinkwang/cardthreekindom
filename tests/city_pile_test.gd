@@ -75,8 +75,9 @@ func _ready() -> void:
 
 func _test_radius() -> void:
 	fixture()
+	GameState.retreat()
 	check(GameState.up_def("radius").size() > 0, "范围是实际永久升级项")
-	check(is_equal_approx(GameState.slap_radius(), 34.0), "初始世界拍卡圆半径34")
+	check(is_equal_approx(GameState.slap_radius(), 40.0), "初始世界拍卡圆半径40")
 	GameState.gold = 10000.0
 	var before: Dictionary = GameState.up.duplicate(true)
 	var gold := GameState.gold
@@ -85,8 +86,8 @@ func _test_radius() -> void:
 	var preview := GameState.upgrade_preview("radius")
 	check(GameState.up == before and GameState.gold == gold, "范围预览不改等级和金币")
 	check(GameState.round_duration == duration and GameState.pile_health() == hp, "范围预览不改当前局和牌堆")
-	check(is_equal_approx(float(preview.current.radius), 34.0), "范围预览当前值真实")
-	check(is_equal_approx(float(preview.next.radius), 40.0), "范围下一级半径增加6")
+	check(is_equal_approx(float(preview.current.radius), 40.0), "范围预览当前值真实")
+	check(is_equal_approx(float(preview.next.radius), 46.0), "范围下一级半径增加6")
 	check(GameState.upgrade_cost("radius") == 24, "首次范围升级24金币")
 	check(GameState.buy_upgrade("radius"), "范围实际可购买")
 	check(is_equal_approx(GameState.gold, gold - 24.0), "范围购买精确扣金币")
@@ -100,14 +101,14 @@ func _test_radius() -> void:
 	GameState.up.radius = 20
 	gold = GameState.gold
 	preview = GameState.upgrade_preview("radius")
-	check(GameState.upgrade_maxed("radius") and is_equal_approx(GameState.slap_radius(), 154.0), "范围20级半径154封顶")
+	check(GameState.upgrade_maxed("radius") and is_equal_approx(GameState.slap_radius(), 160.0), "范围20级半径160封顶")
 	check(preview.current == preview.next, "满级预览不虚构下一档")
 	check(not GameState.buy_upgrade("radius") and GameState.gold == gold, "满级不能扣钱")
 	GameState.up.erase("radius")
 	before = GameState.up.duplicate(true)
 	preview = GameState.upgrade_preview("radius")
 	check(GameState.up == before and not GameState.up.has("radius"), "老存档缺少范围键时预览仍保持只读")
-	check(is_equal_approx(float(preview.current.radius), 34.0), "旧存档范围默认从小圆开始")
+	check(is_equal_approx(float(preview.current.radius), 40.0), "旧存档范围默认从小圆开始")
 
 func _test_city_pile() -> void:
 	fixture()
@@ -228,7 +229,11 @@ func _test_camera_and_area() -> void:
 	check(main._table.clip_contents, "镜头世界按牌堆视口裁切")
 	check(main._slap_cursor != null and main._slap_cursor.mouse_filter == Control.MOUSE_FILTER_IGNORE, "范围光标不挡单击输入")
 	main._reset_camera()
+	var default_pan: Vector2 = main._camera_pan
 	var anchor: Vector2 = main._table.size * 0.5
+	var default_world: Vector2 = main._screen_to_world(anchor)
+	# 锚点缩放使用城中心，避免缩到全城时正确的边界夹取改变开局城区锚点。
+	main._navigate_minimap(main._world_size * 0.5)
 	main._cursor_preview = anchor
 	var original_world: Vector2 = main._screen_to_world(anchor)
 	for zoom in [0.85, 1.4, 1.0]:
@@ -273,14 +278,15 @@ func _test_camera_and_area() -> void:
 	check(main._world_to_screen(original_world).distance_to(after_pan) < 0.01, "释放后的鼠标运动不再平移世界")
 	check(GameState.round_slaps == pan_slaps and GameState.gold == pan_gold, "平移镜头不拍卡不发金币")
 	main._set_camera_zoom(100.0, anchor)
-	check(is_equal_approx(main._camera_zoom, 4.0), "镜头放大限制在400%")
+	check(is_equal_approx(main._camera_zoom, 8.0) and main._zoom_label.text == "+100%", "镜头放大限制在默认视野的+100%")
 	main._set_camera_zoom(0.01, anchor)
-	check(is_equal_approx(main._camera_zoom, 0.65), "镜头缩小限制在65%")
-	for button in main._camera_toolbar.get_child(0).get_children():
-		if button is Button and button.text == "全城":
+	check(is_equal_approx(main._camera_zoom, 0.65), "镜头缩小限制在实际倍率0.65")
+	for button in main._camera_toolbar.find_children("*", "Button", true, false):
+		if button is Button and button.text == "默认":
 			button.pressed.emit()
-	check(is_equal_approx(main._camera_zoom, 1.0) and main._camera_pan.is_zero_approx(), "实际全城按钮恢复100%镜头和零平移")
-	check(main._world_to_screen(original_world).distance_to(anchor) < 0.01 and main._screen_to_world(anchor).distance_to(original_world) < 0.01, "归中后城池世界中心和视口中心仍可双向对应")
+	check(is_equal_approx(main._camera_zoom, 4.0) and main._camera_pan.is_equal_approx(default_pan) and main._zoom_label.text == "0%", "实际默认按钮恢复开局倍率和城区平移")
+	check(main._world_to_screen(default_world).distance_to(anchor) < 0.01 and main._screen_to_world(anchor).distance_to(default_world) < 0.01, "默认城区和视口中心仍可双向对应")
+	main._navigate_minimap(main._world_size * 0.5)
 	# 将一张真牌摆在控制区后面，保证输入阻挡验证不是拍空的偶然结果。
 	var toolbar_point: Vector2 = main._camera_toolbar.get_rect().get_center()
 	var toolbar_world: Vector2 = main._screen_to_world(toolbar_point)
@@ -306,7 +312,7 @@ func _test_camera_and_area() -> void:
 	check(not main._area_targets(card_center, 100.0).has(0), "零厚度牌即使仍可见也不参与命中")
 	put_card(main, 0, card_center + Vector2(-40, -30), Vector2(40, 60))
 	put_card(main, 1, card_center + Vector2(0, -30), Vector2(40, 60))
-	put_card(main, 2, card_center + Vector2(38, -30), Vector2(40, 60))
+	put_card(main, 2, card_center + Vector2(44, -30), Vector2(40, 60))
 	var world_targets: Array = main._area_targets(card_center, GameState.slap_radius())
 	check(world_targets.size() == 2 and world_targets.has(0) and world_targets.has(1), "小圆同一掌覆盖相邻两张牌")
 	for zoom in [0.85, 1.4]:
@@ -345,7 +351,7 @@ func _test_camera_and_area() -> void:
 	main._slap_area(screen_point)
 	check(GameState.round_slaps == before_slaps and GameState.gold == gold, "打开覆盖层当帧范围输入不穿透")
 	await frames()
-	check(GameState.narrative_paused, "看升级时手动轮计时暂停")
+	check(GameState.narrative_paused and not GameState.in_battle, "看升级时当前轮已结算并处于休息")
 	main._home.open_section("upgrade")
 	await frames()
 	var page = main._home._upgrade_page
@@ -359,12 +365,24 @@ func _test_camera_and_area() -> void:
 		check(GameState.upgrade_level("radius") == 1, "范围卡实际按钮买到升级")
 		check(is_equal_approx(GameState.slap_radius(), float(preview.next.radius)), "实际购买令光标世界范围变大")
 		check(page.cards.radius.value.text.contains("→"), "范围卡显示当前到下一级的增量")
-		check(main._area_targets(card_center, GameState.slap_radius()).has(2), "半径升级真实覆盖原先圆外的第三张牌")
-		main._close_home()
+		check(GameState.battle.is_empty() and not GameState.round_active, "休息购买范围不会恢复旧牌堆或旧计时")
+		main._home.return_to_hub()
+		main._home._primary_action.pressed.emit()
+		await frames()
+		check(GameState.in_battle and not main._home.visible, "休息买升级后明确开始下一轮")
+		for i in range(main._cards.size()):
+			put_card(main, i, Vector2(6000 + i * 100, 6000), Vector2(40, 60))
+		card_center = main._screen_to_world(anchor)
+		put_card(main, 0, card_center + Vector2(-40, -30), Vector2(40, 60))
+		put_card(main, 1, card_center + Vector2(0, -30), Vector2(40, 60))
+		put_card(main, 2, card_center + Vector2(44, -30), Vector2(40, 60))
+		hp2 = float(GameState.battle[2]["hp"])
+		screen_point = main._world_to_screen(card_center)
+		check(main._area_targets(card_center, GameState.slap_radius()).has(2), "下一轮半径升级真实覆盖原先圆外的第三张牌")
 		main._cursor_preview = screen_point
 		await frames()
 		var screen_radius: float = main._world_to_screen(card_center + Vector2(GameState.slap_radius(), 0)).distance_to(screen_point)
-		check(main._slap_cursor.visible and is_equal_approx(main._slap_cursor.radius, screen_radius), "关闭升级后实际圆圈立即使用增大范围")
+		check(main._slap_cursor.visible and is_equal_approx(main._slap_cursor.radius, screen_radius), "下一轮实际圆圈使用增大范围")
 		before_slaps = GameState.round_slaps
 		main._slap_area(screen_point)
 		check(GameState.round_slaps == before_slaps + 1 and float(GameState.battle[2]["hp"]) < hp2, "升级后同掌实际伤到新覆盖的第三牌")

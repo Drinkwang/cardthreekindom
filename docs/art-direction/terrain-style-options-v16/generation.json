@@ -1,0 +1,79 @@
+{
+  "date": "2026-10-18",
+  "purpose": "Ten terrain-only art-direction previews; not integrated into the game",
+  "tool": "Built-in image_gen.imagegen",
+  "reference": "00-reference.png",
+  "preserved_design": [
+    "top HUD",
+    "bottom dock and minimap",
+    "zoom controls",
+    "six enemy cards and portraits",
+    "protagonist and empty team slots",
+    "aiming ring",
+    "camera and scene layout"
+  ],
+  "note": "These are generated style previews, not pixel-exact masked production layers. Small generated lettering/pixel differences are not proposed UI changes. Implementation will retain existing separate UI and card layers.",
+  "shared_prompt": "Use case: style-transfer. Asset type: ONE terrain-only alternate style of the provided game screenshot, not a new UI design.\nInput image 1 is the SOLE EDIT TARGET. This is a controlled A/B art-direction comparison. Keep the original canvas size, crop, camera angle and composition.\nALLOWED TO CHANGE: ONLY the world environment artwork behind the cards: paving and soil, roofs and buildings, city wall and gate, trees and shrubs, pond, bridge, rocks and their environment shadows. Apply the requested medium/style to those environment pixels only. Preserve the exact geometry and placement of every environmental landmark. Do not add or remove structures or scenery, do not change the season, time of day, weather, historical period or gameplay layout.\nABSOLUTELY LOCKED / DO NOT REDRAW OR RESTYLE:\n(1) Entire top paper HUD, title, seal, all icons, text, all digits, timer bar and return button.\n(2) Entire bottom paper dock, seal, protagonist portrait, three empty team slots, all text, and the ENTIRE minimap including its thumbnail, dots, frame and viewport rectangle.\n(3) Upper-left floating zoom controls and return-to-target button.\n(4) All SIX enemy cards, including their exact outer paper silhouettes, rotations, positions, portraits, names, HP bars, digits and contact shadows. These cards stay in the original detailed Chinese printed illustration style even when the environment is in a radically different medium.\n(5) The thin broken vermilion targeting ring near the Cao Cao card, unchanged in exact shape, position and color.\nEverything listed as LOCKED must be a faithful unchanged copy of the input, not reinterpreted in the requested style. Never pixelate, simplify, recolor, blur, repaint or relabel any UI or portrait card. Do NOT apply a global image filter. This is a clean two-layer image: original protected 2D interface and cards in front; restyled terrain only behind them.\nTerrain must remain cohesive and richly detailed but quiet enough behind the cards for readable gameplay. No rectangular collage seams. No border, title, caption, reference label, watermark or extra text added to the picture.\nRequested terrain style:\n",
+  "variants": [
+    {
+      "id": "01",
+      "name": "青绿工笔",
+      "file": "01-gongbi.png",
+      "style_prompt": "Paint ONLY the environment as refined Chinese gongbi mineral-pigment painting: extraordinarily fine controlled ink outlines, rich azurite blue and malachite green in roofs, planting and stone recesses, warm ivory paving highlights and restrained cinnabar wood accents. Detailed hand-painted ornamental texture but not ornamental UI. Flatten environment shading slightly into elegant traditional painting while preserving its exact geometry. This should feel more jewel-like and precise than the original sepia illustration."
+    },
+    {
+      "id": "02",
+      "name": "淡彩水墨",
+      "file": "02-ink-wash.png",
+      "style_prompt": "Paint ONLY the environment as poetic Chinese ink-wash landscape art adapted to the exact same courtyard: expressive but controlled ink values, delicate dry-brush stone marks, soft pale ochre and grey-jade washes, ink foliage and translucent atmospheric edges. Keep every existing building, bridge and stone slab structurally legible in its original position. Quiet lyrical ink art, NOT a blank map, not calligraphy artwork, not an all-white empty field."
+    },
+    {
+      "id": "03",
+      "name": "通透水彩",
+      "file": "03-watercolor.png",
+      "style_prompt": "Paint ONLY the environment as exquisite transparent watercolor illustration: luminous layered washes, natural granulation, subtle backruns within material boundaries, soft but readable stone and roof edges, golden-green leaves and clear jade pond. Fresh light-filled plein-air watercolor with convincing fine detail, no dark contour-heavy comic treatment. Preserve all architectural shapes and their placements, daylight and camera exactly."
+    },
+    {
+      "id": "04",
+      "name": "油画厚涂",
+      "file": "04-painterly-oil.png",
+      "style_prompt": "Paint ONLY the environment as a sophisticated hand-painted oil/gouache strategy-game background with visible confident impasto brushwork, tactile masonry and timber, rich sculpted foliage, warm-cool color interplay and dimensional but controlled natural light. Edges alternate crisp and soft artistically, and focal texture follows the original scenery. Not photorealism, not blurry or muddy. Retain the exact original composition and same courtyard geometry."
+    },
+    {
+      "id": "05",
+      "name": "复古像素",
+      "file": "05-pixel-art.png",
+      "style_prompt": "Render ONLY the environment as masterful high-detail 16-bit-era strategy-game pixel art: clearly deliberate square pixels, hand-clustered stone and roof textures, restrained palette with beautiful color ramps, crisp stair-step silhouettes, selective dithering, readable green foliage and golden leaves. Pixels should be evident at this screen size, approximately 3–4 output pixels per art pixel. NO blur, no nearest-neighbor filtering applied to the whole image. CRITICAL: the cards, their portraits, text, aiming ring, HUD and minimap remain smooth and absolutely unpixelated copies of the input."
+    },
+    {
+      "id": "06",
+      "name": "赛璐璐动画",
+      "file": "06-cel-animation.png",
+      "style_prompt": "Render ONLY the environment as premium hand-drawn cel-animation background art: elegant clean contours, broad beautifully organized colors, two or three confident shadow tones per material, simplified but expertly drawn roof tiles and stone patterns, clean jade water and crisp leaf clusters. Charming cinematic animation craftsmanship, not chibi, not cute round toy objects, not vector UI. Same original buildings and exact same geometry, not a redesigned village."
+    },
+    {
+      "id": "07",
+      "name": "低多边形",
+      "file": "07-low-poly.png",
+      "style_prompt": "Render ONLY the environment as a polished stylized low-poly 3D game scene while keeping the exact original camera, silhouettes and placements: deliberate visible planar facets in stone, faceted angular tree canopies, simplified clean roof tile masses, flat-shaded crafted timber, sophisticated warm daylight and ambient occlusion. Geometrically elegant, not a blocky voxel world and not realistic PBR. Keep the cards and all UI fully unchanged as original 2D artwork; no 3D bevels on cards or HUD."
+    },
+    {
+      "id": "08",
+      "name": "立体纸雕",
+      "file": "08-paper-cut.png",
+      "style_prompt": "Transform ONLY the environment into an exquisite handmade layered cut-paper diorama: stone paving built from irregular thin paper pieces, tiled roofs cut from indigo paper, precisely layered leaf clusters, jade pond layers, tiny paper bridge, subtly visible paper fibers and short natural inter-layer shadows. Clearly crafted physical paper rather than a normal illustration with paper texture. Preserve original shapes, architecture, courtyard layout and viewpoint. Do not add paper borders around the screen, do not restyle UI or cards, no tilt-shift blur."
+    },
+    {
+      "id": "09",
+      "name": "黏土微缩",
+      "file": "09-clay-miniature.png",
+      "style_prompt": "Transform ONLY the environment into an artisan handmade clay-and-ceramic miniature set: gently rounded sculpted stone slabs, carefully modeled tiled roofs and wood beams in matte clay, subtly hand-worked surfaces, sculptural tree foliage, glossy fired-jade pond water. Detailed mature museum-diorama craft, NOT childish chibi and not plastic toys. Same environment geometry, the same camera and soft sun direction, no scale-model table edge and no miniature photography blur. Cards and all UI remain untouched flat 2D original artwork."
+    },
+    {
+      "id": "10",
+      "name": "写实材质",
+      "file": "10-realistic-pbr.png",
+      "style_prompt": "Render ONLY the environment as a premium realistic physically based historical game environment: believable weathered limestone, natural moss in stone joints, individually detailed slate tiles, aged timber and baskets, realistic willow and ginkgo foliage, physically coherent soft sunlight, subtle reflections in jade pond water. Photorealistic MATERIALS on precisely the same original building and terrain geometry. Do not change camera angle or composition, do not add realistic people, cinematic depth of field or a new sky. All portrait cards and UI remain exactly the original illustrated 2D overlay."
+    }
+  ]
+}

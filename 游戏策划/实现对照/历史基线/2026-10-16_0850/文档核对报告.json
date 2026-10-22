@@ -1,0 +1,34 @@
+{
+  "checked_utc": "2026-10-16T01:04:13.326886+00:00",
+  "scope": "Documentation coverage, local links and line bounds, runtime snapshot consistency, resource existence, source fingerprints; not full gameplay regression.",
+  "markdown_files": 32,
+  "local_links": 1166,
+  "source_line_links": 850,
+  "cards": 169,
+  "cities": 21,
+  "stages": 201,
+  "upgrades": 13,
+  "packs": 9,
+  "buildings": 30,
+  "routes": 4,
+  "story_events": 12,
+  "story_pages": 14,
+  "card_art_mappings": 169,
+  "source_fingerprints": 37,
+  "screenshots": {
+    "升级_1280x720.png": [
+      1280,
+      720
+    ],
+    "开包_1280x800.png": [
+      1280,
+      800
+    ],
+    "拍牌_1280x720.png": [
+      1280,
+      720
+    ]
+  },
+  "issues": [],
+  "passed": true
+}

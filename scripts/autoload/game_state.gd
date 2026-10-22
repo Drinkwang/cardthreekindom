@@ -7,17 +7,18 @@ signal changed                        # 高频：金币 / 耐力 / 血量 / 连�
 signal map_changed                    # 区域状态变化（解锁 / 克服 / 新周目）
 signal shop_changed                   # 持有卡 / 建筑 / 城池变化
 signal message(text: String)
+signal events_changed
 
 ## v1.2 正式保存成长与城建；局内桌面血量不保留。验证场景自动使用测试档。
 const SAVE_ENABLED := true
-const SAVE_PATH := "user://save_paan.json"
+const SAVE_PATH := "user://save_paan_adventure.json"
 const COMBO_THRESHOLD := 20
 const RANSOM := {3: 200, 4: 800, 5: 3200, 6: 12800}
 const SYNC_COST := {1: 10, 2: 40, 3: 160, 4: 640, 5: 2560}
 const OFFLINE_BASE_HOURS := 8.0
 const OFFLINE_EFFICIENCY := 0.5
-const PACK_PRICE_GROWTH := 1.05
 const Progression = preload("res://scripts/progression_rules.gd")
+const MapEvents = preload("res://scripts/map_events.gd")
 const ROUTES := ["魏线", "蜀线", "吴线", "群雄线"]
 
 # ---------- 拍卡手感 ----------
@@ -49,33 +50,25 @@ const CLEAR_GOLD_COEF := 0.8         # 首通奖励 = 该区域总血量 × 本�
 ##    v1.1：从「升级树」正式变成「技能树」—— 数值定义仍在本常量里，
 ##    层级与前置见下面的 SKILL_TREE。节点数值一个都没改。
 const UPGRADES: Array = [
-	{"id": "auto", "name": "自动拍", "unit": "已解锁", "kind": "add", "base": 0, "step": 1, "lv": 1,
-	 "cost": 60, "growth": 1.0, "desc": "按拍速自动轻拍，间隔为手拍3倍、伤害25%；在限时轮内练已清除的城池卡段"},
-	{"id": "auto_next", "name": "自动下一趟", "unit": "已解锁", "kind": "add", "base": 0, "step": 1, "lv": 1,
-	 "cost": 120, "growth": 1.0, "desc": "练习结束休息4秒再铺原城牌堆；持续挂机及离线练习，不替你推进主线"},
-	{"id": "auto_power", "name": "自动助力", "unit": "%", "kind": "add", "base": 25, "step": 5, "lv": 3,
-	 "cost": 180, "growth": 2.0, "desc": "自动拍伤害25%→40%；手拍仍是冲关主力"},
 	{"id": "stamina", "name": "时长", "unit": "秒", "kind": "add", "base": Progression.ROUND_SECONDS, "step": Progression.ROUND_SECONDS_PER_LEVEL, "lv": 60,
-	 "cost": 18, "growth": 1.20, "desc": "每轮基础30秒，每级延长2秒，留出更多赚钱时间"},
+	 "cost": 1, "growth": 1.0, "desc": "每轮基础30秒，每级延长2秒，留出更多赚钱时间"},
 	{"id": "speed", "name": "拍速", "unit": "拍/秒", "kind": "mult", "base": 1.0 / Progression.SLAP_INTERVAL, "factor": 1.08,
-	 "step": 0, "lv": 40, "cost": 24, "growth": 1.25, "desc": "拍击频率×1.08/级；初始轻拍0.6秒，重拍冷却为轻拍×1.8"},
-	{"id": "radius", "name": "范围", "unit": "半径", "kind": "add", "base": 34, "step": 6, "lv": 20,
-	 "cost": 24, "growth": 1.22, "desc": "拍卡圆圈每级扩大6；单击同时拍中圆内所有卡牌，伤害与一掌冷却共享"},
+	 "step": 0, "lv": 40, "cost": 1, "growth": 1.0, "desc": "拍击频率×1.08/级；初始轻拍0.6秒，重拍冷却为轻拍×1.8"},
+	{"id": "radius", "name": "范围", "unit": "半径", "kind": "add", "base": 40, "step": 6, "lv": 20,
+	 "cost": 1, "growth": 1.0, "desc": "拍卡圆圈每级扩大6；单击同时拍中圆内所有卡牌，伤害与一掌冷却共享"},
 	{"id": "power", "name": "拍力", "unit": "倍", "kind": "mult", "base": 1.0, "factor": 1.12,
-	 "step": 0, "lv": 0, "cost": 18, "growth": 1.20, "desc": "拍力 ×1.12/级（复利叠乘，无上限）"},
+	 "step": 0, "lv": 0, "cost": 1, "growth": 1.0, "desc": "拍力 ×1.12/级（复利叠乘，无上限）"},
 	{"id": "carry", "name": "携带位", "unit": "个", "kind": "add", "base": 3, "step": 1, "lv": 3,
-	 "cost": 300, "growth": 2.00, "desc": "除主角外，能带上桌的武将数"},
+	 "cost": 1, "growth": 1.0, "desc": "除主角外，能带上桌的武将数"},
 	{"id": "crit", "name": "暴击", "unit": "%", "kind": "add", "base": 0, "step": 4, "lv": 8,
-	 "cost": 60, "growth": 1.40, "desc": "暴击率 +4%/级（×2 伤害）"},
+	 "cost": 1, "growth": 1.0, "desc": "暴击率 +4%/级（×2 伤害）"},
 	{"id": "fortune", "name": "财路", "unit": "%", "kind": "add", "base": 0, "step": 20, "lv": 10,
-	 "cost": 40, "growth": 1.35, "desc": "击杀掉金 +20%/级"},
-	{"id": "idle", "name": "挂机效率", "unit": "%", "kind": "add", "base": 0, "step": 5, "lv": 10,
-	 "cost": 80, "growth": 1.40, "desc": "离线产出效率 +5%/级，离线上限 +1h/级"},
+	 "cost": 1, "growth": 1.0, "desc": "击杀掉金 +20%/级"},
 	{"id": "equip", "name": "装备槽", "unit": "格", "kind": "add", "base": 0, "step": 1, "lv": 5,
-	 "cost": 150, "growth": 1.60, "desc": "依次解锁 兵器/铠甲/坐骑/兵书/宝物 五个部位"},
+	 "cost": 1, "growth": 1.0, "desc": "依次解锁 兵器/铠甲/坐骑/兵书/宝物 五个部位"},
 	# v1.1 新增：士卒可以挂到武将身上（用户要求「未来点亮技能树里的武将带兵能力 可以直接把兵给武将装备」）
 	{"id": "troops", "name": "武将带兵", "unit": "兵", "kind": "add", "base": 0, "step": 1, "lv": 3,
-	 "cost": 600, "growth": 2.00,
+	 "cost": 1, "growth": 1.0,
 	 "desc": "每个上阵武将 +1 兵位（0 → 3）；兵位上的士卒战力全额计入卡组，且不占携带位"},
 ]
 
@@ -86,9 +79,6 @@ const UPGRADES: Array = [
 ##    否则会把"玩家自己决定先点什么"变成"被树逼着点"。
 ## req 里列的是「至少点亮过一次（Lv.1）」的前置技能 id。
 const SKILL_TREE: Array = [
-	{"id": "auto", "tier": 2, "req": ["power"]},
-	{"id": "auto_next", "tier": 3, "req": ["auto"]},
-	{"id": "auto_power", "tier": 3, "req": ["auto_next"]},
 	{"id": "stamina", "tier": 1, "req": []},
 	{"id": "speed", "tier": 1, "req": []},
 	{"id": "radius", "tier": 1, "req": []},
@@ -97,7 +87,6 @@ const SKILL_TREE: Array = [
 	{"id": "crit",    "tier": 2, "req": ["power"]},
 	{"id": "fortune", "tier": 2, "req": ["carry"]},
 	{"id": "equip",   "tier": 2, "req": ["power"]},
-	{"id": "idle",    "tier": 3, "req": ["fortune"]},
 	{"id": "troops",  "tier": 3, "req": ["carry", "equip"]},
 ]
 const SKILL_TIER_NAME := {1: "一 · 立身", 2: "二 · 扬名", 3: "三 · 成军"}
@@ -129,6 +118,7 @@ const BUILDING_LV_GROWTH := 1.45
 const BuildingTraits = preload("res://scripts/building_traits.gd")
 
 # ---------- effect 词条（武将被动 / 装备属性 共用） ----------
+const CardTraits = preload("res://scripts/build_traits.gd")
 const MOD_KEYS: Array = [
 	"power_pct",       # 拍力 +X%
 	"power_mult",      # 拍力 ×N（多段乘区）
@@ -159,6 +149,12 @@ const PCT_KEYS: Array = [
 
 # ---------- 经济与收藏 ----------
 var gold: float = 0.0
+var player_lv := 1
+var player_xp := 0
+var skill_points := 0
+var hero_xp: Dictionary = {}
+var map_events: Dictionary = {}
+var items: Dictionary = {}
 var owned: Dictionary = {}          # card_id -> 数量（持有的一切：武将/士兵/装备/建筑/城池）
 var captured: Array = []            # 囚禁中的武将 card_id（可招降）
 var total_packs: int = 0
@@ -234,6 +230,7 @@ var bonus: Dictionary = {
 
 # 跨桌保留完成记号与最高伤害，敌牌剩余血量仍每次重置。
 var table_wins: Dictionary = {}
+var cleared_zones: Dictionary = {} # 城池 -> 已永久征服的0基分区号，允许任意顺序。
 var table_best: Dictionary = {}
 var first_flip_reward := false
 var story_seen: Array = []
@@ -250,6 +247,7 @@ var offline_report: String = ""
 
 var _idle_buffer: float = 0.0
 var _save_timer: float = 0.0
+var _manual_damage_context := false
 ## 构筑计数与冷却仅属于当前桌，和敌牌生命一样不跨桌或跨读档。
 var build_clock: float = 0.0
 var build_counts: Dictionary = {}
@@ -376,24 +374,78 @@ func hero_mods() -> Dictionary:
 
 
 func hero_equip_mods(who: String) -> Dictionary:
-	## 某个武将身上所有装备提供的词条。
+	## 装备只能增加佩戴者本来具有的同名参数。
 	var m := empty_mods()
 	for id in hero_equip.get(who, []):
-		m = add_mods(m, parse_effect(str(GameData.card(str(id)).get("effect", ""))))
+		m = add_mods(m, _matched_equipment_mods(who, str(id)))
+	var amp := 1.0 + float(bonus.get("equip_pct", 0.0)) / 100.0
+	for key in PCT_KEYS:
+		m[key] = float(m[key]) * amp
 	return m
+
+
+func _matched_equipment_mods(who: String, id: String) -> Dictionary:
+	var result := empty_mods()
+	if not is_hero(who): return result
+	var innate := parse_effect(str(GameData.card(who).get("effect", "")))
+	var equipment := parse_effect(str(GameData.card(id).get("effect", "")))
+	for key in MOD_KEYS:
+		if not is_zero_approx(float(innate[key])):
+			result[key] = float(equipment[key])
+	return result
+
+
+func hero_trait_params(who: String) -> Dictionary:
+	var distance := float(CardTraits.GATHER_HEROES.get(who, 0.0))
+	if distance <= 0.0: return {}
+	for id in hero_equip_of(who):
+		distance += float(CardTraits.GATHER_EQUIPMENT.get(str(id), 0.0))
+	return {"gather_distance": distance, "gather_radius": CardTraits.GATHER_RADIUS}
+
+
+func equipment_effect_text(who: String, id: String) -> String:
+	if CardTraits.GATHER_EQUIPMENT.has(id):
+		if not CardTraits.GATHER_HEROES.has(who):
+			return "不契合：本将没有聚拢特性，装备不产生效果"
+		return "契合：聚拢距离 +%s（与本将原有距离相加）" % fmt(float(CardTraits.GATHER_EQUIPMENT[id]))
+	var equipment := parse_effect(str(GameData.card(id).get("effect", "")))
+	var matched := _matched_equipment_mods(who, id)
+	var names := {"power_pct": "拍力加成", "power_mult": "拍力倍率", "gold_pct": "金币加成",
+		"stamina_flat": "固定时长", "stamina_pct": "时长加成", "crit_pct": "暴击率",
+		"offline_pct": "离线收益", "paian_pct": "拍案加成", "paian_mult": "拍案倍率",
+		"threshold": "拍案门槛", "threshold_set": "指定拍案门槛", "combo_gain": "连击积累",
+		"click_pct": "点击伤害", "pack_pct": "卡包价格", "all_pct": "全属性",
+		"extra_slaps": "额外时长", "combo_shield": "连击保护", "relax_drag": "滑拍判定"}
+	var active: Array[String] = []
+	var inactive: Array[String] = []
+	for key in MOD_KEYS:
+		if is_zero_approx(float(equipment[key])): continue
+		var label := str(names.get(key, key))
+		if is_zero_approx(float(matched[key])):
+			inactive.append(label)
+		else:
+			var amount := float(matched[key])
+			if key in PCT_KEYS: amount *= 1.0 + float(bonus.get("equip_pct", 0.0)) / 100.0
+			var unit := "%" if key in PCT_KEYS else ""
+			if key in ["stamina_flat", "extra_slaps"]:
+				amount *= 2.0
+				unit = "秒"
+			if key == "combo_shield":
+				active.append("连击保护（已有，不叠加）")
+			else:
+				active.append("%s %s%s%s" % [label, "+" if amount > 0 else "", fmt(amount), unit])
+	var text := "不契合：本将没有对应特性，装备不产生效果" if active.is_empty() else "契合：" + "、".join(active)
+	if not inactive.is_empty() and not active.is_empty(): text += "；不契合：" + "、".join(inactive)
+	return text
 
 
 func equip_mods() -> Dictionary:
 	## ⚠️ v1.1：装备是**每将独立**的，所以这里要按武将汇总 —— 而且只算**上阵**的武将
 	##    （与"只算上阵的卡"一致：没上阵的武将，它身上的装备也不上桌）。
-	## 再用功能建筑「军械坊」放大百分比类词条。
+	## 军械坊已在各将的契合词条中放大，不能重复乘一次。
 	var m := empty_mods()
 	for who in carry:
 		m = add_mods(m, hero_equip_mods(str(who)))
-	var amp: float = 1.0 + float(bonus.get("equip_pct", 0.0)) / 100.0
-	if not is_equal_approx(amp, 1.0):
-		for k in PCT_KEYS:
-			m[k] = float(m[k]) * amp
 	return m
 
 
@@ -437,12 +489,7 @@ func _boot() -> void:
 
 
 func _process(delta: float) -> void:
-	if not narrative_paused:
-		advance_round(delta)
-	var income := advance_buildings(delta)
-	if income > 0.0:
-		gold += income
-		changed.emit()
+	if not narrative_paused: advance_round(delta)
 	if SAVE_ENABLED:
 		_save_timer += delta
 		if _save_timer >= 30.0:
@@ -455,10 +502,51 @@ func table_count(idx: int) -> int:
 	return Progression.table_count(idx)
 
 func table_progress(idx: int) -> int:
-	return table_count(idx) if _is_cleared(idx) else clampi(int(table_wins.get(idx, 0)), 0, table_count(idx))
+	return (cleared_zones.get(idx, []) as Array).size()
+
+func zone_count(idx: int) -> int:
+	return table_count(idx)
+
+func zone_cleared(idx: int, zone: int) -> bool:
+	return (cleared_zones.get(idx, []) as Array).has(zone)
+
+func zone_status(idx: int, zone: int) -> String:
+	if zone < 0 or zone >= zone_count(idx) or not is_unlocked(idx): return "locked"
+	return "cleared" if zone_cleared(idx, zone) else "available"
+
+func next_zone(idx: int) -> int:
+	for zone in range(zone_count(idx)):
+		if not zone_cleared(idx, zone): return zone
+	return -1
+
+func zone_hp(idx: int, zone: int) -> float:
+	return table_hp(idx, zone)
+
+func zone_name(idx: int, zone: int) -> String:
+	return "%s第%d区" % [GameData.region(idx).get("name", "城池"), zone + 1]
+
+func zone_rect(idx: int, zone: int) -> Rect2:
+	var rects := preload("res://scripts/city_layout.gd").zone_rects(zone_count(idx))
+	return rects[zone] if zone >= 0 and zone < rects.size() else Rect2()
+
+func battle_world_size() -> Vector2:
+	return preload("res://scripts/city_layout.gd").zone_world_size(zone_count(battle_region if battle_region > 0 else START_REGION))
+
+func get_enemy_world_center(i: int) -> Vector2:
+	if i < 0 or i >= battle.size(): return Vector2.ZERO
+	return Vector2(250, 250) + Vector2(float(battle[i].nx), float(battle[i].ny)) * (battle_world_size() - Vector2(500, 500))
+
+func zone_details(idx: int) -> Array[Dictionary]:
+	var result: Array[Dictionary] = []
+	for zone in range(zone_count(idx)):
+		result.append({"zone": zone, "name": zone_name(idx, zone), "rect": zone_rect(idx, zone),
+			"hp": zone_hp(idx, zone), "cards": _table_health_values(idx, zone).size(),
+			"cleared": zone_cleared(idx, zone), "status": zone_status(idx, zone),
+			"difficulty": maxi(1, ceili(float(zone + 1) / zone_count(idx) * 5.0))})
+	return result
 
 func table_hp(idx: int, completed: int = -1) -> float:
-	return Progression.table_hp(GameData.region(idx), table_progress(idx) if completed < 0 else completed)
+	return Progression.table_hp(GameData.region(idx), maxi(0, next_zone(idx)) if completed < 0 else completed)
 
 func table_best_value(idx: int, step: int) -> float:
 	return float(table_best.get("%d:%d" % [idx, step], 0.0))
@@ -529,45 +617,28 @@ func end_slap_batch() -> void:
 	if replenish and in_battle and round_active: _clear_region()
 
 func advance_round(delta: float) -> void:
-	# 自动轮按实际出手事件切分时间：大delta与正常帧具有相同动作、冷却及结算规则。
 	if narrative_paused or delta <= 0.0: return
+	if in_battle and round_active:
+		if battle_mode == "visit":
+			slap_cooldown_left = maxf(0.0, slap_cooldown_left - delta)
+			return
+		if MapEvents.advance(self, minf(delta, round_seconds_left)):
+			events_changed.emit()
 	var remaining := delta
-	while remaining > 0.000001 and not narrative_paused:
-		if not in_battle:
-			if not automation_enabled or not auto_unlocked() or upgrade_level("auto_next") < 1: break
-			var rest := minf(remaining, maxf(0.0, _auto_rest))
-			_auto_rest -= rest
-			remaining -= rest
-			if _auto_rest > 0.000001: break
-			if not start_practice(practice_region):
-				stop_automation(false)
-				break
-		var automated := automation_enabled and auto_unlocked() and battle_mode == "practice"
+	while remaining > 0.000001 and in_battle and round_active and not narrative_paused:
 		var slice := minf(remaining, round_seconds_left)
-		if automated: slice = minf(slice, maxf(0.0, auto_interval() - _auto_clock))
 		slice = minf(slice, _next_build_event_time())
 		if slice > 0.0:
 			slap_cooldown_left = maxf(0.0, slap_cooldown_left - slice)
-			if automated: _auto_clock += slice
 			round_seconds_elapsed += slice
 			round_seconds_left = maxf(0.0, round_seconds_left - slice)
 			stamina = int(ceil(round_seconds_left))
 			remaining -= slice
-			# 先同步计时再派发伤害事件；0秒边界仍结算刚过去的有效时间片。
 			_tick_build_effects(slice, true)
+		if not in_battle: break
 		if round_seconds_left <= 0.000001:
 			round_seconds_left = 0.0
 			settle_run("time_up")
-			continue
-		if automated and _auto_clock + 0.000001 >= auto_interval():
-			_auto_clock = maxf(0.0, _auto_clock - auto_interval())
-			var target := -1
-			var low := INF
-			for i in range(battle.size()):
-				if _build_alive(i) and float(battle[i]["hp"]) < low:
-					low = float(battle[i]["hp"])
-					target = i
-			if target >= 0: attack(target, false, true)
 		elif slice <= 0.0:
 			break
 
@@ -595,29 +666,26 @@ func _start_table(idx: int) -> bool:
 	last_outcome = {}
 	in_battle = true
 	last_slap = {}
-	last_battle_report = "%s · %s整堆%d张　每轮%d秒 · 间隔%.2f秒 · 轻拍%.1f · 总厚度%s" % [
-		GameData.region(idx).get("name", ""), "练习" if battle_mode == "practice" else "挑战",
-		battle.size(), stamina, slap_interval(), click_damage(), fmt(pile_max_health())]
+	MapEvents.ensure_region(self, idx)
+	events_changed.emit()
+	last_battle_report = "%s · 巡城处理宝箱与任务" % GameData.region(idx).get("name", "") if battle_mode == "visit" else "%s · 未征服分区%d张　每轮%d秒 · 间隔%.2f秒 · 轻拍%.1f · 总厚度%s" % [
+		GameData.region(idx).get("name", ""), battle.size(), stamina, slap_interval(), click_damage(), fmt(pile_max_health())]
 	changed.emit()
-	return not battle.is_empty()
+	return battle_mode == "visit" or not battle.is_empty()
 
 func _grant_table_reward(idx: int, step: int) -> void:
 	if idx != 1: return
+	if table_progress(idx) == 1:
+		for id in ["B06", "B08"]:
+			_building_stock_change(id, 0, 1)
 	var gift := "G00" if step == 0 else ("G04" if step == 2 else ("G05" if step == 4 else ""))
 	if gift != "":
 		owned[gift] = int(owned.get(gift, 0)) + 1
 		_auto_carry()
 		log_msg("获得将牌「%s」，构筑能让下一掌不一样。" % GameData.card_name(gift))
-	if step == 4:
-		for id in ["B06", "B08"]: owned[id] = int(owned.get(id, 0)) + 1
-		# 初次建城直接接上可理解的两卡组合，不要求先抽到产出来源。
-		place_building(1, "B06", 0, 0)
-		place_building(1, "B08", 0, 1)
-		log_msg("新野基建开放：农田→水井，每10秒6金币。去基建接上更多组合。")
+
 
 func practice_unlocked() -> bool:
-	for r in GameData.regions:
-		if table_progress(int(r["idx"])) > 0: return true
 	return false
 
 func _practice_target(idx: int) -> int:
@@ -626,36 +694,18 @@ func _practice_target(idx: int) -> int:
 		if table_progress(int(r["idx"])) > 0: return int(r["idx"])
 	return 0
 
-func start_practice(idx: int = 1) -> bool:
-	var target := _practice_target(idx)
-	if target == 0: return false
-	if in_battle: settle_run("returned")
-	practice_region = target
-	practice_table = clampi(table_progress(target) - 1, 0, table_count(target) - 1)
-	battle_mode = "practice"
-	battle_table = practice_table
-	_auto_clock = 0.0
-	_auto_rest = 0.0
-	return _start_table(target)
+func start_practice(_idx: int = 1) -> bool:
+	return false # 已征服分区不再刷新，挂机只通过建筑。
 
 func auto_unlocked() -> bool:
-	return upgrade_level("auto") > 0
+	return false
 
 func auto_ratio() -> float:
-	return clampf(upgrade_value("auto_power") / 100.0, 0.25, 0.40)
+	return 0.0
 
 func set_automation(enabled: bool) -> bool:
-	if enabled and (not auto_unlocked() or not practice_unlocked()): return false
-	automation_enabled = enabled
-	_auto_clock = 0.0
-	_auto_rest = 0.0
-	if enabled and (not in_battle or battle_mode != "practice"):
-		if in_battle: settle_run() # 已拍伤害有结算，不丢弃手动这一趟。
-		automation_enabled = true
-		start_practice(practice_region)
-	save_game()
-	changed.emit()
-	return true
+	stop_automation(false)
+	return not enabled
 
 func stop_automation(announce: bool = true) -> void:
 	automation_enabled = false
@@ -666,64 +716,13 @@ func stop_automation(announce: bool = true) -> void:
 		changed.emit()
 
 func _finish_automation_run() -> void:
-	if not automation_enabled or battle_mode != "practice": return
-	if upgrade_level("auto_next") > 0:
-		_auto_rest = Progression.REST_SECONDS
-	else:
-		automation_enabled = false
-		log_msg("自动练完这一趟。完成新野后可解锁持续练习。")
+	stop_automation(false)
 
-func advance_automation(delta: float) -> void:
-	if automation_enabled: advance_round(delta)
+func advance_automation(_delta: float) -> void:
+	stop_automation(false)
 
 func practice_rate() -> float:
-	# 保守离线工资：使用同轮时长、拍速、自动伤害与休息；不预支暴击或构筑伤害。
-	var idx := _practice_target(practice_region)
-	if idx == 0 or not auto_unlocked(): return 0.0
-	var duration := round_duration_value()
-	var actions := maxi(0, int(floor((duration - 0.000001) / auto_interval())))
-	var full: Array = []
-	var stages: Array = []
-	for step in range(table_progress(idx)):
-		for hp in _table_health_values(idx, step):
-			full.append(hp)
-			stages.append(step)
-	if full.is_empty(): return 0.0
-	var health := full.duplicate()
-	var paid: Dictionary = {}
-	var damage := click_damage() * auto_ratio()
-	var payout := 0.0
-	for ignored in range(actions):
-		var pick := -1
-		var low := INF
-		for i in range(health.size()):
-			if float(health[i]) > 0.0 and float(health[i]) < low:
-				pick = i
-				low = float(health[i])
-		if pick < 0: break
-		var actual := minf(damage, float(health[pick]))
-		health[pick] = float(health[pick]) - actual
-		payout += actual * Progression.DAMAGE_PAY
-		if float(health[pick]) <= 0.0: payout += float(full[pick]) * Progression.KILL_PAY
-		var stage := int(stages[pick])
-		if not paid.has(stage):
-			var stage_done := true
-			for i in range(health.size()):
-				if int(stages[i]) == stage and float(health[i]) > 0.0:
-					stage_done = false
-					break
-			if stage_done:
-				paid[stage] = true
-				payout += table_hp(idx, stage) * Progression.TABLE_BONUS
-		var complete := true
-		for hp in health:
-			if float(hp) > 0.0:
-				complete = false
-				break
-		if complete:
-			health = full.duplicate()
-			paid = {}
-	return payout * fortune_mult() * 60.0 / (duration + Progression.REST_SECONDS)
+	return 0.0 # 旧API保留给历史界面，建筑之外不再产生挂机工资。
 
 func progression_hint() -> String:
 	var idx := battle_region if battle_region > 0 and not _is_cleared(battle_region) else 0
@@ -732,11 +731,12 @@ func progression_hint() -> String:
 			if is_unlocked(int(r["idx"])) and not _is_cleared(int(r["idx"])):
 				idx = int(r["idx"])
 				break
-	if idx == 0: return "荆州全境完成 · 回旧城牌堆验证新组合"
+	if idx == 0: return "荆州全境已征服 · 经营建筑，整理收藏"
 	var done := table_progress(idx)
-	var goal := "%s 卡堆已清%d/%d段 · 当前段厚度%s" % [GameData.region(idx).get("name", ""), done, table_count(idx), fmt(table_hp(idx, done))]
-	var best := table_best_value(idx, done)
-	if best > 0.0: goal += " · 最好%.0f%%" % minf(100.0, best / table_hp(idx, done) * 100.0)
+	var zone := next_zone(idx)
+	var goal := "%s 已征服%d/%d区 · 推荐第%d区厚度%s" % [GameData.region(idx).get("name", ""), done, table_count(idx), zone + 1, fmt(table_hp(idx, zone))]
+	var best := table_best_value(idx, zone)
+	if best > 0.0: goal += " · 最好%.0f%%" % minf(100.0, best / table_hp(idx, zone) * 100.0)
 	var cost := mini(upgrade_cost("radius"), mini(upgrade_cost("power"), mini(upgrade_cost("stamina"), upgrade_cost("speed"))))
 	goal += " · " + ("可升级拍力、拍速、范围或时长" if gold >= cost else "再积累%s金币可练一笔" % fmt(cost - gold))
 	return goal
@@ -788,6 +788,7 @@ func can_fuse_hero(id: String) -> bool:
 	return is_hero(id) and (_hero_free_stock(id, 0) >= 3 or _hero_free_stock(id, 1) >= 3)
 
 func fuse_hero(id: String) -> bool:
+	if in_battle: return false
 	if not can_fuse_hero(id): return false
 	var quality := 1 if _hero_free_stock(id, 1) >= 3 else 0
 	var fine := hero_stock(id, 1)
@@ -802,9 +803,20 @@ func fuse_hero(id: String) -> bool:
 
 func _load_progression_state(d: Dictionary) -> void:
 	table_wins = {}
+	cleared_zones = {}
+	var zone_data: Dictionary = d.get("cleared_zones", {}) if d.get("cleared_zones", {}) is Dictionary else {}
 	for r in GameData.regions:
 		var idx := int(r["idx"])
-		table_wins[idx] = table_count(idx) if _is_cleared(idx) else clampi(int(d.get("table_wins", {}).get(str(idx), 0)), 0, table_count(idx) - 1)
+		var zones: Array[int] = []
+		var stored: Variant = zone_data.get(str(idx), [])
+		if stored is Array:
+			for value in stored:
+				var zone := int(value)
+				if zone >= 0 and zone < zone_count(idx) and not zones.has(zone): zones.append(zone)
+		zones.sort()
+		cleared_zones[idx] = zones
+		table_wins[idx] = zones.size()
+		if zones.size() == zone_count(idx): region_state[idx] = "cleared"
 	table_best = {}
 	for key in d.get("table_best", {}):
 		var bits := str(key).split(":")
@@ -818,25 +830,13 @@ func _load_progression_state(d: Dictionary) -> void:
 	practice_region = _practice_target(int(d.get("practice_region", 1)))
 	if practice_region == 0: practice_region = 1
 	practice_table = clampi(int(d.get("practice_table", 0)), 0, maxi(0, table_progress(practice_region) - 1))
-	automation_enabled = bool(d.get("automation_enabled", false)) and auto_unlocked() and practice_unlocked() and upgrade_level("auto_next") > 0
+	automation_enabled = false
 	narrative_paused = false
 	hero_refined = {}
 	for id in d.get("hero_refined", {}):
 		if is_hero(str(id)) and d["hero_refined"][id] is Array:
 			hero_refined[str(id)] = d["hero_refined"][id]
-	if int(d.get("progression_version", 0)) < 4:
-		# 已完成城池直接视为所有桌已完；旧将牌升级投资一次返还，收藏不删。
-		var refund := 0.0
-		for id in d.get("hero_lv", {}):
-			if not is_hero(str(id)) or int(owned.get(str(id), 0)) <= 0: continue
-			var star := 4 if str(id) == "G00" else int(GameData.card(str(id)).get("star", 2))
-			var old_level := clampi(int(d["hero_lv"][id]), 0, int(HERO_LV_MAX.get(star, 5)))
-			for level in range(old_level):
-				refund += round(float(HERO_LV_COST.get(star, 20)) * pow(HERO_LV_GROWTH, level))
-		gold += refund
-		if runs > 0 and not story_seen.has("opening_robbery"): story_seen.append("opening_robbery")
-		if refund > 0.0: offline_report = "武将改同名合成，已返还旧培养%s金币。" % fmt(refund)
-	hero_lv = {}
+
 
 
 # =====================================================================
@@ -844,6 +844,13 @@ func _load_progression_state(d: Dictionary) -> void:
 # =====================================================================
 func new_game() -> void:
 	gold = 0.0
+	player_lv = 1
+	player_xp = 0
+	skill_points = 0
+	hero_xp = {}
+	map_events = {}
+	items = {}
+	_manual_damage_context = false
 	owned = {"I01": 1}
 	captured = []
 	region_state = {}
@@ -890,6 +897,7 @@ func new_game() -> void:
 	hero_lv = {}
 	hero_refined = {}
 	table_wins = {}
+	cleared_zones = {}
 	table_best = {}
 	first_flip_reward = false
 	story_seen = []
@@ -915,13 +923,7 @@ func new_game() -> void:
 	region_state[START_REGION] = "available"
 	_grant_affinity(START_REGION)
 
-	# 开局：1 张主角卡 + 1 个卡包（5 张）。此时没有任何城池 —— 挂机是后面才解锁的事。
-	var starter := _draw_starter(5)
-	for id in starter:
-		owned[id] = int(owned.get(id, 0)) + 1
-	_auto_carry()
-	log_msg("开局：主角卡「%s」 + 一包卡（%s）。上阵 %d 张，每轮 %d 秒；圆圈拍卡即时赚金，升级拍力、拍速、范围和时长。" % [
-		GameData.card_name(HERO_ALWAYS), _names(starter), carry.size(), stamina_max_value()])
+	log_msg("孤身来到新野，拍翻敌牌后再招募同行。")
 
 	# 直接铺第一桌，玩家一进来就有一桌卡等着拍
 	ensure_table()
@@ -968,7 +970,7 @@ func bond_tier(rt: String) -> int:
 func affinity_unlock_text(rt: String) -> String:
 	var t := affinity_tier(rt)
 	if t >= 3: return "亲和 7 已达成 · 专属建筑已解锁"
-	if t == 2: return "亲和 5：槽位 +1"
+	if t == 2: return "亲和 5 · 基建位按已征服区数开放"
 	if t == 1: return "亲和 3：招降 -15%"
 	return "亲和 0"
 
@@ -1060,32 +1062,14 @@ func upgrade_maxed(id: String) -> bool:
 
 
 func upgrade_cost(id: String) -> int:
-	var u := up_def(id)
-	if u.is_empty():
-		return 0
-	return int(round(float(u["cost"]) * pow(float(u["growth"]), float(upgrade_level(id)))))
-
+	return 0 if up_def(id).is_empty() or upgrade_maxed(id) else 1
 
 func buy_upgrade(id: String) -> bool:
-	var u := up_def(id)
-	if u.is_empty():
-		return false
-	# v1.1：技能树前置门禁（浅门槛 —— 前置 ≥ Lv.1 即可）
-	if not skill_req_met(id):
-		log_msg("「%s」还点不了 —— %s" % [u.get("name", "?"), skill_req_text(id)])
-		return false
-	if upgrade_maxed(id):
-		log_msg("「%s」已满级。" % u.get("name", "?"))
-		return false
+	if in_battle or up_def(id).is_empty() or not skill_req_met(id) or upgrade_maxed(id): return false
 	var cost := upgrade_cost(id)
-	if gold < float(cost):
-		log_msg("金币不足（%s 升级需要 %d，现有 %d）" % [u.get("name", "?"), cost, int(gold)])
-		return false
-	gold -= float(cost)
-	var lv := upgrade_level(id) + 1
-	up[id] = lv
-	log_msg("点亮「%s」→ Lv.%d　现在 %s%s（-%d 金币）" % [
-		u.get("name", "?"), lv, fmt(upgrade_value(id)), str(u.get("unit", "")), cost])
+	if skill_points < cost: return false
+	skill_points -= cost
+	up[id] = upgrade_level(id) + 1
 	save_game()
 	shop_changed.emit()
 	changed.emit()
@@ -1111,22 +1095,21 @@ func skill_reqs(id: String) -> Array:
 
 
 func skill_req_met(id: String) -> bool:
+	if id in ["auto", "auto_next", "auto_power", "idle"]: return false
 	for req in skill_reqs(id):
 		if upgrade_level(str(req)) < 1: return false
-	if id == "auto" and table_progress(1) < 2: return false
-	if id in ["auto_next", "auto_power", "idle"] and not _is_cleared(1): return false
 	if id == "carry" and table_progress(1) < 3: return false
 	if id in ["equip", "troops"] and not _is_cleared(1): return false
 	return true
 
 
 func skill_req_text(id: String) -> String:
+	if id in ["auto", "auto_next", "auto_power", "idle"]: return ""
 	var miss := []
 	for req in skill_reqs(id):
 		if upgrade_level(str(req)) < 1: miss.append(str(up_def(str(req)).get("name", req)))
-	if id == "auto" and table_progress(1) < 2: miss.append("清除新野卡堆前2段")
-	if id in ["auto_next", "auto_power", "idle", "equip", "troops"] and not _is_cleared(1): miss.append("拍空新野整堆")
-	if id == "carry" and table_progress(1) < 3: miss.append("清除新野卡堆前3段")
+	if id in ["equip", "troops"] and not _is_cleared(1): miss.append("征服新野全城")
+	if id == "carry" and table_progress(1) < 3: miss.append("征服新野任意3区")
 	return "需先：" + " · ".join(miss) if not miss.is_empty() else ""
 
 
@@ -1155,8 +1138,44 @@ func total_upgrade_levels() -> int:
 
 
 func player_level() -> int:
-	# 1 级起步，每 3 个升级点算 1 级（纯展示）
-	return 1 + int(total_upgrade_levels() / 3)
+	return player_lv
+
+func player_xp_required() -> int:
+	return 20 + 10 * (player_lv - 1)
+
+func gain_player_xp(amount: int) -> void:
+	if amount <= 0: return
+	player_xp += amount
+	var leveled := false
+	while player_xp >= player_xp_required():
+		player_xp -= player_xp_required()
+		player_lv += 1
+		skill_points += 1
+		leveled = true
+	if leveled: save_game()
+	changed.emit()
+
+func hero_xp_of(id: String) -> int:
+	return int(hero_xp.get(id, 0)) if is_hero(id) else 0
+
+func hero_xp_required(id: String) -> int:
+	return 10 + 5 * (hero_level(id) - 1) if is_hero(id) and not hero_lv_maxed(id) else 0
+
+func gain_hero_xp(id: String, amount: int) -> void:
+	if amount <= 0 or not is_hero(id) or int(owned.get(id, 0)) <= 0 or hero_lv_maxed(id): return
+	hero_xp[id] = hero_xp_of(id) + amount
+	while not hero_lv_maxed(id) and hero_xp_of(id) >= hero_xp_required(id):
+		hero_xp[id] = hero_xp_of(id) - hero_xp_required(id)
+		hero_lv[id] = hero_level(id) + 1
+	if hero_lv_maxed(id): hero_xp[id] = 0
+
+func _award_slap_growth() -> void:
+	if int(build_counts.get("growth_slap", -1)) == round_slaps: return
+	build_counts["growth_slap"] = round_slaps
+	for id in carry:
+		if is_hero(str(id)):
+			gain_hero_xp(str(id), 1)
+	gain_player_xp(1)
 
 
 # =====================================================================
@@ -1182,6 +1201,7 @@ func in_carry(id: String) -> bool:
 
 
 func carry_add(id: String) -> bool:
+	if in_battle: return false
 	if not is_carryable(id):
 		return false
 	if in_carry(id):
@@ -1202,6 +1222,7 @@ func carry_add(id: String) -> bool:
 
 
 func carry_remove(id: String) -> bool:
+	if in_battle: return false
 	if not carry.has(id):
 		return false
 	carry.erase(id)
@@ -1215,6 +1236,7 @@ func carry_remove(id: String) -> bool:
 ## 会觉得"拖拽没生效"。已在阵中的牌会被移到该位（等于重排）。
 ## 槽位已满且这张牌不在阵中时拒绝（不会静默顶掉别人）。
 func carry_put(id: String, index: int) -> bool:
+	if in_battle: return false
 	if not is_carryable(id):
 		return false
 	if in_troops(id) and not in_carry(id):
@@ -1244,6 +1266,7 @@ func carry_toggle(id: String) -> bool:
 
 
 func carry_auto() -> void:
+	if in_battle: return
 	# 按有效战力从高到低自动填满携带位（新手上手用）
 	carry.clear()
 	var pool := []
@@ -1276,13 +1299,11 @@ func is_hero(id: String) -> bool:
 	return str(GameData.card(id).get("type", "")) == "武将"
 
 
-func hero_level(_id: String) -> int:
-	return 0 # 独立经验等级已退役。旧投资迁移时返还。
+func hero_level(id: String) -> int:
+	return clampi(int(hero_lv.get(id, 1)), 1, 20) if is_hero(id) else 0
 
-
-func hero_lv_max(_id: String) -> int:
-	return 0
-
+func hero_lv_max(id: String) -> int:
+	return 20 if is_hero(id) else 0
 
 func hero_lv_maxed(id: String) -> bool:
 	return hero_level(id) >= hero_lv_max(id)
@@ -1293,18 +1314,13 @@ func hero_lv_cost(_id: String) -> int:
 
 
 func hero_lv_mult(id: String) -> float:
-	return [1.0, 1.35, 1.8][hero_quality(id)]
-
+	return 1.0 + 0.08 * max(0, hero_level(id) - 1)
 
 func hero_card_power(id: String) -> float:
-	## 某个武将的"自身战力" = 卡面基础战力 × 等级倍率。
-	return float(GameData.card(id).get("power", 0.0)) * hero_lv_mult(id)
-
+	return float(GameData.card(id).get("power", 0.0)) * hero_lv_mult(id) * [1.0, 1.35, 1.8][hero_quality(id)]
 
 func buy_hero_lv(_id: String) -> bool:
-	log_msg("武将不设等级，请用仓库的同名3张合成。")
-	return false
-
+	return false # 武将只通过出战经验升级。
 
 func equip_slots() -> int:
 	## 已解锁的部位数（0~5），全局共享的解锁进度。
@@ -1376,6 +1392,7 @@ func is_equippable(id: String) -> bool:
 
 
 func equip_to(who: String, id: String) -> bool:
+	if in_battle: return false
 	## 把装备 id 挂到武将 who 身上。
 	if not is_hero(who):
 		log_msg("「%s」没有装备巢 —— 只有武将能带装备。" % GameData.card_name(who))
@@ -1416,6 +1433,7 @@ func equip_to(who: String, id: String) -> bool:
 
 
 func unequip_from(who: String, id: String) -> bool:
+	if in_battle: return false
 	## 从武将 who 身上摘下装备 id。
 	var mine: Array = hero_equip.get(who, [])
 	if not mine.has(id):
@@ -1489,6 +1507,7 @@ func in_troops(id: String) -> bool:
 
 
 func troop_put(who: String, id: String) -> bool:
+	if in_battle: return false
 	## 把士卒挂到武将 who 麾下。
 	if not is_hero(who):
 		log_msg("「%s」不是武将，带不了兵。" % GameData.card_name(who))
@@ -1525,6 +1544,7 @@ func troop_put(who: String, id: String) -> bool:
 
 
 func troop_remove(who: String, id: String) -> bool:
+	if in_battle: return false
 	var mine: Array = hero_troops.get(who, [])
 	if not mine.has(id):
 		return false
@@ -1739,12 +1759,12 @@ func cleared_count() -> int:
 
 
 func city_unlocked() -> bool:
-	return _is_cleared(START_REGION)
-
+	for region in GameData.regions:
+		if table_progress(int(region["idx"])) > 0: return true
+	return false
 
 func city_unlock_text() -> String:
-	return "已解锁" if city_unlocked() else "拍空新野整堆开放基建 · %d/5段" % table_progress(1)
-
+	return "已解锁 · 每征服一区开放1槽" if city_unlocked() else "征服任意一个分区后开放基建"
 
 func _backfill_cities() -> Array:
 	# 城池一旦解锁，把此前已克服区域的城池卡补齐发放（幂等）
@@ -1753,6 +1773,7 @@ func _backfill_cities() -> Array:
 		return got
 	for r in GameData.regions:
 		var i := int(r["idx"])
+		if table_progress(i) > 0: _ensure_building_arrays(i)
 		# v1.0：新野也会被克服，它的城池卡 C01 同样要补发（否则一旦错过就永久拿不到）。
 		if not _is_cleared(i):
 			continue
@@ -1800,23 +1821,63 @@ func table_all_cleared() -> bool:
 # 战斗
 # =====================================================================
 func start_battle(idx: int) -> bool:
-	if not is_unlocked(idx) or GameData.region(idx).is_empty(): return false
+	if not is_unlocked(idx) or _is_cleared(idx) or GameData.region(idx).is_empty() or next_zone(idx) < 0: return false
 	if in_battle: settle_run("returned")
 	stop_automation(false)
 	battle_mode = "challenge"
-	battle_table = mini(table_count(idx) - 1, table_progress(idx))
+	battle_table = next_zone(idx)
 	return _start_table(idx)
+
+
+func start_event_visit(idx: int) -> bool:
+	if not is_unlocked(idx) or not _is_cleared(idx): return false
+	if in_battle: settle_run("returned")
+	battle_mode = "visit"
+	battle_table = 0
+	return _start_table(idx)
+
+
+func map_event_entries(region: int = 0) -> Array[Dictionary]:
+	var idx := battle_region if region <= 0 else region
+	if not in_battle or idx <= 0 or idx != battle_region: return []
+	if MapEvents.ensure_region(self, idx): save_game()
+	return MapEvents.entries(self, idx)
+
+
+func consume_event_slap() -> bool:
+	if not in_battle or not round_active or narrative_paused or slap_cooldown_left > 0.000001: return false
+	slap_cooldown_left = slap_interval()
+	round_slaps += 1
+	return true
+
+
+func interact_map_event(id: String, point: Vector2) -> Dictionary:
+	if not in_battle or not round_active or narrative_paused: return {"handled": false}
+	MapEvents.ensure_region(self, battle_region)
+	var event: Dictionary = map_events.get(id, {})
+	if int(event.get("region", 0)) != battle_region: return {"handled": false}
+	var before := gold
+	var result := MapEvents.interact(self, id, point)
+	if bool(result.get("changed", false)):
+		run_gold += maxf(0.0, gold - before)
+		save_game()
+		shop_changed.emit()
+		events_changed.emit()
+	changed.emit()
+	return result
 
 
 func _refresh_enemies() -> void:
 	battle = []
 	_pile_stages_done = {}
 	_pile_stage_damage = {}
+	if battle_mode == "visit":
+		battle_gen += 1
+		return
 	var raw: Array = GameData.enemies_by_region.get(battle_region, [])
-	var first := 0 if battle_mode == "practice" or _is_cleared(battle_region) else battle_table
-	# 自动练习只练已完成部分；手动挑战把所有剩余阶段一起铺入同一个城堆。
-	var limit := table_progress(battle_region) if battle_mode == "practice" else table_count(battle_region)
-	for step in range(first, limit):
+	# 每段是固定地理分区；只铺仍未征服的区，顺序互不依赖。
+	for step in range(zone_count(battle_region)):
+		if zone_cleared(battle_region, step): continue
 		var health := _table_health_values(battle_region, step)
 		_pile_stage_damage[step] = 0.0
 		for i in range(health.size()):
@@ -1845,16 +1906,21 @@ func _table_health_values(idx: int, step: int) -> Array:
 
 
 func _layout_table() -> void:
-	var positions := preload("res://scripts/city_layout.gd").positions(battle.size(), battle_region)
-	for i in range(battle.size()):
-		battle[i]["nx"] = positions[i].nx
-		battle[i]["ny"] = positions[i].ny
-		battle[i]["rot"] = positions[i].rot
+	var layout = preload("res://scripts/city_layout.gd")
+	for zone in range(zone_count(battle_region)):
+		var indices: Array[int] = []
+		for i in range(battle.size()):
+			if int(battle[i]["stage"]) == zone: indices.append(i)
+		var positions: Array[Dictionary] = layout.zone_positions(indices.size(), battle_region, zone, zone_count(battle_region))
+		for n in range(indices.size()):
+			battle[indices[n]]["nx"] = positions[n].nx
+			battle[indices[n]]["ny"] = positions[n].ny
+			battle[indices[n]]["rot"] = positions[n].rot
 
 
 func attack(i: int, heavy: bool = false, automatic: bool = false) -> bool:
 	## 一次圆形轻拍的多个目标共享冷却；旧重拍接口保留供构筑兼容。
-	if not in_battle or not round_active or narrative_paused or round_seconds_left <= 0.0 or i < 0 or i >= battle.size():
+	if automatic or not in_battle or not round_active or narrative_paused or round_seconds_left <= 0.0 or i < 0 or i >= battle.size():
 		return false
 	if battle[i]["hp"] <= 0.0:
 		return false
@@ -1868,6 +1934,7 @@ func attack(i: int, heavy: bool = false, automatic: bool = false) -> bool:
 		if batch: _slap_batch_started = true
 	if batch: _slap_batch_hits[i] = true
 	var gold_before := run_gold
+	var kills_before := run_kills
 	var action_gen := battle_gen
 
 	var base := click_damage() * (auto_ratio() if automatic else 1.0)
@@ -1893,6 +1960,7 @@ func attack(i: int, heavy: bool = false, automatic: bool = false) -> bool:
 
 	build_events = []
 	var chain := {}
+	_manual_damage_context = true
 	var lightning := 0.0
 	if heavy and carry.has("G05") and _build_ready("G05"):
 		var marks := mini(2, int(battle[i].get("thunder", 0)))
@@ -1907,13 +1975,15 @@ func attack(i: int, heavy: bool = false, automatic: bool = false) -> bool:
 		if tag == "":
 			tag = "雷爆！"
 	_after_build_base(i, heavy, base)
+	_manual_damage_context = false
 	build_effect_seq += 1
 	last_slap = {"index": i, "heavy": heavy, "damage": actual, "tag": tag,
 		"effects": build_events.duplicate(true), "source": "base", "effect_seq": build_effect_seq,
-		"gold_gain": run_gold - gold_before, "battle_gen": action_gen}
+		"gold_gain": run_gold - gold_before, "battle_gen": action_gen, "automatic": automatic}
 	if tag != "":
 		log_msg("%s%s　造成 %.0f 伤害" % ["重拍·" if heavy else "轻拍·", tag, dmg])
 
+	if run_kills > kills_before: _award_slap_growth()
 	_finish_build_action()
 	return true
 
@@ -1923,6 +1993,48 @@ func _reset_build_traits() -> void:
 	build_counts = {}
 	build_ready_at = {}
 	build_events = []
+
+
+func apply_slap_displacement(center: Vector2, hit_indices: Array) -> Array:
+	# 主界面在整掌命中完成、end_slap_batch前调用；多目标不能重复拉动。
+	var moved: Array = []
+	if not in_battle or not round_active or not _slap_batch_active or not _slap_batch_started:
+		return moved
+	if bool(last_slap.get("automatic", false)) or int(build_counts.get("gather_slap", -1)) == round_slaps:
+		return moved
+	build_counts["gather_slap"] = round_slaps
+	var distance := 0.0
+	for who in carry:
+		distance += float(hero_trait_params(str(who)).get("gather_distance", 0.0))
+	if distance <= 0.0: return moved
+	var anchor := -1
+	var nearest := INF
+	for raw_index in hit_indices:
+		var index := int(raw_index)
+		if not _slap_batch_hits.has(index) or index < 0 or index >= battle.size(): continue
+		var gap := get_enemy_world_center(index).distance_squared_to(center)
+		if gap < nearest:
+			anchor = index
+			nearest = gap
+	if anchor < 0: return moved
+	var stage := int(battle[anchor].get("stage", 0))
+	if zone_cleared(battle_region, stage): return moved
+	var bounds := zone_rect(battle_region, stage).grow(-80.0)
+	var target := center.clamp(bounds.position, bounds.end)
+	var area := battle_world_size() - Vector2(500, 500)
+	for index in range(battle.size()):
+		if not _build_alive(index) or int(battle[index].get("stage", 0)) != stage: continue
+		var before := get_enemy_world_center(index)
+		if before.distance_to(center) > CardTraits.GATHER_RADIUS: continue
+		var after := before.move_toward(target, distance).clamp(bounds.position, bounds.end)
+		if before.is_equal_approx(after): continue
+		battle[index]["nx"] = (after.x - 250.0) / area.x
+		battle[index]["ny"] = (after.y - 250.0) / area.y
+		moved.append({"index": index, "from": before, "to": after, "kind": "聚拢"})
+	if not moved.is_empty():
+		last_slap["displacements"] = moved
+		changed.emit()
+	return moved
 
 
 func _build_ready(id: String) -> bool:
@@ -1964,9 +2076,6 @@ func _build_damage(i: int, damage: float, chain: Dictionary, base: float, kind: 
 	table_damage += actual
 	var stage := int(battle[i].get("stage", battle_table))
 	_pile_stage_damage[stage] = float(_pile_stage_damage.get(stage, 0.0)) + actual
-	var payout := actual * Progression.DAMAGE_PAY * fortune_mult()
-	gold += payout
-	run_gold += payout
 	build_events.append({"index": i, "damage": actual, "tag": kind, "kind": kind})
 	if not _build_alive(i) and not bool(battle[i].get("kill_rewarded", false)):
 		battle[i]["kill_rewarded"] = true
@@ -2107,15 +2216,16 @@ func _all_cleared() -> bool:
 
 
 func _on_enemy_killed(i: int) -> void:
-	var reward := float(battle[i]["hp_max"]) * Progression.KILL_PAY * fortune_mult()
+	run_kills += 1
+	if MapEvents.on_enemy_killed(self, str(battle[i]["card_id"])): events_changed.emit()
+	if not _manual_damage_context: return
+	var reward := float(battle[i]["hp_max"]) * (Progression.DAMAGE_PAY + Progression.KILL_PAY) * fortune_mult()
 	gold += reward
 	run_gold += reward
-	run_kills += 1
 	if not first_flip_reward:
 		first_flip_reward = true
 		gold += 8.0
 		run_gold += 8.0
-		log_msg("第一张翻牌！一次性收获8金币，下一趟可以买助力。")
 
 
 func _stage_cleared(step: int) -> bool:
@@ -2130,37 +2240,29 @@ func _stage_cleared(step: int) -> bool:
 func _update_pile_checkpoints() -> void:
 	if not in_battle or battle.is_empty(): return
 	var idx := battle_region
-	var reward := 0.0
 	var changed_progress := false
-	# 每个段只在本次铺堆第一次清完时发金币；先拍厚段也不会提前推进连续检查点。
+	# 任一区独立永久征服；不要求相邻编号先完成，也不再重铺已征服区。
 	for step in _pile_stage_damage:
-		if _pile_stages_done.has(step) or not _stage_cleared(int(step)): continue
+		if zone_cleared(idx, int(step)) or _pile_stages_done.has(step) or not _stage_cleared(int(step)): continue
 		_pile_stages_done[step] = true
-		reward += table_hp(idx, int(step)) * Progression.TABLE_BONUS * fortune_mult()
+		var zones: Array = cleared_zones.get(idx, [])
+		zones.append(int(step))
+		zones.sort()
+		cleared_zones[idx] = zones
+		table_wins[idx] = zones.size()
+		changed_progress = true
 		round_tables_flipped += 1
+		_grant_table_reward(idx, int(step))
 	_update_table_best()
-	if battle_mode != "practice" and not _is_cleared(idx):
-		var next := table_progress(idx)
-		while next < table_count(idx) and _stage_cleared(next):
-			table_wins[idx] = next + 1
-			changed_progress = true
-			if next == table_count(idx) - 1:
-				region_state[idx] = "cleared"
-				round_first_clears.append(idx)
-				reward += table_hp(idx, next) * Progression.CITY_BONUS * fortune_mult()
-				_grant_affinity(idx)
-				for e in battle:
-					var c := GameData.card(str(e["card_id"]))
-					if str(c.get("type", "")) == "武将" and bool(c.get("capturable", false)):
-						if not captured.has(e["card_id"]): captured.append(e["card_id"])
-				_backfill_cities()
-				log_msg("%s整堆已空！城池首通，剩余时间继续赚金。" % GameData.region(idx).get("name", ""))
-			_grant_table_reward(idx, next)
-			next += 1
-	if reward > 0.0:
-		gold += reward
-		run_gold += reward
-		if not last_slap.is_empty(): last_slap["gold_gain"] = float(last_slap.get("gold_gain", 0.0)) + reward
+	if changed_progress and table_progress(idx) == zone_count(idx) and not _is_cleared(idx):
+		region_state[idx] = "cleared"
+		round_first_clears.append(idx)
+		_grant_affinity(idx)
+		for e in GameData.enemies_by_region.get(idx, []):
+			var c := GameData.card(str(e["card_id"]))
+			if str(c.get("type", "")) == "武将" and bool(c.get("capturable", false)):
+				if not captured.has(e["card_id"]): captured.append(e["card_id"])
+		_backfill_cities()
 	if changed_progress:
 		_recompute_bonus()
 		save_game()
@@ -2171,21 +2273,12 @@ func _update_pile_checkpoints() -> void:
 func _clear_region() -> void:
 	if not in_battle or not round_active or battle.is_empty() or not _all_cleared(): return
 	_update_pile_checkpoints()
-	var idx := battle_region
-	# 全堆清空才补整堆。段内清完不换牌，也不重置镜头或当前圆形拍击。
-	battle_table = 0 if battle_mode == "practice" or _is_cleared(idx) else mini(table_count(idx) - 1, table_progress(idx))
-	table_damage = 0.0
-	_reset_build_traits()
-	_refresh_enemies()
-	last_battle_report = "%s · 整堆拍空，重新铺%d张；剩余%.1f秒，继续赚金！" % [GameData.region(idx).get("name", ""), battle.size(), round_seconds_left]
-	save_game()
-	map_changed.emit()
-	shop_changed.emit()
-	changed.emit()
+	settle_run("city_cleared")
 
 
 func settle_run(reason: String = "returned") -> void:
 	if not in_battle: return
+	if MapEvents.finish_round(self): events_changed.emit()
 	# 到期/主动回营也兑现已拍翻的当前桌，不能因鼠标尚未抬起丢掉完成记号。
 	end_slap_batch()
 	_update_table_best()
@@ -2205,7 +2298,7 @@ func settle_run(reason: String = "returned") -> void:
 	battle = []
 	battle_gen += 1
 	combo = 0
-	last_settle = "%s · %s　%.1f秒拍%d次 · 翻%d张 / 清%d段 · 收获%s金币。升级拍力、拍速、范围和时长，再开一轮。" % [
+	last_settle = "%s · %s　%.1f秒拍%d次 · 翻%d张 / 清%d段 · 本轮获得%s金币。" % [
 		GameData.region(battle_region).get("name", ""), "本轮时间到" if reason == "time_up" else "本轮回营",
 		round_seconds_elapsed, round_slaps, run_kills, round_tables_flipped, fmt(run_gold)]
 	last_battle_report = last_settle
@@ -2261,12 +2354,16 @@ func pack_unlocked(i: int) -> bool:
 func pack_price(i: int) -> int:
 	if i < 0 or i >= GameData.packs.size(): return 0
 	var p: Dictionary = GameData.packs[i]
-	var n := int(pack_bought.get(p.get("name", ""), 0))
 	var off := clampf(float(bonus["pack_price_pct"]) + float(active_mods()["pack_pct"]), -50.0, 75.0)
-	return maxi(1, int(round(float(p.get("price", 100)) * minf(1.5, 1.0 + 0.05 * n) * (1.0 - off / 100.0))))
+	var price := Progression.STARTER_PACK_PRICE if i == 0 else int(p.get("price", 100))
+	return maxi(1, int(round(float(price) * (1.0 - off / 100.0))))
 
 
 func buy_pack(i: int) -> Array:
+	if in_battle:
+		log_msg("请先结束本轮，再到卡铺开包。")
+		return []
+	if i < 0 or i >= GameData.packs.size(): return []
 	if not pack_unlocked(i):
 		log_msg("「%s」未解锁：需先克服该郡的任一区域。" % GameData.packs[i].get("name", "?"))
 		return []
@@ -2276,10 +2373,10 @@ func buy_pack(i: int) -> Array:
 		return []
 	gold -= float(price)
 	var drawn := _draw_pack_cards(i, int(GameData.packs[i].get("cards", 5)))
-	# 保底：每 10 包必出 1 张 ★★★★ 及以上
+	# 各包独立累计，每10包保证当前牌池至少一张三星牌。
 	total_packs += 1
-	if (int(pack_bought.get(GameData.packs[i].get("name", ""), 0)) + 1) % 10 == 0:
-		var hi := _draw_high_star(i, mini(3, progression_star_cap()))
+	if (int(pack_bought.get(GameData.packs[i].get("name", ""), 0)) + 1) % Progression.PACK_PITY_COUNT == 0:
+		var hi := _draw_high_star(i, mini(Progression.PACK_PITY_STAR, progression_star_cap()))
 		if hi != "":
 			drawn[drawn.size() - 1] = hi
 	for id in drawn:
@@ -2343,16 +2440,6 @@ func _draw_pack_cards(i: int, count: int) -> Array:
 	return out
 
 
-func _draw_starter(count: int) -> Array:
-	# 固定三种薄牌，避免抽到重复后开局强度与教程失配。
-	var pool := []
-	for c in GameData.cards:
-		if str(c.get("type", "")) == "士兵" and int(c.get("star", 0)) == 1: pool.append(str(c["id"]))
-	var out := []
-	for i in range(count): out.append(pool[i % mini(3, pool.size())])
-	return out
-
-
 func _draw_high_star(i: int, min_star: int) -> String:
 	var hi := []
 	for c in _pack_pool(i):
@@ -2377,6 +2464,7 @@ func ransom_cost(card_id: String) -> int:
 
 
 func ransom(card_id: String) -> bool:
+	if in_battle: return false
 	if not captured.has(card_id):
 		return false
 	var cost := ransom_cost(card_id)
@@ -2412,6 +2500,7 @@ func synth_cost(star: int) -> int:
 
 
 func synthesize(star: int) -> String:
+	if in_battle: return ""
 	if star >= progression_star_cap():
 		log_msg("当前进度最高开放★%d；武将请用同名合成。" % progression_star_cap())
 		return ""
@@ -2451,10 +2540,7 @@ func synthesize(star: int) -> String:
 # 城建：城池 = 地基（槽位），建筑 = 产钱实体
 # =====================================================================
 func city_slots(idx: int) -> int:
-	var legacy := int(GameData.region(idx).get("slots", 1))
-	if affinity_tier(region_route(idx)) >= 2:
-		legacy += 1
-	return maxi(6, legacy)
+	return table_progress(idx)
 
 func city_buildings(idx: int) -> Array:
 	return cities[idx].get("buildings", []) if cities.has(idx) else []
@@ -2515,36 +2601,11 @@ func _ensure_building_arrays(idx: int) -> void:
 
 func city_combo(idx: int) -> Dictionary:
 	var result := BuildingTraits.evaluate(city_buildings(idx), city_quality.get(idx, []))
-	result["hourly"] = float(result["hourly"]) * _building_global_mult()
+	result["hourly"] = 0.0
 	return result
 
-func _building_global_mult() -> float:
-	var mult := 1.0 + float(bonus["building_output_pct"]) / 100.0
-	if bond_tier("群雄线") >= 2:
-		mult += 0.10
-	if bond_tier("群雄线") >= 1:
-		mult += 0.20
-	return mult
-
-func advance_buildings(seconds: float, efficiency: float = 1.0) -> float:
-	if seconds <= 0 or not city_unlocked():
-		return 0.0
-	var income := 0.0
-	for raw_idx in cities.keys():
-		var idx := int(raw_idx)
-		if not _is_cleared(idx):
-			continue
-		var summary := city_combo(idx)
-		if float(summary["normal"]) <= 0:
-			continue
-		var elapsed := float(building_clocks.get(idx, 0.0)) + seconds
-		var cycles := int(floor((elapsed + 0.0000001) / BuildingTraits.CYCLE))
-		building_clocks[idx] = maxf(0.0, elapsed - cycles * BuildingTraits.CYCLE)
-		if cycles > 0:
-			var before := int(building_ticks.get(idx, 0))
-			income += BuildingTraits.payout(summary, before, cycles)
-			building_ticks[idx] = (before + cycles) % 60
-	return income * _building_global_mult() * clampf(efficiency, 0, 1)
+func advance_buildings(_seconds: float, _efficiency: float = 1.0) -> float:
+	return 0.0
 
 func _building_loadout_changed(idx: int) -> void:
 	# 改阵重开周期，不能把快到期的产出搬到另一城反复领取。
@@ -2572,30 +2633,29 @@ func building_output(idx: int, slot: int) -> float:
 	return float(GameData.building(_building_at(idx, slot)).get("prod", 0.0)) * BuildingTraits.quality_mult(building_quality(idx, slot))
 
 func place_building(idx: int, building_id: String, quality: int = -1, target_slot: int = -1) -> bool:
-	if not city_unlocked() or not _is_cleared(idx) or GameData.building(building_id).is_empty():
+	if in_battle or city_slots(idx) <= 0 or GameData.building(building_id).is_empty():
 		return false
 	if city_buildings(idx).has(building_id):
 		log_msg("同城同名建筑只装配1张；重复卡可同名合成。")
 		return false
 	if quality == -1:
-		for q in [2, 1, 0]:
-			if building_stock(building_id, q) > 0:
-				quality = q
+		for candidate in [2, 1, 0]:
+			if building_stock(building_id, candidate) > 0:
+				quality = candidate
 				break
 	if building_stock(building_id, quality) <= 0 or city_used_slots(idx) >= city_slots(idx):
 		return false
 	_ensure_building_arrays(idx)
-	var arr := city_buildings(idx)
+	var buildings := city_buildings(idx)
 	if target_slot < 0:
-		target_slot = arr.find("")
-		if target_slot < 0:
-			target_slot = arr.size()
-	if target_slot >= city_slots(idx) or (target_slot < arr.size() and str(arr[target_slot]) != ""):
+		target_slot = buildings.find("")
+		if target_slot < 0: target_slot = buildings.size()
+	if target_slot >= city_slots(idx) or (target_slot < buildings.size() and str(buildings[target_slot]) != ""):
 		return false
-	while arr.size() <= target_slot:
-		arr.append("")
+	while buildings.size() <= target_slot:
+		buildings.append("")
 	_ensure_building_arrays(idx)
-	arr[target_slot] = building_id
+	buildings[target_slot] = building_id
 	city_quality[idx][target_slot] = quality
 	_building_stock_change(building_id, quality, -1)
 	log_msg("装配%s·%s：%s" % [GameData.card_name(building_id), BuildingTraits.quality_name(quality), GameData.building(building_id).get("effect", "")])
@@ -2603,6 +2663,7 @@ func place_building(idx: int, building_id: String, quality: int = -1, target_slo
 	return true
 
 func remove_building(idx: int, slot_index: int) -> bool:
+	if in_battle: return false
 	var id := _building_at(idx, slot_index)
 	if id == "":
 		return false
@@ -2618,6 +2679,7 @@ func remove_building(idx: int, slot_index: int) -> bool:
 	return true
 
 func move_building_slot(idx: int, from: int, to: int) -> bool:
+	if in_battle: return false
 	if _building_at(idx, from) == "" or to < 0 or to >= city_slots(idx):
 		return false
 	while city_buildings(idx).size() <= to:
@@ -2633,11 +2695,7 @@ func move_building_slot(idx: int, from: int, to: int) -> bool:
 	return true
 
 func gold_per_hour() -> float:
-	var total := 0.0
-	for idx in cities.keys():
-		if _is_cleared(int(idx)):
-			total += float(city_combo(int(idx))["hourly"])
-	return total
+	return 0.0
 
 func building_star_pool(star: int) -> Array:
 	var out := []
@@ -2651,6 +2709,7 @@ func synth_building_cost(_star: int) -> int:
 	return 0
 
 func fuse_building(id: String, quality: int = 0) -> String:
+	if in_battle: return ""
 	if quality < 0 or quality >= 2 or building_stock(id, quality) < 3:
 		log_msg("合成需要仓库3张同名、同品相建筑；已装配卡受保护。")
 		return ""
@@ -2684,23 +2743,18 @@ func _load_building_state(data: Dictionary) -> void:
 		var stored_quality: Variant = data.get("city_quality", {}).get(str(idx), [])
 		city_quality[idx] = stored_quality.duplicate() if stored_quality is Array else []
 		_ensure_building_arrays(int(idx))
-		building_clocks[idx] = clampf(float(data.get("building_clocks", {}).get(str(idx), 0)), 0, 9.999999)
-		building_ticks[idx] = maxi(0, int(data.get("building_ticks", {}).get(str(idx), 0))) % 60
+		building_clocks[idx] = 0.0
+		building_ticks[idx] = 0
 		var seen := {}
 		for slot in range(city_buildings(int(idx)).size()):
 			var id := _building_at(int(idx), slot)
 			city_quality[idx][slot] = clampi(int(city_quality[idx][slot]), 0, 2)
-			var old_level := clampi(int(city_lv[idx][slot]), 0, BUILDING_LV_MAX)
-			if int(data.get("building_system_version", 0)) < 2 and old_level > 0 and not GameData.building(id).is_empty():
-				var star := int(GameData.building(id).get("star", 1))
-				for level in range(old_level):
-					gold += int(round(BUILDING_LV_COST * pow(1.6, maxi(0, star - 1)) * pow(BUILDING_LV_GROWTH, level)))
 			city_lv[idx][slot] = 0
-			if id == "":
-				continue
+			if id == "": continue
 			if GameData.building(id).is_empty():
 				city_buildings(int(idx))[slot] = ""
-			elif seen.has(id):
+				city_quality[idx][slot] = 0
+			elif slot >= city_slots(int(idx)) or seen.has(id):
 				_building_stock_change(id, building_quality(int(idx), slot), 1)
 				city_buildings(int(idx))[slot] = ""
 				city_quality[idx][slot] = 0
@@ -2710,21 +2764,11 @@ func _load_building_state(data: Dictionary) -> void:
 			city_buildings(int(idx)).pop_back()
 		_ensure_building_arrays(int(idx))
 
-
 func offline_efficiency() -> float:
-	# 离线结算效率：基础 50%，「挂机效率」升级每级 +5%，装备/武将「离线收益」再叠加，封顶 100%
-	var e: float = OFFLINE_EFFICIENCY + upgrade_value("idle") / 100.0
-	e *= 1.0 + float(active_mods()["offline_pct"]) / 100.0
-	return minf(1.0, e)
-
+	return 0.0
 
 func offline_cap_hours() -> float:
-	var h: float = OFFLINE_BASE_HOURS + float(bonus["offline_hours"]) \
-		+ float(upgrade_level("idle"))          # 挂机效率：每级 +1h 离线上限
-	if bond_tier("群雄线") >= 2:
-		h *= 1.5
-	return minf(h, 24.0)
-
+	return 0.0
 
 func _reset_bonus() -> void:
 	for k in bonus.keys():
@@ -2736,15 +2780,15 @@ func _recompute_bonus() -> void:
 	var strongest := {}
 	for idx in cities.keys():
 		for slot in range(city_buildings(int(idx)).size()):
-			var b := _building_at(int(idx), slot)
-			var bd := GameData.building(b)
-			var t: String = bd.get("effect_type", "none")
-			if bonus.has(t):
-				var amount := float(bd.get("effect_value", 0.0)) * BuildingTraits.quality_mult(building_quality(int(idx), slot))
-				if bool(bd.get("unique", false)):
-					strongest[b] = {"type": t, "value": maxf(amount, float(strongest.get(b, {}).get("value", 0.0)))}
+			var building := GameData.building(_building_at(int(idx), slot))
+			var effect: String = building.get("effect_type", "none")
+			if bonus.has(effect):
+				var amount := float(building.get("effect_value", 0.0)) * BuildingTraits.quality_mult(building_quality(int(idx), slot))
+				if bool(building.get("unique", false)):
+					var id := str(building["id"])
+					strongest[id] = {"type": effect, "value": maxf(amount, float(strongest.get(id, {}).get("value", 0.0)))}
 				else:
-					bonus[t] = float(bonus[t]) + amount
+					bonus[effect] = float(bonus[effect]) + amount
 	for entry in strongest.values():
 		bonus[entry["type"]] += float(entry["value"])
 
@@ -2757,6 +2801,9 @@ func save_game() -> void:
 		return                            # v1.0：开发期不落盘
 	var data := {
 		"gold": gold, "owned": owned, "captured": captured,
+		"zone_system_version": 2, "cleared_zones": cleared_zones,
+		"player_lv": player_lv, "player_xp": player_xp, "skill_points": skill_points,
+		"hero_xp": hero_xp, "map_events": map_events, "items": items,
 		"progression_version": Progression.VERSION, "table_wins": table_wins, "table_best": table_best,
 		"first_flip_reward": first_flip_reward, "story_seen": story_seen,
 		"hero_refined": hero_refined, "practice_runs": practice_runs, "practice_region": practice_region,
@@ -2788,8 +2835,17 @@ func load_game() -> bool:
 	var d = JSON.parse_string(f.get_as_text())
 	if not (d is Dictionary):
 		return false
+	if int(d.get("zone_system_version", 0)) != 2:
+		return false
 
 	gold = float(d.get("gold", 0.0))
+	player_lv = maxi(1, int(d.get("player_lv", 1)))
+	player_xp = maxi(0, int(d.get("player_xp", 0)))
+	skill_points = maxi(0, int(d.get("skill_points", 0)))
+	hero_xp = d.get("hero_xp", {})
+	map_events = d.get("map_events", {})
+	items = d.get("items", {})
+	offline_report = ""
 	owned = d.get("owned", {})
 	captured = d.get("captured", [])
 	pack_bought = d.get("pack_bought", {})
@@ -2868,7 +2924,7 @@ func load_game() -> bool:
 	for k in d.get("hero_lv", {}).keys():
 		var hid := str(k)
 		if int(owned.get(hid, 0)) > 0 and is_hero(hid):
-			hero_lv[hid] = mini(int(d["hero_lv"][k]), hero_lv_max(hid))
+			hero_lv[hid] = clampi(int(d["hero_lv"][k]), 1, hero_lv_max(hid))
 
 	affinity = {}
 	for rt in ROUTES:
@@ -2901,29 +2957,8 @@ func load_game() -> bool:
 	_load_progression_state(d)
 	_load_building_state(d)
 	_backfill_cities()
-	if int(d.get("progression_version", 0)) < 4 and _is_cleared(1) and city_used_slots(1) == 0:
-		for id in ["B06", "B08"]:
-			owned[id] = int(owned.get(id, 0)) + 1
-		place_building(1, "B06", 0, 0)
-		place_building(1, "B08", 0, 1)
 	_recompute_bonus()
 
-	# 离线复用在线周期及追加计数，入账后立即保存，不能重复领取。
-	var elapsed := float(Time.get_unix_time_from_system()) - float(d.get("last_save", 0))
-	if elapsed > 0.0 and gold_per_hour() > 0.0:
-		var eff := offline_efficiency()
-		var hours: float = minf(elapsed / 3600.0, offline_cap_hours())
-		var gain := advance_buildings(hours * 3600.0, eff)
-		gold += gain
-		offline_report = "离线 %.1f 小时，建筑产出 %d 金币（效率 %.0f%%）" % [
-			hours, int(gain), eff * 100.0]
-
-	if automation_enabled and upgrade_level("auto_next") > 0 and elapsed > 0.0:
-		var trained := minf(elapsed, offline_cap_hours() * 3600.0)
-		var gain := practice_rate() / 60.0 * trained * offline_efficiency()
-		gold += gain
-		practice_runs += int(trained / (round_duration_value() + Progression.REST_SECONDS))
-		offline_report += "  练习积累%s金币（估算收益，离线效率%.0f%%）" % [fmt(gain), offline_efficiency() * 100.0]
 	# 局内血量不持久；有效战果停在整备界面，重进游戏不能自动把战果覆盖掉。
 	in_battle = false
 	round_active = false
@@ -3051,6 +3086,8 @@ func fmt(n: float) -> String:
 func save_path() -> String:
 	var test := OS.get_cmdline_user_args().has("--test-profile")
 	for arg in OS.get_cmdline_args():
+		if arg.ends_with("ZoneConquestTest.tscn") or arg.ends_with("ManualCampaignTest.tscn") or arg.ends_with("ManualCombatUITest.tscn") or arg.ends_with("HeroEquipmentTraitsTest.tscn") or arg.ends_with("RestFlowTest.tscn") or arg.ends_with("RevealAnimationTest.tscn") or arg.ends_with("UIInteractionTest.tscn"):
+			test = true
 		if arg.ends_with("UpgradeArtTest.tscn") or arg.ends_with("CityPileTest.tscn") or arg.ends_with("CityExplorationTest.tscn"):
 			test = true
 		if arg.ends_with("SelfTest.tscn") or arg.ends_with("IncrementalTest.tscn") or arg.ends_with("Screenshot.tscn") or arg.ends_with("PrintTest.tscn") or arg.ends_with("OutcomeTest.tscn") or arg.ends_with("HubTest.tscn") or arg.ends_with("BuildTraitsTest.tscn") or arg.ends_with("ArtV5Test.tscn") or arg.ends_with("BuildingComboTest.tscn") or arg.ends_with("BuildingDragTest.tscn"):

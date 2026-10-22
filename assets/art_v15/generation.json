@@ -1,0 +1,22 @@
+{
+  "date": "2026-10-18",
+  "generator": "Built-in image_gen.imagegen",
+  "purpose": "Continuous city ground and connected roads with complete transparent scenery silhouettes",
+  "assets": [
+    {
+      "file": "res://assets/art_v15/city_scenery_atlas.png",
+      "pixels": [
+        1536,
+        1024
+      ],
+      "transparent_background": true,
+      "layout": "3 columns by 2 rows; 512x512 cells; market, garrison, garden, trees, stones, stalls",
+      "prompt": "Use case: historical-scene / stylized-concept.\nAsset type: ONE game-ready transparent PNG SPRITE ATLAS for a Three Kingdoms Chinese city map.\nPrimary request: Create exactly SIX ISOLATED SCENERY SPRITES in a strict 3-column, 2-row invisible grid on a landscape 1536 by 1024 canvas. Every cell is a square 512 by 512. Transparent background throughout, no visible grid. Keep each sprite entirely inside the inner 76% of its own cell, with generous genuinely transparent margin on all four sides. Never connect sprites across cells.\nTop row, left to right:\n1. A compact ancient Chinese MARKET shop cluster: one low dark-indigo tiled wooden roof, two small ochre cloth awnings, baskets and a sparse small jade tree, viewed from above.\n2. A compact GARRISON lodge cluster: one low dark-indigo tiled roof, a single sand-colored canvas tent, restrained vermilion pennant and neatly bundled spears, viewed from above.\n3. A small GARDEN scene: one restrained jade-green lotus pond with an organically irregular stone bank and a tiny roofed pavilion beside it, sparse willow canopy, no rectangular ground tile.\nBottom row, left to right:\n4. A freestanding group of two leafy deciduous trees and a low shrub, golden-green and dusty jade foliage, trunks visible from the same high camera.\n5. A small organically scattered patch of pale flat stones, a low rounded rock and sparse short jade grasses, subtle edge shapes.\n6. A compact pair of ancient wooden market stalls with beige cloth awnings and closed baskets, without a roofed building.\nStyle: refined historical Chinese book-print illustration; fine confident dark sepia woodcut outlines, softly worn hand-printed pigments, warm ivory highlights, dusty ochre timber, dark blue slate roofs, restrained jade and vermilion. Match an illustrated paper-card strategy game. Crisp at close zoom, delicate line weight, not pixel art.\nCamera: one identical high near-top-down orthographic camera for all six sprites, looking almost straight down with only shallow south-facing wall faces visible; no horizon, no vanishing point, no long perspective.\nLighting: identical soft warm top-left light; very short faint contact shadows only, no cast shadow leaving its cell.\nConstraints: ONLY the six separated scenery objects. Objects must have COMPLETE silhouette edges, no cropped roofs, no cut tree canopy, no cut pond, no rectangular backing patches, no surrounding earth/stone floor square, no decorative frames, no walls enclosing each sprite. No roads, no cards, no portrait people, no characters, no text, no letters, no labels, no numbers, no watermark. TRUE alpha transparency; do not paint a checkerboard, solid color background, parchment, or white rectangle."
+    }
+  ],
+  "notes": [
+    "Source PNG copied into the repository without image manipulation.",
+    "Ground and roads are rendered at a fixed world scale; scenery atlas uses complete alpha silhouettes.",
+    "Zone rectangles, world extents, card coordinates, conquest state and save format are unchanged."
+  ]
+}

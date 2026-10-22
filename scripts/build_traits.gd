@@ -1,8 +1,18 @@
 class_name PaanBuildTraits
 extends RefCounted
-## 构筑说明与实战共用同一批六将。尚未实现的主将、自动拍不在此显示。
+## 武将特性与装备匹配共用的数据。聚拢是角色联想的玩法创意，不是史实能力。
+
+const GATHER_HEROES := {"G00": 18.0, "G19": 26.0, "G57": 22.0}
+const GATHER_RADIUS := 260.0
+const GATHER_EQUIPMENT := {"E02": 8.0, "E03": 12.0, "E04": 16.0, "E09": 24.0}
 
 const TRAITS := {
+	"G00": {"name": "荆州壮士", "title": "拢牌练掌", "tag": "聚拢", "role": "聚拢", "color": Color("876d3f"),
+		"description": "每次有效手拍后，同区掌心260范围内的存活牌向掌心聚拢18；一掌多张只发动一次。"},
+	"G19": {"name": "廖化", "title": "整队聚阵", "tag": "聚拢", "role": "聚拢", "color": Color("876d3f"),
+		"description": "每次有效手拍后，同区掌心260范围内的存活牌向掌心聚拢26；一掌多张只发动一次。"},
+	"G57": {"name": "黄月英", "title": "机巧聚牌", "tag": "聚拢", "role": "聚拢", "color": Color("876d3f"),
+		"description": "每次有效手拍后，同区掌心260范围内的存活牌向掌心聚拢22；一掌多张只发动一次。"},
 	"G04": {"name": "朱灵", "title": "三拍引雷", "tag": "雷印", "role": "附印", "color": Color("416777"),
 		"description": "每3次基础拍击，为存活最厚牌附1层雷印，最多3层。"},
 	"G05": {"name": "文聘", "title": "重掌引爆", "tag": "雷印", "role": "引爆", "color": Color("416777"),
@@ -60,6 +70,9 @@ static func team_summary(carry: Array) -> Dictionary:
 		title = "%s起手" % "、".join(tags)
 	if not chains.is_empty():
 		description = "；".join(chains)
+	elif carry.has("G00") or carry.has("G19") or carry.has("G57"):
+		title = "聚拢拍阵"
+		description = "手拍把同区附近牌拉向掌心，几掌聚在一起；上阵聚拢将的距离相加。"
 	elif not steps.is_empty():
 		description = "核心武将已上阵，补齐搭档可延长连锁。"
 	return {"title": title, "description": description, "steps": steps,

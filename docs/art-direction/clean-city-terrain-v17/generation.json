@@ -1,0 +1,62 @@
+{
+  "date": "2026-10-18",
+  "generator": "built-in image_gen",
+  "type": "concept-preview-not-runtime",
+  "reference": "user selected cel-animation screenshot (same as terrain-style-options-v16/06-cel-animation.png)",
+  "base_prompt": "Edit the attached game screenshot as a clean city-terrain art-direction mockup. LOCK the entire top parchment HUD and bottom parchment HUD, all existing buttons, Chinese typography, numbers, minimap frame, all six standing character cards, their portraits, exact positions, sizes and rotations, and the red target ring. Change ONLY the environment between the HUD bars. Keep the same camera perspective, the same polished Chinese historical hand-painted cel-animation illustration style: crisp drawn silhouettes, attractive restrained two-tone shading, warm daylight, tactile but NOT gritty materials. This is not pixel art, not photoreal, not low-poly and not flat beige. Dramatically SIMPLIFY the environment: the central 70 to 75 percent must be calm continuous clean playable ground. Remove tiny weeds, scattered leaves, decorative clutter, dense flowers and busy textures. Keep a few large beautiful perimeter silhouettes and one or two readable landmarks. No decorative objects behind/through cards, no extra cards/characters, no new UI, no title label, no text over the terrain. Do not redesign or expand UI. ",
+  "variants": [
+    {
+      "id": "01",
+      "city": "新野",
+      "title": "新野 · 清石庭院",
+      "file": "01-新野.png",
+      "source": "/Users/arthurwang/.codex/generated_images/01a148ad-f3ee-7241-b34a-f88e50a4b09d/exec-a694955d-8cbd-4b69-81e7-29054e557dfe.png",
+      "prompt": "Edit the attached game screenshot as a clean city-terrain art-direction mockup. LOCK the entire top parchment HUD and bottom parchment HUD, all existing buttons, Chinese typography, numbers, minimap frame, all six standing character cards, their portraits, exact positions, sizes and rotations, and the red target ring. Change ONLY the environment between the HUD bars. Keep the same camera perspective, the same polished Chinese historical hand-painted cel-animation illustration style: crisp drawn silhouettes, attractive restrained two-tone shading, warm daylight, tactile but NOT gritty materials. This is not pixel art, not photoreal, not low-poly and not flat beige. Dramatically SIMPLIFY the environment: the central 70 to 75 percent must be calm continuous clean playable ground. Remove tiny weeds, scattered leaves, decorative clutter, dense flowers and busy textures. Keep a few large beautiful perimeter silhouettes and one or two readable landmarks. No decorative objects behind/through cards, no extra cards/characters, no new UI, no title label, no text over the terrain. Do not redesign or expand UI. Terrain: a peaceful Xinye township stone courtyard, large warm ivory-grey limestone paving with narrow soft joints and extremely subtle clean shading. A small blue tiled timber shopfront at the upper-left perimeter, a short stone gate at the upper-right perimeter, one golden ginkgo crown only at a far edge. Replace the elaborate foreground garden and bridge with a simple low stone boundary and quiet ground. Favor warm cream, muted blue roof and restrained golden foliage. Keep the scene beautifully composed but remarkably uncluttered.",
+      "dimensions": [
+        1586,
+        992
+      ]
+    },
+    {
+      "id": "08",
+      "city": "夏口",
+      "title": "夏口 · 江岸码头",
+      "file": "08-夏口.png",
+      "source": "/Users/arthurwang/.codex/generated_images/01a148ad-f3ee-7241-b34a-f88e50a4b09d/exec-5f0e2b4d-803b-499e-afe0-ba1e33938099.png",
+      "prompt": "Edit the attached game screenshot as a clean city-terrain art-direction mockup. LOCK the entire top parchment HUD and bottom parchment HUD, all existing buttons, Chinese typography, numbers, minimap frame, all six standing character cards, their portraits, exact positions, sizes and rotations, and the red target ring. Change ONLY the environment between the HUD bars. Keep the same camera perspective, the same polished Chinese historical hand-painted cel-animation illustration style: crisp drawn silhouettes, attractive restrained two-tone shading, warm daylight, tactile but NOT gritty materials. This is not pixel art, not photoreal, not low-poly and not flat beige. Dramatically SIMPLIFY the environment: the central 70 to 75 percent must be calm continuous clean playable ground. Remove tiny weeds, scattered leaves, decorative clutter, dense flowers and busy textures. Keep a few large beautiful perimeter silhouettes and one or two readable landmarks. No decorative objects behind/through cards, no extra cards/characters, no new UI, no title label, no text over the terrain. Do not redesign or expand UI. Terrain: a Xiakou river-quay city plaza, broad clean cool blue-grey stone paving through the entire card play area. A thin teal-blue river inlet confined to the far right edge, a simple low stone embankment, one short wooden landing with a small moored boat at the upper-right perimeter, one restrained blue tiled riverside pavilion at the upper-left. Central ground is open, dry and continuous, no water across/behind cards. Clear elegant waterfront identity, just a few reeds at the far margin, no busy market stalls, no debris or dense plants.",
+      "dimensions": [
+        1586,
+        992
+      ]
+    },
+    {
+      "id": "09",
+      "city": "夷陵",
+      "title": "夷陵 · 山口岩台",
+      "file": "09-夷陵.png",
+      "source": "/Users/arthurwang/.codex/generated_images/01a148ad-f3ee-7241-b34a-f88e50a4b09d/exec-4b4bc26b-8bc3-4d56-8674-259fbc24da20.png",
+      "prompt": "Edit the attached game screenshot as a clean city-terrain art-direction mockup. LOCK the entire top parchment HUD and bottom parchment HUD, all existing buttons, Chinese typography, numbers, minimap frame, all six standing character cards, their portraits, exact positions, sizes and rotations, and the red target ring. Change ONLY the environment between the HUD bars. Keep the same camera perspective, the same polished Chinese historical hand-painted cel-animation illustration style: crisp drawn silhouettes, attractive restrained two-tone shading, warm daylight, tactile but NOT gritty materials. This is not pixel art, not photoreal, not low-poly and not flat beige. Dramatically SIMPLIFY the environment: the central 70 to 75 percent must be calm continuous clean playable ground. Remove tiny weeds, scattered leaves, decorative clutter, dense flowers and busy textures. Keep a few large beautiful perimeter silhouettes and one or two readable landmarks. No decorative objects behind/through cards, no extra cards/characters, no new UI, no title label, no text over the terrain. Do not redesign or expand UI. Terrain: a Yiling mountain-pass terrace, broad clean pale sandstone and warm compacted-earth playing surface with only a few large flat embedded rock plates. A low layered pale rock outcrop and two elegant sparse pines at the far upper-left, a simple small stone lookout/gate at the far upper-right, hints of distant cool mountain silhouettes beyond the boundary. Play area smooth and unobstructed, absolutely no repeating tiny pebbles or vegetation confetti. Strong broad rock shapes distinguish this from a river dock or bamboo village. Refined cel-painted rock planes, gentle natural light.",
+      "dimensions": [
+        1586,
+        992
+      ]
+    },
+    {
+      "id": "11",
+      "city": "沅陵",
+      "title": "沅陵 · 竹篱土坪",
+      "file": "11-沅陵.png",
+      "source": "/Users/arthurwang/.codex/generated_images/01a148ad-f3ee-7241-b34a-f88e50a4b09d/exec-c16839ea-677d-4c25-894d-85c961540b44.png",
+      "prompt": "Edit the attached game screenshot as a clean city-terrain art-direction mockup. LOCK the entire top parchment HUD and bottom parchment HUD, all existing buttons, Chinese typography, numbers, minimap frame, all six standing character cards, their portraits, exact positions, sizes and rotations, and the red target ring. Change ONLY the environment between the HUD bars. Keep the same camera perspective, the same polished Chinese historical hand-painted cel-animation illustration style: crisp drawn silhouettes, attractive restrained two-tone shading, warm daylight, tactile but NOT gritty materials. This is not pixel art, not photoreal, not low-poly and not flat beige. Dramatically SIMPLIFY the environment: the central 70 to 75 percent must be calm continuous clean playable ground. Remove tiny weeds, scattered leaves, decorative clutter, dense flowers and busy textures. Keep a few large beautiful perimeter silhouettes and one or two readable landmarks. No decorative objects behind/through cards, no extra cards/characters, no new UI, no title label, no text over the terrain. Do not redesign or expand UI. Terrain: a Yuanling bamboo village clearing, broad smooth light ochre compacted-earth playing ground with extremely sparse large flat stepping stones and a very gentle bamboo shadow at an edge. A small airy bamboo grove and simple bamboo fence confined to the upper-left/far-left perimeter, one modest thatched farm shelter at the upper-right perimeter. Open calm middle with no rice stalks, weeds, fallen leaves or debris under cards. Soft jade-green foliage, straw roof, pale warm earth, clean broad painted shapes. Do not add mountain rocks, courtyard shops or a river dock.",
+      "dimensions": [
+        1586,
+        992
+      ]
+    }
+  ],
+  "limitations": [
+    "The generator retains the intended HUD/card layout but does not guarantee pixel-identical lettering, numbers, toolbar or minimap; these images are not used as UI assets.",
+    "The reference HUD city label is intentionally retained; external filenames identify the proposed city terrain.",
+    "Production maps use reusable materials and perimeter landmarks, not these complete screenshot compositions."
+  ]
+}

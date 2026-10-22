@@ -3,6 +3,36 @@ extends RefCounted
 const BASE_SIZE := Vector2(2400, 1500)
 const ROTATED_CARD_BOUNDS := Vector2(130, 164)
 const CLEAR_GAP := 30.0
+const ZONE_SIZE := Vector2(1440, 1040)
+const ZONE_COLUMNS := 3
+
+static func zone_world_size(count: int) -> Vector2:
+	var columns := mini(ZONE_COLUMNS, maxi(1, count))
+	var rows := maxi(1, ceili(float(count) / ZONE_COLUMNS))
+	return Vector2(columns, rows) * ZONE_SIZE + Vector2(500, 500)
+
+static func zone_rects(count: int) -> Array[Rect2]:
+	var result: Array[Rect2] = []
+	for zone in range(count):
+		result.append(Rect2(Vector2(250, 250) + Vector2(zone % ZONE_COLUMNS, floori(float(zone) / ZONE_COLUMNS)) * ZONE_SIZE, ZONE_SIZE))
+	return result
+
+static func zone_positions(count: int, region: int, zone: int, zones: int) -> Array[Dictionary]:
+	var result: Array[Dictionary] = []
+	var bounds := zone_rects(zones)[zone].grow(-80)
+	var grid := grid_size(count)
+	# 同区聚成可操作的小阵；相邻牌在聚拢范围内，仍留出初始间隙。
+	var cell := Vector2(180, 210).min(bounds.size / Vector2(grid))
+	var origin := bounds.get_center() - cell * Vector2(grid) * 0.5
+	var jitter := ((cell - ROTATED_CARD_BOUNDS - Vector2.ONE * CLEAR_GAP) * 0.5).max(Vector2.ZERO)
+	var rng := RandomNumberGenerator.new()
+	rng.seed = region * 7919 + zone * 104729
+	var area := zone_world_size(zones) - Vector2(500, 500)
+	for i in range(count):
+		var center := origin + cell * (Vector2(i % grid.x, floori(float(i) / grid.x)) + Vector2.ONE * 0.5)
+		center += Vector2(rng.randf_range(-jitter.x, jitter.x), rng.randf_range(-jitter.y, jitter.y)) * 0.65
+		result.append({"nx": (center.x - 250.0) / area.x, "ny": (center.y - 250.0) / area.y, "rot": rng.randf_range(-0.12, 0.12)})
+	return result
 
 static func grid_size(count: int) -> Vector2i:
 	var columns := maxi(1, int(ceil(sqrt(float(count) * 2.05))))

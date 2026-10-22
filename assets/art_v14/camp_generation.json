@@ -1,0 +1,80 @@
+{
+  "date": "2026-10-17",
+  "generator": "built-in image_gen.imagegen",
+  "mode": "generate",
+  "asset": "camp_atlas.png",
+  "source_file": "/Users/arthurwang/.codex/generated_images/01a149bd-1196-7722-946e-a4e2e614d836/exec-7a343e39-0398-422c-a5ed-768c6e6a624a.png",
+  "requested_size": [
+    2048,
+    2048
+  ],
+  "actual_size": [
+    1254,
+    1254
+  ],
+  "grid": {
+    "columns": 2,
+    "rows": 2,
+    "cell_size": [
+      627,
+      627
+    ],
+    "order": "row-major",
+    "cells": [
+      {
+        "index": 0,
+        "name": "军需铺",
+        "rect": [
+          0,
+          0,
+          627,
+          627
+        ]
+      },
+      {
+        "index": 1,
+        "name": "将台",
+        "rect": [
+          627,
+          0,
+          627,
+          627
+        ]
+      },
+      {
+        "index": 2,
+        "name": "研习堂",
+        "rect": [
+          0,
+          627,
+          627,
+          627
+        ]
+      },
+      {
+        "index": 3,
+        "name": "营造坊",
+        "rect": [
+          627,
+          627,
+          627,
+          627
+        ]
+      }
+    ]
+  },
+  "prompt": "Use case: historical-scene\nAsset type: production game environment illustration atlas for a Chinese Three Kingdoms paper-card game.\nPrimary request: Generate ONE square 2048 by 2048 pixel texture atlas, exactly two equal columns and two equal rows, four independent square 1024 by 1024 environment illustrations. The quadrants abut directly at the exact center without gutters, separators, outer borders or frames. No object crosses a cell boundary. NOT a screenshot, NOT a user interface, just the four illustrations.\nShared style: elegant nostalgic Chinese printed picture-book and fine woodblock line art on warm lightly aged ivory rice paper. Precise thin ink outlines, gently uneven color registration, subtle paper grain. Restrained cinnabar red, dusty ochre, muted jade green and dark indigo. Readable silhouettes and lovingly drawn ancient timber objects. Warm soft daylight. All objects and architecture belong to ancient Three Kingdoms China.\nComposition in EVERY quadrant: a coherent charming miniature environment in three-quarter perspective. Put the detailed architecture, tabletop objects and focal decoration into the RIGHT 55 percent. Leave the LEFT 40 percent mostly quiet warm rice paper, with only faint low contrast environment hints, because large game titles will be drawn there by code. Maintain useful empty left area in all four cells. Restrained perspective depth, attractive at small thumbnail size.\nExact row-major quadrant subjects:\nTOP LEFT: an unmanned ancient military supply shop, open timber shopfront with cinnabar and indigo canopy, shelves, a small counter, stacked blank paper card packets and ornate lacquered wooden card boxes. Empty shop, absolutely no shopkeeper or human figure.\nTOP RIGHT: a general's preparation pavilion, a substantial wooden rack with lamellar armor and helmet, rolled battle pennants in red and indigo, and a few blank paper cards laid neatly on a low table. No human figures, no faces or portraits on any card.\nBOTTOM LEFT: an ancient study hall, low writing desk with bamboo slips, rolled military books, soft ink-brush landscape motifs on open sheets, black inkstone and traditional calligraphy brushes. Clearly ancient Chinese scholarly materials; no pencil or modern notebook.\nBOTTOM RIGHT: an ancient construction workshop, refined timber beam joints, mortise-and-tenon components, small measuring sticks and cord, tiny architectural model of a tiled-roof Three Kingdoms gate and courtyard. The wooden model and timber joints form an appealing coherent workshop scene.\nText: absolutely no text of any language, no Chinese characters, numbers, labels, symbols pretending to be letters, or watermarks.\nAvoid: people, grandmothers, female or male figures, human illustrations or portrait cards, pencils, ballpoint pens, modern spiral notebooks, machines, neon, plastic, modern packaging, photorealism, glossy 3D rendering, fantasy castles, UI panels, buttons, captions, drawn borders, gutters.",
+  "validation": {
+    "method": "native output inspected visually; dimensions read with macOS sips",
+    "result": "passed",
+    "notes": [
+      "Four independent equal square scenes occupy the exact 2 by 2 grid without gutters or outer borders.",
+      "Shared aged ivory paper, fine ink outlines, cinnabar and indigo palette matches the existing game direction.",
+      "The supply shop, armor pavilion, study desk and timber workshop are visually distinct and follow the required row-major order.",
+      "No people, portrait cards, modern pencil, visible labels or watermark were observed.",
+      "All four scenes leave quiet low contrast paper and scenery at the left for title overlays; the workshop has some timber detail along the lower left.",
+      "Actual output is 1254 by 1254, not the requested 2048 by 2048; the source has not been resized.",
+      "Godot import, runtime atlas cropping and layout verification are delegated to the main integration task."
+    ]
+  }
+}

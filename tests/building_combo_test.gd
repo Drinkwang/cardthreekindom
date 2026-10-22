@@ -14,10 +14,11 @@ func fixture() -> void:
 	GameState.set_process(false)
 	GameState.leave_battle()
 	GameState.gold = 0
-	# 基建现由新野首通解锁；组合测试仍在2号城装配原来的示例建筑。
+	# 组合测试使用已征服全部分区的2号城。
 	for idx in [1, 2, 3, 4]:
 		GameState.region_state[idx] = "cleared"
 		GameState.table_wins[idx] = GameState.table_count(idx)
+		GameState.cleared_zones[idx] = range(GameState.zone_count(idx))
 	GameState._backfill_cities()
 	for building in GameData.buildings:
 		GameState.owned[str(building["id"])] = 12
@@ -31,32 +32,58 @@ func rewrite_save(data: Dictionary) -> void:
 	file.store_string(JSON.stringify(data))
 	file.close()
 
+func test_unlock_and_pool() -> void:
+	GameState.set_process(false)
+	GameState.new_game()
+	GameState.narrative_paused = false
+	GameState.up.power = 90
+	check(GameState.owned == {"I01": 1} and not GameState.city_unlocked() and GameState.city_slots(1) == 0, "单人新局未征服分区时没有基建位或建筑")
+	check(GameState.begin_slap_batch(), "手动征服任意首区")
+	for index in range(GameState.battle.size()):
+		if int(GameState.battle[index].stage) == 4:
+			check(GameState.attack(index), "拍翻首个分区中的敌牌")
+	GameState.end_slap_batch()
+	check(GameState.city_unlocked() and GameState.city_slots(1) == 1, "先征服第5区也开放1个基建位")
+	check(GameState.building_stock("B06") == 1 and GameState.building_stock("B08") == 1, "首次清区赠起步建筑库存")
+	GameState._update_pile_checkpoints()
+	check(GameState.building_stock("B06") == 1 and GameState.building_stock("B08") == 1, "重复检查已征服分区不重复赠建筑")
+	check(not GameState.place_building(1, "B06"), "征服后仍在战斗时不能装配")
+	GameState.retreat()
+	check(GameState.place_building(1, "B06", 0, 0), "休息时可在部分征服城中装配")
+	check(not GameState.place_building(1, "B08", 0, 1), "未征服分区不能提前装建筑")
+	var pool := GameState._pack_pool(0)
+	var building_count := 0
+	var hero_count := 0
+	for card in pool:
+		if str(card.get("type", "")) == "建筑": building_count += 1
+		if str(card.get("type", "")) == "武将": hero_count += 1
+	check(building_count > 0 and hero_count > 0, "卡包包含建筑并保留武将收集池")
+	check(GameState.start_battle(1), "装配后继续未征服分区")
+	var buildings := GameState.city_buildings(1).duplicate()
+	var stock := GameState.owned.duplicate(true)
+	check(not GameState.remove_building(1, 0) and not GameState.move_building_slot(1, 0, 0) and GameState.fuse_building("B08") == "", "战斗中拒绝卸下、换位和合成建筑")
+	check(GameState.city_buildings(1) == buildings and GameState.owned == stock, "被拒的建筑操作不损失库存或装配卡")
+
 func _ready() -> void:
+	check(GameState.save_path() != GameState.SAVE_PATH, "建筑回归使用隔离存档")
+	if GameState.save_path() == GameState.SAVE_PATH:
+		get_tree().quit(1)
+		return
+	test_unlock_and_pool()
 	fixture()
 	check(GameData.buildings.size() == 30, "完整30种建筑卡")
 	for building in GameData.buildings:
 		var id := str(building["id"])
 		check(Traits.RULES.has(id) or str(building.get("effect_type", "none")) != "none", "建筑有可执行效果 " + id)
-	check(GameState.city_slots(2) == 6, "低阶城市也有六槽")
+	check(GameState.city_slots(2) == 6, "征服六区开放六槽")
 	equip_chain()
-	check(is_equal_approx(GameState.gold_per_hour(), 3600), "示例组合60金币/分")
-	check(is_equal_approx(GameState.advance_buildings(9.9), 0), "未满10秒无收益")
-	check(is_equal_approx(GameState.advance_buildings(0.1), 6), "第一次6金币")
-	check(is_equal_approx(GameState.advance_buildings(10), 6), "第二次6金币")
-	check(is_equal_approx(GameState.advance_buildings(10), 18), "第三次6基础+12追加")
-	GameState.building_clocks.clear()
-	GameState.building_ticks.clear()
-	var bulk := GameState.advance_buildings(3600)
-	check(is_equal_approx(bulk, 3600), "整小时精确结算")
-	GameState.building_clocks.clear()
-	GameState.building_ticks.clear()
-	var split := 0.0
-	for i in range(360):
-		split += GameState.advance_buildings(10)
-	check(is_equal_approx(bulk, split), "批量与逐周期结算一致")
-	GameState.building_clocks.clear()
-	GameState.building_ticks.clear()
-	check(is_equal_approx(GameState.advance_buildings(3600, 0.5), 1800), "离线效率作用于完整组合")
+	check(is_zero_approx(GameState.gold_per_hour()) and is_zero_approx(float(GameState.city_combo(2).hourly)), "装配组合不会显示挂机金币")
+	var cash := GameState.gold
+	var xp := GameState.player_xp
+	check(is_zero_approx(GameState.advance_buildings(86400)) and is_zero_approx(GameState.advance_buildings(86400, 0.5)), "在线或离线效率参数均不能恢复建筑产金")
+	GameState._process(120.0)
+	check(GameState.gold == cash and GameState.player_xp == xp, "休息等待不会产生金币或经验")
+	check(is_zero_approx(GameState.offline_efficiency()) and is_zero_approx(GameState.offline_cap_hours()), "基建开放后离线效率和时长仍为零")
 	var additive := Traits.evaluate(["B06", "B08", "B11", "B12", "B04"], [])
 	check(is_equal_approx(Traits.payout(additive, 0, 3), 31.5), "追加倍率同层相加且不递归")
 	var ordered := Traits.evaluate(["B12", "B11", "B08", "B06"], [])
@@ -101,6 +128,10 @@ func _ready() -> void:
 	GameState._building_stock_change("B23", 1, 1)
 	GameState.place_building(3, "B23", 1)
 	check(is_equal_approx(float(GameState.bonus.combat_power_pct), 20.25), "全局唯一效果取最强品相而不重复叠加")
+	var original_price := GameState.pack_price(0)
+	check(GameState.place_building(2, "B24", 0), "功能建筑可在休息时装配")
+	check(GameState.pack_price(0) < original_price and float(GameState.bonus.pack_price_pct) == 10.0, "市场恢复原卡包折扣效果")
+	check(GameState.remove_building(3, 0) and is_equal_approx(float(GameState.bonus.combat_power_pct), 15.0), "卸下最强品相后恢复另一城的原版拍力加成")
 	fixture()
 	equip_chain()
 	GameState.advance_buildings(25)
@@ -111,25 +142,19 @@ func _ready() -> void:
 	phase_save.last_save = Time.get_unix_time_from_system() + 60
 	rewrite_save(phase_save)
 	check(GameState.load_game(), "存档可载入")
-	check(is_equal_approx(float(GameState.building_clocks[2]), 5) and GameState.building_ticks[2] == 2, "读档保留周期相位和计数")
+	check(GameState.city_buildings(2) == ["B06", "B08", "B11", "B12"], "读档保留城池装配而不无条件清空")
+	check(is_zero_approx(float(GameState.building_clocks[2])) and GameState.building_ticks[2] == 0, "读档不恢复自动产金计时")
 	check(GameState.last_outcome.get("region", 0) == 5, "读档保留失败战果")
-	check(is_equal_approx(GameState.advance_buildings(5), 18), "重进游戏后第3次仍触发追加")
+	check(is_zero_approx(GameState.advance_buildings(5)), "重进游戏也不触发旧追加产金")
 	GameState.save_game()
 	var saved: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(GameState.save_path()))
 	saved.last_save = Time.get_unix_time_from_system() - 3600
 	saved.building_clocks = {"2": 0}
 	saved.building_ticks = {"2": 0}
 	rewrite_save(saved)
-	check(GameState.load_game() and is_equal_approx(GameState.gold, 1800), "实际离线读取发放组合收益")
+	check(GameState.load_game() and is_zero_approx(GameState.gold) and GameState.player_xp == 0, "离线读取保留基建但不发金币或经验")
 	var after := GameState.gold
 	check(GameState.load_game() and is_equal_approx(GameState.gold, after), "立即再次读档不重复领取离线金币")
-	fixture()
-	var legacy := {"gold": 100, "owned": {}, "region_state": {"1": "cleared", "2": "cleared", "3": "cleared", "4": "cleared"}, "cities": {"2": {"buildings": ["B01", "B01"]}}, "city_lv": {"2": [2, 1]}, "last_save": Time.get_unix_time_from_system()}
-	rewrite_save(legacy)
-	check(GameState.load_game(), "旧建筑档可迁移")
-	check(is_equal_approx(GameState.gold, 514), "旧强化费用完整返还120+174+120")
-	check(GameState.city_buildings(2) == ["B01"] and GameState.building_stock("B01") == 1, "重复同城建筑安全返仓")
-	check(GameState.load_game() and is_equal_approx(GameState.gold, 514), "旧强化返还只执行一次")
 	fixture()
 	GameState.owned["B01"] = 3
 	GameState.building_refined["B01"] = [3, 0]
@@ -141,12 +166,27 @@ func _ready() -> void:
 	check(GameState.building_stock("B06", 1) == 1 and GameState.building_stock("B01", 2) == 0, "读档保留仓库品相且不复制已装配卡")
 	check(is_equal_approx(GameState.building_output(2, 0), 648), "读档后珍藏实际数值保留")
 	fixture()
+	check(GameState.place_building(2, "B23", 0), "拍力建筑存档夹具可装配")
+	GameState.save_game()
+	var limited: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(GameState.save_path()))
+	limited.cleared_zones["2"] = [0]
+	limited.cities["2"].buildings = ["B23", "B23", "B06"]
+	limited.city_quality["2"] = [0, 1, 2]
+	limited.city_lv["2"] = [3, 3, 3]
+	limited.building_system_version = 1
+	rewrite_save(limited)
+	check(GameState.load_game() and GameState.city_buildings(2) == ["B23"], "读档只保留已征服槽位的建筑")
+	check(GameState.building_stock("B23", 1) == 1 and GameState.building_stock("B06", 2) == 1, "超出已征服槽位的建筑原品相返还仓库")
+	check(is_zero_approx(GameState.gold) and GameState.player_xp == 0, "修复建筑存档不通过旧等级退款制造金币或经验")
+	check(is_equal_approx(float(GameState.bonus.combat_power_pct), 15.0), "读档重算已装配建筑的战斗加成")
+	fixture()
 	var main = load("res://scenes/Main.tscn").instantiate()
 	add_child(main)
 	main._open_city()
 	for i in range(4):
 		await get_tree().process_frame
 	var city = main._city
+	city._on_pick(2)
 	var target = city.find_child("CitySlot5", true, false)
 	var drag := {"kind": "building_card", "id": "B06", "quality": 0, "city": -1, "slot": -1}
 	check(target._can_drop_data(Vector2.ZERO, drag), "空槽接受仓库卡拖拽")

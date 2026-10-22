@@ -1,0 +1,13 @@
+{
+  "version": "print-v14-female-heroes",
+  "cards": {
+    "G57": {"name": "黄月英", "atlas": "res://assets/art_v14/female_heroes.png", "columns": 4, "rows": 2, "index": 0, "inset": 0.015, "icon_focus": [0.5, 0.49], "icon_scale": 0.94},
+    "G58": {"name": "貂蝉", "atlas": "res://assets/art_v14/female_heroes.png", "columns": 4, "rows": 2, "index": 1, "inset": 0.015, "icon_focus": [0.5, 0.49], "icon_scale": 0.94},
+    "G59": {"name": "孙尚香", "atlas": "res://assets/art_v14/female_heroes.png", "columns": 4, "rows": 2, "index": 2, "inset": 0.015, "icon_focus": [0.5, 0.49], "icon_scale": 0.94},
+    "G60": {"name": "大乔", "atlas": "res://assets/art_v14/female_heroes.png", "columns": 4, "rows": 2, "index": 3, "inset": 0.015, "icon_focus": [0.5, 0.49], "icon_scale": 0.94},
+    "G61": {"name": "小乔", "atlas": "res://assets/art_v14/female_heroes.png", "columns": 4, "rows": 2, "index": 4, "inset": 0.015, "icon_focus": [0.5, 0.49], "icon_scale": 0.94},
+    "G62": {"name": "甄宓", "atlas": "res://assets/art_v14/female_heroes.png", "columns": 4, "rows": 2, "index": 5, "inset": 0.015, "icon_focus": [0.5, 0.49], "icon_scale": 0.94},
+    "G63": {"name": "蔡文姬", "atlas": "res://assets/art_v14/female_heroes.png", "columns": 4, "rows": 2, "index": 6, "inset": 0.015, "icon_focus": [0.5, 0.49], "icon_scale": 0.94},
+    "G64": {"name": "祝融", "atlas": "res://assets/art_v14/female_heroes.png", "columns": 4, "rows": 2, "index": 7, "inset": 0.015, "icon_focus": [0.5, 0.49], "icon_scale": 0.94}
+  }
+}

@@ -255,6 +255,7 @@ func _test_ui() -> void:
 	check(main._slap_cursor != null and main._camera_toolbar != null, "实际主界面有拍卡圆圈和缩放工具")
 	var first: Dictionary = main._cards[0]
 	var last: Dictionary = main._cards[main._cards.size() - 1]
+	main._navigate_minimap(first.rest_pos + first.size * 0.5)
 	var start: Vector2 = main._world_to_screen(first.rest_pos + first.size * 0.5)
 	var finish: Vector2 = main._world_to_screen(last.rest_pos + last.size * 0.5)
 	var press := InputEventMouseButton.new()
@@ -292,10 +293,14 @@ func _test_ui() -> void:
 	check(GameState.in_battle and not main._home.visible, "再来一轮按钮真正开始轮次")
 	main._open_home()
 	main._process(0.1)
-	check(GameState.narrative_paused, "打开手动整备暂停计时")
+	check(GameState.narrative_paused and not GameState.in_battle and not GameState.round_active, "打开手动整备结束当前轮并进入休息")
 	main._close_home()
 	main._process(0.1)
-	check(not GameState.narrative_paused, "关闭整备恢复计时")
+	check(not GameState.narrative_paused and not GameState.in_battle, "关闭整备清除遮罩暂停但不恢复已结束轮")
+	main._open_home()
+	main._home._primary_action.pressed.emit()
+	main._process(0.1)
+	check(GameState.in_battle and not GameState.narrative_paused, "明确再来一轮后恢复拍牌计时")
 	for word in ["小野", "雷飞", "唐棠", "操场", "课桌", "耐力耗尽"]:
 		check(not all_text(main).contains(word), "实际主界面无旧设定文案 " + word)
 	main.queue_free()

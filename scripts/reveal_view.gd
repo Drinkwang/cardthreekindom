@@ -48,6 +48,8 @@ var _showcase_done := false
 var _showcasing := false
 var _closing := false
 var _close_tween: Tween
+var _flip_tween: Tween
+var _showcase_tween: Tween
 
 var _root_box: VBoxContainer
 var _row: HBoxContainer
@@ -72,6 +74,7 @@ func _ready() -> void:
 # 打开 / 关闭
 # =====================================================================
 func open(title: String, ids: Array, sub: String = "") -> void:
+	_stop_card_animations()
 	_title = title
 	_sub = sub
 	_ids = ids.duplicate()
@@ -174,7 +177,7 @@ func _build() -> void:
 		_row.add_child(slot["wrap"])
 
 	_hint = Label.new()
-	_hint.text = "翻开旧纸，收下一段新征程。　·　点击推进"
+	_hint.text = "卡牌将逐张翻开　·　点击翻开下一张"
 	_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_hint.add_theme_font_size_override("font_size", 14)
 	_hint.add_theme_color_override("font_color", Color(0.91, 0.84, 0.70))
@@ -341,14 +344,14 @@ func _process(delta: float) -> void:
 
 
 func _flip_next() -> void:
-	if _next >= _slots.size():
+	if _flipping or _closing or _showcase_done or _next >= _slots.size():
 		return
 	var slot: Dictionary = _slots[_next]
 	_next += 1
 	_flipping = true
 	_flip_slot(slot, func():
 		_flipping = false
-		_gap = 0.20)
+		_gap = 0.32)
 
 
 func _flip_slot(slot: Dictionary, on_done: Callable) -> void:
@@ -357,16 +360,25 @@ func _flip_slot(slot: Dictionary, on_done: Callable) -> void:
 	var accent := rarity_color(star)
 	# 高星卡翻出来时先"卡一下"，再"啪"地亮出来 —— 这是开包的节奏感
 	var hold := 0.30 if star >= SHOWCASE_MIN_STAR else 0.10
-	var tw := wrap.create_tween()
+	_flip_tween = wrap.create_tween()
+	var tw := _flip_tween
 	tw.tween_interval(hold)
-	tw.tween_property(wrap, "scale:x", 0.05, 0.11).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
+	tw.tween_property(wrap, "scale:x", 0.05, 0.16).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
 	tw.tween_callback(func():
 		(slot["back"] as Control).visible = false
 		(slot["front"] as Control).visible = true
 		if star >= SHOWCASE_MIN_STAR:
 			_burst(wrap, accent, 1.55))
-	tw.tween_property(wrap, "scale:x", 1.0, 0.19).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tw.tween_property(wrap, "scale:x", 1.0, 0.24).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 	tw.tween_callback(on_done)
+
+
+func _stop_card_animations() -> void:
+	for tw in [_flip_tween, _showcase_tween]:
+		if tw != null and tw.is_valid():
+			tw.kill()
+	_flipping = false
+	_showcasing = false
 
 
 func _burst(anchor: Control, col: Color, mult: float = 2.0) -> void:
@@ -382,7 +394,7 @@ func _burst(anchor: Control, col: Color, mult: float = 2.0) -> void:
 	add_child(ring)
 	ring.size = anchor.size
 	ring.pivot_offset = anchor.size * 0.5
-	ring.global_position = anchor.global_position
+	ring.global_position = anchor.get_global_transform() * (anchor.size * 0.5) - ring.size * 0.5
 	var tw := ring.create_tween()
 	tw.set_parallel(true)
 	tw.tween_property(ring, "scale", Vector2(mult, mult), 0.42)
@@ -391,18 +403,14 @@ func _burst(anchor: Control, col: Color, mult: float = 2.0) -> void:
 
 
 func _reveal_all() -> void:
-	if _showcase_done or _showcasing:
+	if _closing or _showcase_done or _showcasing:
 		return
+	_stop_card_animations()
 	for i in range(_slots.size()):
 		var slot: Dictionary = _slots[i]
-		if (slot["front"] as Control).visible:
-			continue
 		(slot["back"] as Control).visible = false
 		(slot["front"] as Control).visible = true
-		var wrap: Control = slot["wrap"]
-		var tw := wrap.create_tween()
-		tw.tween_property(wrap, "scale", Vector2(1.15, 1.15), 0.08)
-		tw.tween_property(wrap, "scale", Vector2(1.0, 1.0), 0.10)
+		(slot["wrap"] as Control).scale = Vector2.ONE
 	_next = _slots.size()
 	_flipping = false
 	_after_all_revealed()
@@ -439,7 +447,8 @@ func _run_showcase(i: int) -> void:
 		c.get("name", "?"), GameData.star_text(star)]
 
 	# 该卡放大、上浮、发光
-	var tw := wrap.create_tween()
+	_showcase_tween = wrap.create_tween()
+	var tw := _showcase_tween
 	tw.tween_property(wrap, "scale", Vector2(1.14, 1.14), 0.30).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 	tw.parallel().tween_property(wrap, "position:y", wrap.position.y - 18.0, 0.30)
 	tw.tween_callback(func():
@@ -491,14 +500,17 @@ func _advance() -> void:
 	if _closing:
 		return
 	if _showcasing:
-		_showcasing = false
+		_stop_card_animations()
 		_showcase_done = true
 		_hint.text = "点任意处继续"
 		return
+	if _flipping:
+		return
 	if _next < _slots.size():
-		# 翻一半就直接亮完（不耐烦的玩家不该被动画卡住）
 		_flip_next()
-		_reveal_all()
+		return
+	if not _showcase_done:
+		_after_all_revealed()
 		return
 	_close()
 
@@ -507,6 +519,7 @@ func _close() -> void:
 	if _closing:
 		return
 	_closing = true
+	_stop_card_animations()
 	set_process(false)
 	if is_inside_tree():
 		_close_tween = create_tween()

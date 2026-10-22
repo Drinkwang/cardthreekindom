@@ -1,23 +1,20 @@
 extends Control
 const Art = preload("res://scripts/ui/print_art.gd")
 const InkImpact = preload("res://scripts/ui/ink_impact.gd")
-const StoryBook = preload("res://scripts/story_book.gd")
-const StoryView = preload("res://scripts/story_view.gd")
 const SlapCursor = preload("res://scripts/ui/slap_cursor.gd")
 const CityMinimap = preload("res://scripts/ui/city_minimap.gd")
-const CityLayout = preload("res://scripts/city_layout.gd")
+const MapEventLayer = preload("res://scripts/ui/map_event_layer.gd")
+const DistrictArt = preload("res://scripts/ui/district_art.gd")
 const SlapFeedback = preload("res://scripts/ui/slap_feedback.gd")
 const UISkin = preload("res://scripts/ui/ui_skin.gd")
-var _story: Control
-var _story_camp_run := -1
 ## 《拍案三国》单界面 —— 限时拍击、赚钱与长期升级。
 ##
 ## 主界面是一座可探索的城池：将牌分散在街巷与空地，各自留出间距。
 ##   单击         = 圆圈范围拍击，圈内多牌共用一掌和一次冷却
-##   滚轮缩放     = 镜头围绕鼠标缩放；鼠标靠边移动视野，右上地图可收起
+##   滚轮缩放     = 镜头围绕鼠标缩放；鼠标靠边移动视野，右下地图点击定位
 ## 血量拍光的卡会当场翻面转走，收进你的卡组。
 ##
-## 胜败都回「大本营」整备：商店 / 构筑 / 升级 / 基建。
+## 战后回「大本营」整备：商店 / 构筑 / 技能。
 ## 通关后进入大地图；失败后原关重试或换地图。
 ## 卡包 / 招降 / 合成 / 城建 / 路线 / 收藏 收进右侧抽屉，不抢桌面。
 ## 未来"背面朝上"的伏兵牌，只需要在 _mk_card 里不画卡面即可（见 TODO 注释）。
@@ -55,8 +52,8 @@ const CARD_DIR := "res://assets/cards/"
 const FRAME_MARGIN := 16.0      # cardface_*.png（源 128×176，边框 16px）
 const PANEL_MARGIN := 14.0      # panel.png（源 112×112，边框 14px）
 const BTN_MARGIN := 6.0         # btn_*.png（源 40×40，边框 6px）
-                                # ⚠️ 按钮边框不能大：顶栏按钮只有 ~28px 高，
-                                #    九宫格的角是 1:1 画的，边框一大按钮横向就被撑爆（顶栏会溢出屏）
+								# ⚠️ 按钮边框不能大：顶栏按钮只有 ~28px 高，
+								#    九宫格的角是 1:1 画的，边框一大按钮横向就被撑爆（顶栏会溢出屏）
 # 纸面上的印墨字色（换成纸底 UI 后，字必须由浅转深，否则看不见）
 const INK := Color(0.17, 0.13, 0.10)
 const INK_DIM := Color(0.40, 0.34, 0.27)
@@ -68,22 +65,32 @@ const PAPER := Color(0.933, 0.894, 0.796)
 # ---------- 桌面 ----------
 var _table: Control
 const WORLD_SIZE := Vector2(2400, 1500)
-const DEFAULT_ZOOM := 1.8
+const DEFAULT_ZOOM := 4.0
 const ZOOM_MIN := 0.65
-const ZOOM_MAX := 4.0
-const EDGE_PAN_BAND := 32.0
+const ZOOM_MAX := 8.0
+const EDGE_PAN_BAND := 16.0
 const EDGE_PAN_SPEED := 460.0
 var _world_size := WORLD_SIZE
 var _pile_layer: Control
+var _zone_layer: Control
+var _event_layer
 var _slap_cursor: Control
 var _camera_zoom := DEFAULT_ZOOM
 var _camera_pan := Vector2.ZERO
+var _camera_focus := Vector2(-1, -1)
 var _camera_scale := 1.0
 var _panning := false
+var _pan_button := MOUSE_BUTTON_NONE
+var _space_pan_held := false
+var _zoom_frame := -1
+var _pointer_position := Vector2(-1, -1)
+var _edge_hint: Control
+var _edge_hint_direction := Vector2.ZERO
 var _zoom_label: Label
 var _camera_toolbar: Control
 var _minimap: Control
 var _window_focused := true
+var _mouse_in_window := true
 var _initial_camera := true
 var _slap_receipt: Control
 var _cursor_hidden := false
@@ -105,7 +112,6 @@ var _lbl_progress: Label
 var _lbl_route: Label
 var _lbl_combo: Label
 var _lbl_income: Label
-var _lbl_hint: Label
 var _lbl_pace: Label
 var _stamina_bar: ProgressBar
 var _btn_drawer: Button
@@ -124,7 +130,6 @@ var _collection_owned := false
 
 var _btn_map: Button
 var _btn_home: Button
-var _btn_city: Button
 var _map_layer: Control
 var _map_view: PaanMapView
 var _map_left: VBoxContainer
@@ -138,14 +143,13 @@ var _sel_idx := -1
 var _home: PaanHome
 var _city: PaanCity
 var _shop: PaanShop
-var _city_from_home := false
 
 var _reveal: PaanReveal
 
 var _log_lbl: Label
 var _log_lines: Array = []
 var _was_in_battle := false
-var _offline_shown := false
+var _camera_region := -1
 
 # ---------- 底部上阵条（v1.0）----------
 # 用户要求：「带领的武将在 UI 下方」「玩家可以查看已有卡池的将兵，移动到 UI 下方，拖过去」。
@@ -166,32 +170,35 @@ const SLOT_W := 88.0                              # 紧凑上阵肖像宽度；�
 func _ready() -> void:
 	theme = Art.theme()
 	_build()
+	get_window().mouse_exited.connect(_on_window_mouse_exited)
 	GameState.changed.connect(_on_changed)
 	GameState.map_changed.connect(_on_map_changed)
 	GameState.shop_changed.connect(_refresh_shop)
 	GameState.message.connect(_append_log)
+	GameState.events_changed.connect(_refresh_map_events)
 	_on_map_changed()
 	_refresh_shop()
 	_on_changed()
-	if not GameState.in_battle and not GameState.last_outcome.is_empty():
+	_refresh_map_events()
+	if not GameState.in_battle:
 		_open_home()
-	if GameState.offline_report != "" and not _offline_shown:
-		_offline_shown = true
-		_append_log(GameState.offline_report)
-	_maybe_story.call_deferred()
 
 
 func _process(delta: float) -> void:
-	# 看升级与札记时暂停手动轮；自动经营仍按自己的节奏运行。
+	# 覆盖页拦截拍击；经营只在轮次结束后操作。
 	var overlay_open := (_home != null and _home.visible) or (_map_layer != null and _map_layer.visible) \
-		or (_city != null and _city.visible) or (_shop != null and _shop.visible) \
-		or (_story != null and _story.visible) or (_reveal != null and _reveal.visible) or _drawer_open or _pool_open
-	GameState.narrative_paused = overlay_open and not GameState.automation_enabled
+		or (_city != null and _city.visible) or (_shop != null and _shop.visible) or (_reveal != null and _reveal.visible) or _drawer_open or _pool_open
+	GameState.narrative_paused = overlay_open
+	if not _input_allowed(): _cancel_camera_input()
+	_sync_card_positions()
 	if _camera_toolbar != null: _camera_toolbar.visible = not overlay_open
 	if _minimap != null: _minimap.visible = not overlay_open
 	if _table != null and _slap_cursor != null:
-		var pointer := _cursor_preview if _cursor_preview.x >= 0 else _table.get_local_mouse_position()
-		if _window_focused: _advance_edge_pan(delta, pointer)
+		var pointer := _pointer_table_position()
+		if _cursor_preview != Vector2(-1, -1) or _pointer_position != Vector2(-1, -1):
+			_advance_edge_pan(delta, pointer)
+		else:
+			_set_edge_hint(Vector2.ZERO, Vector2.ZERO)
 		_update_slap_cursor(pointer)
 	_round_ui_clock += delta
 	if _round_ui_clock >= 0.05:
@@ -200,18 +207,69 @@ func _process(delta: float) -> void:
 		_update_minimap()
 
 func _input(event: InputEvent) -> void:
-	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_MIDDLE and not event.pressed:
-		_panning = false
-	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_M and _input_allowed():
-		_minimap.toggle()
+	if event is InputEventMouse:
+		_pointer_position = event.position
+		_mouse_in_window = get_global_rect().has_point(event.position)
+	if event is InputEventMouseButton and not event.pressed and event.button_index == _pan_button:
+		_cancel_camera_input(false)
+		_update_slap_cursor(_pointer_table_position())
 		get_viewport().set_input_as_handled()
+		return
+	if not _window_focused or not _input_allowed():
+		_cancel_camera_input()
+		return
+	if _panning and event is InputEventMouseButton:
+		get_viewport().set_input_as_handled()
+		return
+	if event is InputEventKey and (event.keycode == KEY_SPACE or event.physical_keycode == KEY_SPACE):
+		_space_pan_held = event.pressed
+		if not event.pressed and _pan_button == MOUSE_BUTTON_LEFT: _cancel_camera_input(false)
+		_table.mouse_default_cursor_shape = Control.CURSOR_DRAG if _space_pan_held else Control.CURSOR_ARROW
+		_update_slap_cursor(_pointer_table_position())
+		get_viewport().set_input_as_handled()
+	elif event is InputEventMouseButton and event.pressed:
+		var drag_button: bool = event.button_index == MOUSE_BUTTON_MIDDLE or (event.button_index == MOUSE_BUTTON_LEFT and _space_pan_held)
+		var point := _pointer_table_position()
+		if drag_button and Rect2(Vector2.ZERO, _table.size).has_point(point) and not _over_camera_ui(point) and _edge_direction(event.position).is_zero_approx():
+			_panning = true
+			_pan_button = event.button_index
+			_table.mouse_default_cursor_shape = Control.CURSOR_DRAG
+			_set_edge_hint(Vector2.ZERO, event.position)
+			_update_slap_cursor(point)
+			get_viewport().set_input_as_handled()
+	elif event is InputEventMouseMotion and _panning:
+		_camera_pan += event.relative
+		_apply_camera()
+		_update_slap_cursor(_pointer_table_position())
+		get_viewport().set_input_as_handled()
+
+func _pointer_table_position() -> Vector2:
+	if _cursor_preview != Vector2(-1, -1): return _cursor_preview
+	if _pointer_position != Vector2(-1, -1): return _table.get_global_transform().affine_inverse() * _pointer_position
+	return _table.get_local_mouse_position()
+
+func _cancel_camera_input(clear_space: bool = true) -> void:
+	_panning = false
+	_pan_button = MOUSE_BUTTON_NONE
+	if clear_space: _space_pan_held = false
+	if clear_space and _minimap != null: _minimap._dragging = false
+	if _table != null: _table.mouse_default_cursor_shape = Control.CURSOR_DRAG if _space_pan_held else Control.CURSOR_ARROW
+	_set_edge_hint(Vector2.ZERO, Vector2.ZERO)
+
+func _on_window_mouse_exited() -> void:
+	_mouse_in_window = false
+	_pointer_position = Vector2(-1, -1)
+	_cancel_camera_input()
+	if _slap_cursor != null: _update_slap_cursor(Vector2(-1, -1))
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_WM_WINDOW_FOCUS_OUT:
 		_window_focused = false
-		_panning = false
+		_cancel_camera_input()
+		if _slap_cursor != null: _update_slap_cursor(_pointer_table_position())
 	elif what == NOTIFICATION_WM_WINDOW_FOCUS_IN:
 		_window_focused = true
+		_pointer_position = Vector2(-1, -1)
 
 
 # =====================================================================
@@ -250,16 +308,14 @@ func _build() -> void:
 	_home = PaanHome.new()
 	_home.deploy.connect(_on_home_deploy)
 	_home.request_map.connect(_on_home_map)
-	_home.request_city.connect(_open_city)
 	_home.request_shop.connect(_open_shop)
-	_home.closed.connect(_close_home)
-	_home.practice_requested.connect(_on_home_practice)
-	_home.request_journal.connect(_open_journal)
+	_home.request_city.connect(_open_city)
+	_home.request_rest.connect(_enter_rest)
 	add_child(_home)
 	_home.visible = false
 	_city = PaanCity.new()
 	_city.closed.connect(_return_from_city)
-	_city.request_home.connect(_open_home)
+	_city.request_home.connect(_return_from_city)
 	_city.request_map.connect(_on_home_map)
 	_city.deploy.connect(_on_city_deploy)
 	add_child(_city)
@@ -270,15 +326,17 @@ func _build() -> void:
 	_shop.visible = false
 	_reveal = PaanReveal.new()
 	add_child(_reveal)
-	_story = StoryView.new()
-	_story.name = "StoryDiary"
-	_story.event_finished.connect(func(id: String, _skipped: bool): GameState.mark_story_seen(id))
-	_story.closed.connect(func(): GameState.narrative_paused = false)
-	add_child(_story)
-	_story.visible = false
-	var overlays := [_map_layer, _home, _city, _shop, _reveal, _story]
+	var overlays := [_map_layer, _home, _city, _shop, _reveal]
 	for i in range(overlays.size()):
 		overlays[i].z_index = 200 + i * 100
+	_edge_hint = Control.new()
+	_edge_hint.name = "EdgeNavigationHint"
+	_edge_hint.size = Vector2(48, 48)
+	_edge_hint.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_edge_hint.z_index = 180
+	_edge_hint.visible = false
+	_edge_hint.draw.connect(_draw_edge_hint)
+	add_child(_edge_hint)
 
 	_set_drawer(false)
 
@@ -287,7 +345,10 @@ func _build_topbar() -> Control:
 	var panel := PanelContainer.new()
 	panel.name = "CityHUD"
 	panel.custom_minimum_size.y = 82
-	panel.add_theme_stylebox_override("panel", UISkin.panel(Art.PAPER_LIGHT, 12, Art.GOLD))
+	var style := UISkin.panel(Art.PAPER_LIGHT, 12, Art.GOLD)
+	style.content_margin_left = EDGE_PAN_BAND
+	style.content_margin_right = EDGE_PAN_BAND
+	panel.add_theme_stylebox_override("panel", style)
 	UISkin.chrome(panel, "header")
 	var hb := HBoxContainer.new()
 	hb.add_theme_constant_override("separation", 6)
@@ -343,7 +404,6 @@ func _build_topbar() -> Control:
 	money_group.add_child(money)
 	_lbl_gold = Art.label("", 25, Art.INK)
 	_lbl_gold.name = "GoldAmount"
-	_lbl_gold.clip_text = true
 	money.add_child(_lbl_gold)
 	_lbl_income = Art.label("", 11, Art.GOLD)
 	_lbl_income.clip_text = true
@@ -383,11 +443,11 @@ func _build_topbar() -> Control:
 	hb.add_child(space)
 	_btn_upgrade = Button.new()
 	_btn_upgrade.name = "OpenUpgrades"
-	_btn_upgrade.text = "升级"
+	_btn_upgrade.text = "技能"
 	_btn_upgrade.custom_minimum_size = Vector2(82, 46)
 	_btn_upgrade.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	_btn_upgrade.add_theme_font_size_override("font_size", 23)
-	_btn_upgrade.tooltip_text = "练掌堂：升级拍力、拍速、范围与时长"
+	_btn_upgrade.tooltip_text = "技能点 %d" % GameState.skill_points
 	UISkin.button(_btn_upgrade, true)
 	_btn_upgrade.pressed.connect(_open_upgrade)
 	hb.add_child(_btn_upgrade)
@@ -395,29 +455,16 @@ func _build_topbar() -> Control:
 	hb.add_child(_btn_map)
 	_btn_home = _nav_button("大本营", "home", _open_home)
 	hb.add_child(_btn_home)
-	_btn_city = _nav_button("基建", "city", _open_city)
-	hb.add_child(_btn_city)
-	_btn_drawer = _nav_button("卡铺", "shop", func(): _set_drawer(not _drawer_open))
+	_btn_drawer = _nav_button("卡铺", "shop", _open_shop)
 	hb.add_child(_btn_drawer)
 	_btn_retreat = Button.new()
-	_btn_retreat.text = "收钱"
-	_btn_retreat.custom_minimum_size = Vector2(50, 40)
+	_btn_retreat.text = "返回休息"
+	_btn_retreat.custom_minimum_size = Vector2(102, 40)
 	_btn_retreat.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	UISkin.button(_btn_retreat, false, true)
-	_btn_retreat.tooltip_text = "提前结束本轮，带着赚到的金币回营升级"
-	_btn_retreat.pressed.connect(func(): GameState.retreat())
+	_btn_retreat.tooltip_text = "结束本轮"
+	_btn_retreat.pressed.connect(_return_to_rest)
 	hb.add_child(_btn_retreat)
-	var menu := Button.new()
-	menu.text = "封面"
-	menu.custom_minimum_size = Vector2(46, 40)
-	menu.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	UISkin.button(menu, false, true)
-	menu.pressed.connect(func():
-		if GameState.in_battle and not GameState.automation_enabled:
-			GameState.retreat()
-		GameState.save_game()
-		get_tree().change_scene_to_file("res://scenes/MainMenu.tscn"))
-	hb.add_child(menu)
 	return panel
 
 
@@ -441,7 +488,7 @@ func _build_table() -> Control:
 	var panel := PanelContainer.new()
 	panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	panel.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	panel.add_theme_stylebox_override("panel", Art.panel(Color("cfb183"), 0, Art.RULE, 0))
+	panel.add_theme_stylebox_override("panel", UISkin.panel(DistrictArt.GROUND, 0, Art.RULE, 0))
 
 	var layer := Control.new()
 	layer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -458,27 +505,31 @@ func _build_table() -> Control:
 	_pile_layer.size = WORLD_SIZE
 	_pile_layer.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	layer.add_child(_pile_layer)
-	var background := TextureRect.new()
+	var background := ColorRect.new()
 	background.name = "CityCourtyardArt"
-	background.texture = load("res://assets/art_v12/city_world.png")
-	background.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	background.stretch_mode = TextureRect.STRETCH_SCALE
+	background.color = DistrictArt.GROUND
 	background.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	background.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_pile_layer.add_child(background)
+	_zone_layer = Control.new()
+	_zone_layer.name = "CityZones"
+	_zone_layer.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+	_zone_layer.size = _world_size
+	_zone_layer.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_zone_layer.draw.connect(_draw_zones)
+	_pile_layer.add_child(_zone_layer)
+	_event_layer = MapEventLayer.new()
+	_event_layer.name = "MapEvents"
+	_event_layer.visible = false
+	_event_layer.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_event_layer.z_index = 4
+	_pile_layer.add_child(_event_layer)
+	_event_layer.setup(GameState.map_event_entries())
 	_slap_cursor = SlapCursor.new()
 	_slap_cursor.name = "SlapRangeCursor"
 	layer.add_child(_slap_cursor)
 	_camera_toolbar = _build_camera_toolbar()
 	layer.add_child(_camera_toolbar)
-	_camera_toolbar.resized.connect(_apply_camera)
-	_minimap = CityMinimap.new()
-	_minimap.name = "CityMinimap"
-	layer.add_child(_minimap)
-	_minimap.set_world(background.texture, _world_size)
-	_minimap.navigate_requested.connect(_navigate_minimap)
-	_minimap.expanded_changed.connect(func(_expanded: bool): _apply_camera())
-
 	_banner = _mk_label("", 20, Color(0.92, 0.90, 0.84))
 	_banner.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_banner.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
@@ -504,7 +555,8 @@ func _build_camera_toolbar() -> Control:
 	minus.tooltip_text = "缩小镜头（鼠标滚轮向下）"
 	minus.pressed.connect(func(): _set_camera_zoom(_camera_zoom / 1.15, _table.size * 0.5))
 	row.add_child(minus)
-	_zoom_label = Art.label("100%", 13)
+	_zoom_label = Art.label("0%", 13)
+	_zoom_label.tooltip_text = "以默认视野为0%；正数放大，负数缩小"
 	_zoom_label.custom_minimum_size.x = 48
 	_zoom_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_zoom_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
@@ -517,9 +569,9 @@ func _build_camera_toolbar() -> Control:
 	plus.pressed.connect(func(): _set_camera_zoom(_camera_zoom * 1.15, _table.size * 0.5))
 	row.add_child(plus)
 	var reset := Button.new()
-	reset.text = "全城"
-	reset.tooltip_text = "恢复完整城池视野"
-	reset.custom_minimum_size = Vector2(50, 30)
+	reset.text = "回目标区"
+	reset.tooltip_text = "回到当前未清分区，恢复默认视野（0%）"
+	reset.custom_minimum_size = Vector2(76, 30)
 	UISkin.button(reset, false, true)
 	reset.pressed.connect(_reset_camera)
 	row.add_child(reset)
@@ -531,7 +583,7 @@ func _world_to_screen(point: Vector2) -> Vector2:
 func _screen_to_world(point: Vector2) -> Vector2:
 	return (point - _pile_layer.position) / maxf(0.0001, _camera_scale)
 
-func _apply_camera() -> void:
+func _apply_camera(preserve_focus: bool = false) -> void:
 	if _pile_layer == null or _table.size.y < 10: return
 	_camera_scale = minf(_table.size.x / _world_size.x, _table.size.y / _world_size.y) * _camera_zoom
 	var limit := ((_world_size * _camera_scale - _table.size) * 0.5).max(Vector2.ZERO)
@@ -539,11 +591,12 @@ func _apply_camera() -> void:
 	_camera_pan.y = clampf(_camera_pan.y, -limit.y, limit.y)
 	_pile_layer.scale = Vector2.ONE * _camera_scale
 	_pile_layer.position = (_table.size - _world_size * _camera_scale) * 0.5 + _camera_pan
-	if _zoom_label != null: _zoom_label.text = "%d%%" % roundi(_camera_zoom * 100.0)
+	if not preserve_focus: _camera_focus = _screen_to_world(_table.size * 0.5)
+	if _zoom_label != null:
+		var percent := roundi((_camera_zoom / DEFAULT_ZOOM - 1.0) * 100.0)
+		_zoom_label.text = ("+%d%%" if percent > 0 else "%d%%") % percent
 	if _camera_toolbar != null:
 		_camera_toolbar.position = Vector2(16, 14)
-	if _minimap != null:
-		_minimap.position = Vector2(maxf(8, _table.size.x - _minimap.size.x - 16), 14)
 	_update_minimap()
 
 func _viewport_world_rect() -> Rect2:
@@ -556,61 +609,110 @@ func _update_minimap() -> void:
 		var card: Dictionary = _cards[i]
 		if not card.has("rest_pos"): continue
 		if not bool(card.dead) and float(GameState.battle[i].hp) > 0:
-			positions.append(card.rest_pos + card.size * 0.5)
+			positions.append(_card_center(i))
 	_minimap.update_view(_viewport_world_rect(), positions)
-	_minimap.set_city_title(str(GameData.region(GameState.battle_region).get("name", "城池")))
+	_minimap.set_city_index(GameState.battle_region)
+	_minimap.set_zones(GameState.zone_details(GameState.battle_region))
+	_minimap.set_events([])
 
 func _over_camera_ui(screen_pos: Vector2) -> bool:
-	return (_camera_toolbar != null and _camera_toolbar.visible and _camera_toolbar.get_rect().has_point(screen_pos)) \
-		or (_minimap != null and _minimap.visible and _minimap.get_rect().has_point(screen_pos))
+	var global_point := _table.get_global_transform() * screen_pos
+	if _minimap != null and _minimap.is_pointer_over(global_point): return true
+	if _slot_row != null:
+		var slots := _slot_row.find_parent("DeploySlotsScroll") as ScrollContainer
+		if slots != null:
+			var horizontal := slots.get_h_scroll_bar()
+			if horizontal.is_visible_in_tree() and horizontal.get_global_rect().has_point(global_point): return true
+	if _camera_toolbar != null and _camera_toolbar.visible:
+		for button in _camera_toolbar.find_children("*", "BaseButton", true, false):
+			if button.is_visible_in_tree() and button.get_global_rect().has_point(global_point): return true
+	for control in [_btn_retreat, _btn_upgrade, _btn_map, _btn_home, _btn_drawer, _btn_pool, _slot_row]:
+		if control != null and control.is_visible_in_tree() and control.get_global_rect().has_point(global_point): return true
+	return false
+
+func _edge_direction(global_point: Vector2) -> Vector2:
+	if not _window_focused or not _mouse_in_window or not _input_allowed(): return Vector2.ZERO
+	var bounds := get_global_rect()
+	if not bounds.has_point(global_point) or _over_camera_ui(_table.get_global_transform().affine_inverse() * global_point): return Vector2.ZERO
+	var point := global_point - bounds.position
+	var direction := Vector2.ZERO
+	if point.x < EDGE_PAN_BAND: direction.x = -1.0 + point.x / EDGE_PAN_BAND
+	elif point.x > bounds.size.x - EDGE_PAN_BAND: direction.x = 1.0 - (bounds.size.x - point.x) / EDGE_PAN_BAND
+	if point.y < EDGE_PAN_BAND: direction.y = -1.0 + point.y / EDGE_PAN_BAND
+	elif point.y > bounds.size.y - EDGE_PAN_BAND: direction.y = 1.0 - (bounds.size.y - point.y) / EDGE_PAN_BAND
+	return direction.limit_length(1.0)
 
 func _advance_edge_pan(delta: float, screen_pos: Vector2) -> void:
-	if not _input_allowed() or _panning or _over_camera_ui(screen_pos) or not Rect2(Vector2.ZERO, _table.size).has_point(screen_pos): return
-	var direction := Vector2.ZERO
-	if screen_pos.x < EDGE_PAN_BAND: direction.x = 1.0 - screen_pos.x / EDGE_PAN_BAND
-	elif screen_pos.x > _table.size.x - EDGE_PAN_BAND: direction.x = -1.0 + (_table.size.x - screen_pos.x) / EDGE_PAN_BAND
-	if screen_pos.y < EDGE_PAN_BAND: direction.y = 1.0 - screen_pos.y / EDGE_PAN_BAND
-	elif screen_pos.y > _table.size.y - EDGE_PAN_BAND: direction.y = -1.0 + (_table.size.y - screen_pos.y) / EDGE_PAN_BAND
-	if direction.length_squared() <= 0.0001: return
-	if direction.length_squared() > 1.0: direction = direction.normalized()
-	_camera_pan += direction * EDGE_PAN_SPEED * minf(delta, 0.05)
+	var global_point := _table.get_global_transform() * screen_pos
+	var direction := Vector2.ZERO if _panning or (_minimap != null and _minimap._dragging) or _zoom_frame == Engine.get_process_frames() else _edge_direction(global_point)
+	_set_edge_hint(direction, global_point)
+	if direction.is_zero_approx(): return
+	_camera_pan -= direction * EDGE_PAN_SPEED * minf(delta, 0.05)
 	_apply_camera()
+
+func _set_edge_hint(direction: Vector2, global_point: Vector2) -> void:
+	if _edge_hint == null: return
+	_edge_hint_direction = direction.normalized()
+	_edge_hint.visible = not direction.is_zero_approx()
+	if not _edge_hint.visible: return
+	var point := get_global_transform().affine_inverse() * global_point
+	var table_origin := get_global_transform().affine_inverse() * _table.global_position
+	point = point.clamp(table_origin + Vector2(26, 26), table_origin + _table.size - Vector2(26, 26))
+	var toolbar := _camera_toolbar.get_global_rect().grow(26)
+	if toolbar.has_point(get_global_transform() * point): point.y = table_origin.y + _camera_toolbar.position.y + _camera_toolbar.size.y + 26
+	_edge_hint.position = point - _edge_hint.size * 0.5
+	_edge_hint.queue_redraw()
+
+func _draw_edge_hint() -> void:
+	var direction := _edge_hint_direction
+	var side := direction.orthogonal()
+	var center := _edge_hint.size * 0.5
+	_edge_hint.draw_circle(center, 19, Color(Art.PAPER_LIGHT, 0.96))
+	_edge_hint.draw_arc(center, 19, 0, TAU, 32, Art.GOLD, 1.5, true)
+	var arrow := PackedVector2Array([center + direction * 12, center - direction * 2 + side * 9, center - direction * 2 + side * 3, center - direction * 11 + side * 3, center - direction * 11 - side * 3, center - direction * 2 - side * 3, center - direction * 2 - side * 9])
+	_edge_hint.draw_colored_polygon(arrow, Art.RED)
 
 func _navigate_minimap(world_point: Vector2) -> void:
 	if not _input_allowed(): return
+	_camera_focus = world_point
 	_camera_pan = (_world_size * 0.5 - world_point) * _camera_scale
-	_apply_camera()
+	_apply_camera(true)
 	_update_slap_cursor(_table.get_local_mouse_position())
 
 func _set_camera_zoom(value: float, screen_anchor: Vector2) -> void:
+	_zoom_frame = Engine.get_process_frames()
+	_set_edge_hint(Vector2.ZERO, Vector2.ZERO)
 	var anchor := _screen_to_world(screen_anchor)
 	_camera_zoom = clampf(value, ZOOM_MIN, ZOOM_MAX)
 	_apply_camera()
 	_camera_pan += screen_anchor - _world_to_screen(anchor)
 	_apply_camera()
-	_update_slap_cursor(screen_anchor)
+	_update_slap_cursor(_pointer_table_position())
 
 func _reset_camera() -> void:
-	_camera_zoom = 1.0
-	_camera_pan = Vector2.ZERO
-	_apply_camera()
+	_zoom_frame = Engine.get_process_frames()
+	_set_edge_hint(Vector2.ZERO, Vector2.ZERO)
+	_focus_starting_district()
+	_update_slap_cursor(_pointer_table_position())
 
 func _focus_starting_district() -> void:
 	_camera_zoom = DEFAULT_ZOOM
 	_apply_camera()
-	_camera_pan = (_world_size * 0.5 - _world_size * Vector2(0.42, 0.32)) * _camera_scale
-	_apply_camera()
+	var zone := GameState.next_zone(GameState.battle_region)
+	var focus := GameState.zone_rect(GameState.battle_region, zone).get_center() if zone >= 0 else _world_size * 0.5
+	_camera_focus = focus
+	_camera_pan = (_world_size * 0.5 - focus) * _camera_scale
+	_apply_camera(true)
 
 func _input_allowed() -> bool:
 	if not GameState.in_battle or not GameState.round_active or GameState.narrative_paused: return false
 	return not ((_home != null and _home.visible) or (_map_layer != null and _map_layer.visible)
-		or (_city != null and _city.visible) or (_shop != null and _shop.visible)
-		or (_story != null and _story.visible) or (_reveal != null and _reveal.visible)
+		or (_city != null and _city.visible) or (_shop != null and _shop.visible) or (_reveal != null and _reveal.visible)
 		or _drawer_open or _pool_open)
 
 func _update_slap_cursor(screen_pos: Vector2) -> void:
 	var over_tools := _over_camera_ui(screen_pos)
-	var active := _window_focused and _input_allowed() and Rect2(Vector2.ZERO, _table.size).has_point(screen_pos) and not over_tools and not _panning
+	var active: bool = _window_focused and _mouse_in_window and _input_allowed() and Rect2(Vector2.ZERO, _table.size).has_point(screen_pos) and not over_tools and not _panning and not _space_pan_held and not _minimap._dragging and _edge_direction(_table.get_global_transform() * screen_pos).is_zero_approx()
 	_slap_cursor.visible = active
 	if active != _cursor_hidden:
 		_cursor_hidden = active
@@ -625,7 +727,7 @@ func _update_slap_cursor(screen_pos: Vector2) -> void:
 	_slap_cursor.outlines = []
 	for i in hits:
 		var card: Dictionary = _cards[i]
-		var center: Vector2 = card.rest_pos + card.size * 0.5
+		var center := _card_center(i)
 		var corners := PackedVector2Array()
 		for corner in [Vector2(-1, -1), Vector2(1, -1), Vector2(1, 1), Vector2(-1, 1)]:
 			corners.append(_world_to_screen(center + (card.size * corner * 0.5).rotated(float(card.rot))))
@@ -647,7 +749,7 @@ func _build_drawer() -> PanelContainer:
 	_tabs.add_theme_color_override("font_selected_color", Art.PAPER_LIGHT)
 	_tabs.add_theme_color_override("font_unselected_color", Art.DIM)
 	panel.add_child(_tabs)
-	for nm in ["卡包", "招降", "合成", "城建", "路线", "收藏"]:
+	for nm in ["卡包", "招降", "合成", "收藏"]:
 		var body := VBoxContainer.new()
 		body.name = nm
 		var scroll := ScrollContainer.new()
@@ -662,8 +764,6 @@ func _build_drawer() -> PanelContainer:
 		_tabs.add_child(body)
 		if nm == "收藏":
 			_tabs.set_tab_title(_tabs.get_tab_count() - 1, "图鉴")
-		elif nm == "城建":
-			_tabs.set_tab_title(_tabs.get_tab_count() - 1, "基建")
 
 	return panel
 
@@ -672,7 +772,12 @@ func _build_bottombar() -> Control:
 	var panel := PanelContainer.new()
 	panel.name = "CompactDeployBar"
 	panel.custom_minimum_size.y = 112
-	panel.add_theme_stylebox_override("panel", UISkin.panel(Art.PAPER_LIGHT, 10, Art.GOLD, 1))
+	var style := UISkin.panel(Art.PAPER_LIGHT, 10, Art.GOLD, 1)
+	style.content_margin_left = EDGE_PAN_BAND
+	style.content_margin_right = EDGE_PAN_BAND
+	style.content_margin_top = 8
+	style.content_margin_bottom = 8
+	panel.add_theme_stylebox_override("panel", style)
 	UISkin.chrome(panel, "footer")
 	_bar = panel
 	var hb := HBoxContainer.new()
@@ -682,7 +787,13 @@ func _build_bottombar() -> Control:
 	legend.custom_minimum_size.x = 44
 	legend.alignment = BoxContainer.ALIGNMENT_CENTER
 	legend.add_theme_constant_override("separation", 3)
-	legend.add_child(Art.stamp("上阵", Vector2(38, 62)))
+	var deploy_stamp := Art.stamp("上阵", Vector2(38, 62))
+	var caption := deploy_stamp.get_child(0) as Label
+	var font_size := caption.get_theme_font_size("font_size")
+	while font_size > 1 and Art.title_font().get_multiline_string_size(caption.text, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).y > deploy_stamp.custom_minimum_size.y - 12:
+		font_size -= 1
+		caption.add_theme_font_size_override("font_size", font_size)
+	legend.add_child(deploy_stamp)
 	_lbl_bar = Art.label("", 10, Art.DIM)
 	_lbl_bar.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	legend.add_child(_lbl_bar)
@@ -695,26 +806,30 @@ func _build_bottombar() -> Control:
 	slots_scroll.size_flags_stretch_ratio = 0.9
 	slots_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
 	slots_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	slots_scroll.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	slots_scroll.custom_minimum_size.y = 96
 	hb.add_child(slots_scroll)
+	var slots_center := VBoxContainer.new()
+	slots_center.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	slots_center.alignment = BoxContainer.ALIGNMENT_CENTER
+	slots_center.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	slots_scroll.add_child(slots_center)
 	_slot_row = HBoxContainer.new()
 	_slot_row.add_theme_constant_override("separation", 8)
 	_slot_row.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	slots_scroll.add_child(_slot_row)
+	slots_center.add_child(_slot_row)
 	hb.add_child(_vsep())
 	var info := VBoxContainer.new()
-	info.name = "DeployFieldNotes"
+	info.name = "BattleStatus"
 	info.custom_minimum_size.x = 300
 	info.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	info.alignment = BoxContainer.ALIGNMENT_CENTER
 	info.add_theme_constant_override("separation", 6)
 	hb.add_child(info)
-	_lbl_hint = Art.label("", 13, Art.INK)
-	_lbl_hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	info.add_child(_lbl_hint)
-	_lbl_progress = Art.label("", 11, Art.DIM)
+	_lbl_progress = Art.label("", 13, Art.DIM)
 	_lbl_progress.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	info.add_child(_lbl_progress)
-	_log_lbl = Art.label("", 10, Art.GOLD)
+	_log_lbl = Art.label("", 12, Art.GOLD)
 	_log_lbl.clip_text = true
 	info.add_child(_log_lbl)
 	_btn_pool = Button.new()
@@ -727,6 +842,12 @@ func _build_bottombar() -> Control:
 	_btn_pool.tooltip_text = "展开已有将兵，把牌拖到上阵槽"
 	_btn_pool.pressed.connect(func(): _set_pool(not _pool_open))
 	hb.add_child(_btn_pool)
+	_minimap = CityMinimap.new()
+	_minimap.name = "CityMinimap"
+	_minimap.size_flags_vertical = Control.SIZE_SHRINK_END
+	hb.add_child(_minimap)
+	_minimap.set_world(null, _world_size)
+	_minimap.navigate_requested.connect(_navigate_minimap)
 	return panel
 
 
@@ -764,6 +885,7 @@ func _build_pool() -> PanelContainer:
 
 
 func _set_pool(open: bool) -> void:
+	if open and GameState.in_battle: return
 	_pool_open = open
 	_pool.visible = open
 	_btn_pool.text = "卡池 ▴" if open else "卡池 ▾"
@@ -773,6 +895,7 @@ func _set_pool(open: bool) -> void:
 
 
 func _set_drawer(open: bool) -> void:
+	if open and GameState.in_battle: return
 	if open and _shop != null and _shop.visible:
 		return
 	_drawer_open = open
@@ -788,12 +911,12 @@ func _set_drawer(open: bool) -> void:
 ## 由 _on_changed() 调用。用一个"指纹"串判断要不要重建 —— 拍卡时 changed 每一下都发，
 ## 每次都重建 7 个槽位 + 几十张卡池牌会白烧 CPU（也让人眼看到闪烁）。
 func _refresh_deploy_bar() -> void:
-	var sig := "%d|%d" % [GameState.carry.size(), GameState.carry_max()]
+	var sig := "%d|%d|%s" % [GameState.carry.size(), GameState.carry_max(), GameState.in_battle]
 	for id in GameState.carry:
 		var sid := str(id)
 		sig += "|" + sid
 		# v1.1：装备/兵的数量也要进指纹 —— 不然在大本营挂了装备回来，槽位上还是旧数字
-		sig += ":%d:%d" % [GameState.hero_equip_of(sid).size(), GameState.hero_troops_of(sid).size()]
+		sig += ":%d:%d:%d" % [GameState.hero_equip_of(sid).size(), GameState.hero_troops_of(sid).size(), GameState.hero_level(sid)]
 	if sig != _bar_sig:
 		_bar_sig = sig
 		_rebuild_slots()
@@ -839,11 +962,15 @@ func _mk_slot_node(card_id: String, slot_index: int, locked: bool) -> Control:
 	slot.locked = locked
 	slot.custom_minimum_size = Vector2(SLOT_W, 88)
 	var rest_style := _slot_style(filled, locked)
+	rest_style.content_margin_top = 3
+	rest_style.content_margin_bottom = 3
 	var hover_style := UISkin.panel(Color("fff4d8"), 6, Art.GOLD if locked else Art.RED, 2)
+	hover_style.content_margin_top = 3
+	hover_style.content_margin_bottom = 3
 	slot.add_theme_stylebox_override("panel", rest_style)
 	UISkin.chrome(slot, "card")
 	slot.mouse_filter = Control.MOUSE_FILTER_STOP
-	slot.mouse_default_cursor_shape = Control.CURSOR_ARROW if locked else Control.CURSOR_POINTING_HAND
+	slot.mouse_default_cursor_shape = Control.CURSOR_ARROW if locked or GameState.in_battle else Control.CURSOR_POINTING_HAND
 	slot.mouse_entered.connect(func(): slot.add_theme_stylebox_override("panel", hover_style))
 	slot.mouse_exited.connect(func(): slot.add_theme_stylebox_override("panel", rest_style))
 	var v := VBoxContainer.new()
@@ -856,11 +983,11 @@ func _mk_slot_node(card_id: String, slot_index: int, locked: bool) -> Control:
 		plus.size_flags_vertical = Control.SIZE_EXPAND_FILL
 		plus.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 		v.add_child(plus)
-		var tip := Art.label("拖入将兵", 11, Art.DIM)
+		var tip := Art.label("空同行位" if GameState.in_battle else "拖入将兵", 11, Art.DIM)
 		tip.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		v.add_child(tip)
 		slot.add_child(EmptySlotOutline.new())
-		slot.tooltip_text = "空携带位 %d／%d：从卡池拖入将兵" % [slot_index + 1, GameState.carry_max()]
+		slot.tooltip_text = "战斗中队伍只读，返回休息后可配队" if GameState.in_battle else "空携带位 %d／%d：从卡池拖入将兵" % [slot_index + 1, GameState.carry_max()]
 		return slot
 	var c := GameData.card(card_id)
 	var nm := Art.label(str(c.get("name", card_id)), 14)
@@ -868,7 +995,14 @@ func _mk_slot_node(card_id: String, slot_index: int, locked: bool) -> Control:
 	nm.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	nm.clip_text = true
 	v.add_child(nm)
+	var eqn := GameState.hero_equip_of(card_id).size()
+	var tpn := GameState.hero_troops_of(card_id).size()
+	var portrait_row := HBoxContainer.new()
+	portrait_row.add_theme_constant_override("separation", 3)
+	portrait_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	v.add_child(portrait_row)
 	var portrait := Art.image(card_id, Vector2(0, 44))
+	portrait.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	var portrait_source := portrait.texture as AtlasTexture
 	if portrait_source != null:
 		var strip := portrait_source.duplicate() as AtlasTexture
@@ -878,18 +1012,18 @@ func _mk_slot_node(card_id: String, slot_index: int, locked: bool) -> Control:
 		portrait.texture = strip
 	portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
 	portrait.clip_contents = true
-	v.add_child(portrait)
-	var eqn := GameState.hero_equip_of(card_id).size()
-	var tpn := GameState.hero_troops_of(card_id).size()
+	portrait_row.add_child(portrait)
+	if eqn > 0 or tpn > 0:
+		var attachments := Art.label("装%d\n兵%d" % [eqn, tpn], 9, Art.DIM)
+		attachments.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		attachments.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		portrait_row.add_child(attachments)
 	var star := int(c.get("star", 1))
-	var row := Art.label(("固定 " if locked else "★%d " % star) + _fmt_pow(GameState.hero_card_power(card_id)), 10, Art.GOLD if locked else Art.DIM)
+	var rank := "固定 " if locked else ("Lv.%d · ★%d " % [GameState.hero_level(card_id), star] if GameState.is_hero(card_id) else "★%d " % star)
+	var row := Art.label(rank + _fmt_pow(GameState.hero_card_power(card_id)), 10, Art.GOLD if locked else Art.DIM)
 	row.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	row.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	v.add_child(row)
-	if eqn > 0 or tpn > 0:
-		var attachments := Art.label("装%d · 兵%d" % [eqn, tpn], 9, Art.DIM)
-		attachments.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		v.add_child(attachments)
 	if locked:
 		slot.tooltip_text = "主角「%s」固定上阵，不占携带位。拍力 %s" % [c.get("name", card_id), _fmt_pow(GameState.hero_card_power(card_id))]
 	else:
@@ -904,7 +1038,7 @@ func _mk_slot_node(card_id: String, slot_index: int, locked: bool) -> Control:
 			troop_names.append(GameData.card_name(str(tid)))
 		if not troop_names.is_empty():
 			detail += "\n带兵：" + "、".join(troop_names)
-		slot.tooltip_text = "%s · ★%d · 拍力 %s\n%s\n点一下卸下，拖动替换" % [c.get("name", card_id), star, _fmt_pow(GameState.hero_card_power(card_id)), detail]
+		slot.tooltip_text = "%s · ★%d · 拍力 %s\n%s\n%s" % [c.get("name", card_id), star, _fmt_pow(GameState.hero_card_power(card_id)), detail, "战斗中队伍只读，返回休息后可配队" if GameState.in_battle else "点一下卸下，拖动替换"]
 	return slot
 
 
@@ -937,7 +1071,7 @@ func _rebuild_pool() -> void:
 			ids.append(sid)
 
 	if ids.is_empty():
-		var tip := "卡池里没有待命的将兵 —— 去「商店 → 卡包」开几包，或把上阵的槽位点掉。"
+		var tip := "暂无待命将兵"
 		_pool_box.add_child(_mk_label(tip, 12, INK_DIM))
 		return
 
@@ -1004,6 +1138,7 @@ func _mk_pool_card(id: String) -> Control:
 
 ## 拖过来的牌落到第 index 个槽位。落点已有人 = 换人（旧的回卡池）。
 func _deploy_at(id: String, index: int) -> void:
+	if GameState.in_battle: return
 	var cap := GameState.carry_max()
 	if index < 0 or index >= cap:
 		GameState.carry_add(id)                  # 兜底：当追加处理
@@ -1015,6 +1150,7 @@ func _deploy_at(id: String, index: int) -> void:
 
 
 func _undeploy(id: String) -> void:
+	if GameState.in_battle: return
 	if GameState.carry_remove(id):
 		_pool_sig = ""                            # 有人退回卡池 → 卡池要重画
 
@@ -1121,6 +1257,8 @@ func _clear(node: Node) -> void:
 # 高频刷新：顶栏 + 卡牌血量
 # =====================================================================
 func _on_changed() -> void:
+	if GameState.in_battle and _pool_open: _set_pool(false)
+	if _zone_layer != null: _zone_layer.queue_redraw()
 	_update_topbar()
 	_refresh_deploy_bar()
 	if _shown_gen != GameState.battle_gen:
@@ -1128,15 +1266,20 @@ func _on_changed() -> void:
 		_rebuild_cards()
 	else:
 		_update_cards()
+	_sync_card_positions()
 	_present_build_effects()
+	_refresh_map_events()
 
 	# 战果只改变底部继续按钮，不移走四个整备入口。
 	if _was_in_battle and not GameState.in_battle:
 		_was_in_battle = false
 		_sel_idx = -1
-		if not GameState.automation_enabled:
-			_open_home()
-			_maybe_story.call_deferred()
+		_open_home()
+	elif not _was_in_battle and GameState.in_battle:
+		_close_home()
+		_close_city()
+		_close_shop()
+		_close_map()
 	elif _map_layer != null and _map_layer.visible:
 		_refresh_map_panels()
 	elif _home != null and _home.visible:
@@ -1150,38 +1293,39 @@ func _on_changed() -> void:
 
 
 func _update_topbar() -> void:
+	for button in [_btn_upgrade, _btn_map, _btn_home, _btn_drawer]:
+		button.visible = not GameState.in_battle
+	_btn_pool.visible = not GameState.in_battle
 	if GameState.in_battle:
 		var r := GameData.region(GameState.battle_region)
 		var route := str(r.get("route", ""))
 		_lbl_region.text = str(r.get("name", "?"))
-		_lbl_route.text = "%s · %d/%d段" % ["采集" if GameState.battle_mode == "practice" else route, GameState.table_progress(GameState.battle_region), GameState.table_count(GameState.battle_region)]
+		_lbl_route.text = "%s · %d/%d区" % [route, GameState.table_progress(GameState.battle_region), GameState.zone_count(GameState.battle_region)]
 		_lbl_region.add_theme_color_override("font_color", Art.INK)
 		var alive := 0
 		for e in GameState.battle:
 			if float(e["hp"]) > 0.0:
 				alive += 1
-		_lbl_stamina.text = "剩余  %.1f 秒" % GameState.round_seconds_left
+		_lbl_stamina.text = "巡城" if GameState.battle_mode == "visit" else "剩余  %.1f 秒" % GameState.round_seconds_left
 		_lbl_combo.text = "已拍 %d 次 · 余 %d 张" % [GameState.round_slaps, alive]
 		_stamina_bar.max_value = maxf(1.0, GameState.round_duration)
 		_stamina_bar.value = GameState.round_seconds_left
 		_lbl_pace.text = "已暂停 · 关闭整备继续" if GameState.narrative_paused else ("蓄掌 %.1f秒" % GameState.slap_cooldown_left if GameState.slap_cooldown_left > 0.03 else "可拍 · %.2f秒 / 次" % GameState.slap_interval())
-		_stamina_bar.visible = true
+		_stamina_bar.visible = GameState.battle_mode != "visit"
 		_btn_retreat.visible = true
 	else:
-		_lbl_region.text = "回营升级"
-		_lbl_route.text = "再来一轮，赚得更多"
-		_lbl_stamina.text = "本轮已收钱"
-		_lbl_combo.text = "买升级 · 再开一轮"
+		_lbl_region.text = "休息整备"
+		_lbl_route.text = "Lv.%d · 技能点%d" % [GameState.player_level(), GameState.skill_points]
+		_lbl_stamina.text = "本轮结束"
+		_lbl_combo.text = "已拍 %d 次" % GameState.round_slaps
 		_lbl_pace.text = "%.2f秒 / 拍" % GameState.slap_interval()
 		_stamina_bar.visible = false
 		_btn_retreat.visible = false
 	_lbl_dmg.text = "拍力 %s · 范围 %d" % [_fmt_pow(GameState.click_damage()), roundi(GameState.slap_radius())]
 	_lbl_gold.text = "金币  " + GameState.fmt(GameState.gold)
-	_lbl_income.text = "本轮 +%s · %.1f / 秒" % [_fmt_pow(GameState.run_gold), GameState.round_gold_per_second()] if GameState.in_battle else "基建 %s / 时" % GameState.fmt(GameState.gold_per_hour())
-	_lbl_progress.text = "Lv.%d  ·  上阵 %d/%d  ·  拍力 %s  ·  荆州 %d/%d" % [GameState.player_level(), GameState.carry.size(), GameState.carry_max(), _fmt_pow(GameState.deck_power()), GameState.cleared_count(), GameState.total_field_regions()]
-	var hint := "单击拍牌 · 滚轮缩放 · 靠边移动镜头\n点击地图定位 · M收起 · 升级范围拍更多"
-	_lbl_hint.tooltip_text = "" if GameState.city_unlocked() else GameState.city_unlock_text()
-	_lbl_hint.text = hint
+	_lbl_income.text = "本轮 +%s · %.1f / 秒" % [_fmt_pow(GameState.run_gold), GameState.round_gold_per_second()] if GameState.in_battle else "本轮 +%s" % _fmt_pow(GameState.run_gold)
+	_lbl_progress.text = "Lv.%d · 技能点 %d · 上阵 %d/%d · 荆州 %d/%d" % [GameState.player_level(), GameState.skill_points, GameState.carry.size(), GameState.carry_max(), GameState.cleared_count(), GameState.total_field_regions()]
+	_btn_upgrade.tooltip_text = "技能点 %d" % GameState.skill_points
 
 
 func _update_banner() -> void:
@@ -1190,11 +1334,11 @@ func _update_banner() -> void:
 		return
 	_banner.visible = true
 	if GameState.cleared_count() >= GameState.total_field_regions():
-		_banner.text = "荆州八郡已定。\n仍可在已开区域拍牌赚钱、经营城池。"
+		_banner.text = "荆州八郡已定。"
 	elif GameState.end_reason == "settled":
-		_banner.text = "本轮金币已入账。\n去大本营升级，再开一轮。"
+		_banner.text = "本轮已结束。"
 	else:
-		_banner.text = "桌上没有牌。\n点顶部「大本营」整备，或「荆州舆图」挑一桌"
+		_banner.text = "当前没有敌牌。"
 
 
 # =====================================================================
@@ -1202,12 +1346,13 @@ func _update_banner() -> void:
 # =====================================================================
 func _rebuild_cards() -> void:
 	for c in _pile_layer.get_children():
-		if c.name == "CityCourtyardArt":
+		if c.name in ["CityCourtyardArt", "CityZones", "MapEvents"]:
 			continue
 		_pile_layer.remove_child(c)
 		c.queue_free()
 	_cards.clear()
 	if not GameState.in_battle or GameState.battle.is_empty():
+		_layout_cards()
 		return
 	for i in range(GameState.battle.size()):
 		var card := _mk_card(i)
@@ -1285,14 +1430,25 @@ func _mk_card(i: int) -> Dictionary:
 
 
 func _layout_cards() -> void:
+	var focus := _camera_focus if _camera_focus != Vector2(-1, -1) else _world_size * 0.5
 	var n := _cards.size()
-	_world_size = CityLayout.world_size(n)
+	_world_size = GameState.battle_world_size()
+	if _zone_layer != null: _zone_layer.size = _world_size
+	if _event_layer != null: _event_layer.size = _world_size
 	if _pile_layer != null: _pile_layer.size = _world_size
-	if _minimap != null: _minimap.set_world(load("res://assets/art_v12/city_world.png"), _world_size)
-	_apply_camera()
+	if _minimap != null: _minimap.set_world(null, _world_size)
+	_apply_camera(true)
 	var area := _table.size
-	if area.x <= 60.0 or area.y <= 60.0 or _cards.is_empty():
+	if area.x <= 60.0 or area.y <= 60.0:
 		return
+	if _initial_camera or _camera_region != GameState.battle_region:
+		_initial_camera = false
+		_camera_region = GameState.battle_region
+		_focus_starting_district()
+	else:
+		_camera_pan = (_world_size * 0.5 - focus) * _camera_scale
+		_apply_camera(true)
+	if _cards.is_empty(): return
 	var sz := CARD_SIZE
 	var k := clampf(sz.x / CARD_SIZE.x, 0.65, 1.65)
 	for i in range(_cards.size()):
@@ -1321,14 +1477,46 @@ func _layout_cards() -> void:
 		card["bar"].size = Vector2(sz.x - margin * 2, 5 * k)
 		card["hpt"].position = Vector2(margin + 30 * k, sz.y - 16 * k)
 		card["hpt"].size = Vector2(sz.x - margin * 2 - 30 * k, 11 * k)
-		var enemy: Dictionary = GameState.battle[i]
-		card["rest_pos"] = Vector2(250, 250) + Vector2(float(enemy.nx), float(enemy.ny)) * (_world_size - Vector2(500, 500)) - sz * 0.5
+		card["rest_pos"] = _card_center(i) - sz * 0.5
 		if not card["dead"]:
 			node.position = card["rest_pos"]
-	if _initial_camera:
-		_initial_camera = false
-		_focus_starting_district()
-	_apply_camera()
+	_apply_camera(true)
+
+
+func _card_center(i: int) -> Vector2:
+	return GameState.get_enemy_world_center(i)
+
+
+func _draw_zones() -> void:
+	if not GameState.in_battle: return
+	var zones := GameState.zone_details(GameState.battle_region)
+	DistrictArt.draw_background(_zone_layer, Rect2(Vector2.ZERO, _world_size), _world_size, zones, GameState.battle_region)
+	for zone in zones:
+		var rect: Rect2 = zone.get("rect", Rect2())
+		var conquered := bool(zone.get("cleared", false))
+		var ink := Color("21665b") if conquered else Art.RED
+		# 区域由路口和纸签识别，避免整块颜色与直角网格盖住场地。
+		var badge := Rect2(rect.position + Vector2((rect.size.x - 245) * 0.5, rect.size.y - 65), Vector2(245, 42))
+		_zone_layer.draw_style_box(Art.panel(Color("f8f0dc", 0.94), 7, Color(Art.RULE, 0.8), 1), badge)
+		_zone_layer.draw_rect(Rect2(badge.position + Vector2(8, 8), Vector2(28, 26)), ink)
+		_zone_layer.draw_string(Art.title_font(), badge.position + Vector2(8, 29), "%02d" % (int(zone["zone"]) + 1), HORIZONTAL_ALIGNMENT_CENTER, 28, 19, Art.PAPER_LIGHT)
+		var title := "%s · %s" % [str(zone.get("name", "分区")), "已征服" if conquered else "难%d" % int(zone.get("difficulty", 1))]
+		_zone_layer.draw_string(Art.title_font(), badge.position + Vector2(44, 28), title, HORIZONTAL_ALIGNMENT_LEFT, 192, 21, ink)
+
+
+func _sync_card_positions() -> void:
+	for i in range(mini(_cards.size(), GameState.battle.size())):
+		var card: Dictionary = _cards[i]
+		if bool(card.dead) or not card.has("rest_pos"): continue
+		var destination := _card_center(i) - Vector2(card.size) * 0.5
+		if Vector2(card.rest_pos).is_equal_approx(destination): continue
+		card["rest_pos"] = destination
+		for key in ["shake_tween", "move_tween"]:
+			var previous := card.get(key) as Tween
+			if previous != null and previous.is_valid(): previous.kill()
+		var motion: Tween = card.node.create_tween()
+		card["move_tween"] = motion
+		motion.tween_property(card.node, "position", destination, 0.18).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 
 
 func _update_card(i: int) -> void:
@@ -1414,7 +1602,7 @@ func _update_cards() -> void:
 # 输入：单击范围拍击 / 滚轮缩放 / 靠边移动；中键拖动作为附加操作
 # =====================================================================
 func _on_table_input(ev: InputEvent) -> void:
-	if not _input_allowed(): return
+	if not _window_focused or not _input_allowed(): return
 	if ev is InputEventMouse and _over_camera_ui(ev.position): return
 	if ev is InputEventMouseButton:
 		var mb := ev as InputEventMouseButton
@@ -1423,10 +1611,12 @@ func _on_table_input(ev: InputEvent) -> void:
 				_set_camera_zoom(_camera_zoom * (1.15 if mb.button_index == MOUSE_BUTTON_WHEEL_UP else 1.0 / 1.15), mb.position)
 			return
 		if mb.button_index == MOUSE_BUTTON_MIDDLE:
+			if mb.pressed and not _edge_direction(_table.get_global_transform() * mb.position).is_zero_approx(): return
 			_panning = mb.pressed
+			_pan_button = MOUSE_BUTTON_MIDDLE if mb.pressed else MOUSE_BUTTON_NONE
 			_update_slap_cursor(mb.position)
 			return
-		if mb.button_index == MOUSE_BUTTON_LEFT and mb.pressed and not _panning:
+		if mb.button_index == MOUSE_BUTTON_LEFT and mb.pressed and not _panning and not _space_pan_held:
 			_slap_area(mb.position)
 		return
 	if ev is InputEventMouseMotion:
@@ -1442,7 +1632,7 @@ func _area_targets(world_pos: Vector2, radius: float) -> Array:
 		var card: Dictionary = _cards[i]
 		if bool(card.dead) or float(GameState.battle[i].hp) <= 0: continue
 		var half: Vector2 = card.size * 0.5
-		var center: Vector2 = card.get("rest_pos", card.node.position) + half
+		var center := _card_center(i)
 		var point := (world_pos - center).rotated(-float(card.rot))
 		var closest := Vector2(clampf(point.x, -half.x, half.x), clampf(point.y, -half.y, half.y))
 		if point.distance_squared_to(closest) <= (radius + 0.001) * (radius + 0.001):
@@ -1451,8 +1641,13 @@ func _area_targets(world_pos: Vector2, radius: float) -> Array:
 
 func _slap_area(screen_pos: Vector2) -> void:
 	if not _input_allowed() or not Rect2(Vector2.ZERO, _table.size).has_point(screen_pos): return
-	if _over_camera_ui(screen_pos): return
+	if _panning or _space_pan_held or _over_camera_ui(screen_pos) or not _edge_direction(_table.get_global_transform() * screen_pos).is_zero_approx(): return
 	var world := _screen_to_world(screen_pos)
+	var event_id: String = _event_layer.hit_test(world) if _event_layer.visible else ""
+	if not event_id.is_empty():
+		GameState.interact_map_event(event_id, world)
+		_refresh_map_events()
+		return
 	var targets := _area_targets(world, GameState.slap_radius())
 	if targets.is_empty() or not GameState.begin_slap_batch(): return
 	var generation := GameState.battle_gen
@@ -1464,6 +1659,8 @@ func _slap_area(screen_pos: Vector2) -> void:
 			count += 1
 			if generation == GameState.battle_gen and not bool(_cards[i].dead):
 				_shake(int(i), false)
+	if count > 0 and generation == GameState.battle_gen:
+		GameState.apply_slap_displacement(world, targets)
 	GameState.end_slap_batch()
 	if count > 0:
 		_spawn_area_impact(world, GameState.slap_radius(), count, GameState.gold - gold_before, GameState.run_damage - damage_before)
@@ -1499,7 +1696,7 @@ func _hit_index_at(local_pos: Vector2) -> int:
 			continue
 		var sz: Vector2 = card["size"]
 		# 在卡牌自身的（未旋转）坐标系里做判定 —— 不依赖引擎的变换栈
-		var local: Vector2 = (local_pos - card.get("rest_pos", node.position) - sz * 0.5).rotated(-float(card.rot))
+		var local: Vector2 = (local_pos - _card_center(i)).rotated(-float(card.rot))
 		if absf(local.x) <= sz.x * 0.5 and absf(local.y) <= sz.y * 0.5:
 			# 重叠时取离牌心最近的那张（上层被压住的牌只算边角）
 			var d: float = local.length()
@@ -1517,7 +1714,7 @@ func _slap(i: int, heavy: bool, pos: Vector2) -> void:
 	var generation := GameState.battle_gen
 	if not GameState.attack(i, heavy):
 		return
-	# 清桌会自动补牌。新桌的卡不能承接上一桌的摇动和翻牌动画。
+	# 结算后新开的城池不能承接上一场的摇动和翻牌动画。
 	_spawn_impact(pos, i, heavy)
 	if generation == GameState.battle_gen and i < _cards.size() and i < GameState.battle.size() and not bool(_cards[i]["dead"]):
 		_shake(i, heavy)
@@ -1596,6 +1793,9 @@ func _flip_card(i: int) -> void:
 		return
 	card["dead"] = true
 	var node: Control = card["node"]
+	for key in ["shake_tween", "move_tween"]:
+		var previous := card.get(key) as Tween
+		if previous != null and previous.is_valid(): previous.kill()
 	var tw := node.create_tween()
 	tw.tween_property(node, "scale:x", 0.04, 0.1)
 	tw.tween_callback(func():
@@ -1718,8 +1918,10 @@ func _build_map_layer() -> Control:
 
 
 func _open_map() -> void:
-	_close_home()
+	if GameState.in_battle: return
+	_enter_rest()
 	_close_city()
+	_close_home()
 	_close_shop()
 	_map_layer.visible = true
 	if _sel_idx <= 0:
@@ -1739,6 +1941,7 @@ func _return_from_map() -> void:
 
 
 func _on_home_map() -> void:
+	_close_city()
 	_sel_idx = _default_region()
 	_open_map()
 
@@ -1746,45 +1949,37 @@ func _on_home_map() -> void:
 # =====================================================================
 # 大本营（全屏覆盖层）：升级树 / 上阵 / 装备 / 出征
 # =====================================================================
+func _enter_rest() -> void:
+	if _pool_open: _set_pool(false)
+	_set_drawer(false)
+	if GameState.in_battle:
+		GameState.retreat()
+
+
+func _return_to_rest() -> void:
+	_enter_rest()
+	_open_home()
+
+
 func _open_home() -> void:
-	if _home == null:
+	if GameState.in_battle or _home == null:
 		return
+	_enter_rest()
 	_close_map()
 	_close_city()
 	_close_shop()
 	_home.open_home()
-	_maybe_story.call_deferred()
 
 func _open_upgrade() -> void:
+	if GameState.in_battle: return
 	if _home == null: return
+	_enter_rest()
 	_close_map()
 	_close_city()
 	_close_shop()
 	_set_drawer(false)
 	_home.open_home()
 	_home.open_section("upgrade")
-
-func _maybe_story() -> void:
-	if _story == null or _story.visible or GameState.automation_enabled: return
-	if _story_camp_run == GameState.runs: return
-	var event: Dictionary = StoryBook.next_event(GameState.story_context(), GameState.story_seen)
-	if event.is_empty(): return
-	_story_camp_run = GameState.runs
-	GameState.narrative_paused = true
-	_panning = false
-	_story.open_event(event)
-
-func _open_journal() -> void:
-	GameState.narrative_paused = true
-	_panning = false
-	_story.open_journal(GameState.story_seen)
-
-func _on_home_practice(idx: int) -> void:
-	if GameState.start_practice(idx):
-		_close_home()
-		_close_map()
-		_close_shop()
-		_close_city()
 
 func _exit_tree() -> void:
 	GameState.narrative_paused = false
@@ -1797,13 +1992,8 @@ func _close_home() -> void:
 		_home.visible = false
 
 
-# =====================================================================
-# 城建（全屏覆盖层）：城池 / 建筑 / 更换 / 合成
-# =====================================================================
 func _open_city() -> void:
-	if _city == null:
-		return
-	_city_from_home = _home != null and _home.visible
+	if GameState.in_battle or _city == null: return
 	_close_map()
 	_close_home()
 	_close_shop()
@@ -1811,26 +2001,35 @@ func _open_city() -> void:
 
 
 func _close_city() -> void:
-	if _city != null:
-		_city.visible = false
+	if _city != null: _city.visible = false
 
 
 func _return_from_city() -> void:
 	_close_city()
-	if _city_from_home or not GameState.in_battle:
-		_open_home()
+	_open_home()
 
 
+func _on_city_deploy(idx: int) -> void:
+	if _city == null or not _city.visible or GameState.in_battle: return
+	if GameState.start_battle(idx):
+		_close_city()
+		_close_home()
+		_close_shop()
+		_close_map()
+
+
+# =====================================================================
+# 商店（全屏覆盖层）
+# =====================================================================
 func _open_shop() -> void:
+	if GameState.in_battle: return
+	_enter_rest()
 	_close_map()
 	_close_city()
 	_close_home()
 	_set_drawer(false)
 	if _tabs.get_parent() != _shop.content:
 		_tabs.reparent(_shop.content, false)
-	# 大本营商店只展示消费和收藏，经营仍从基建进入。
-	_tabs.set_tab_hidden(3, true)
-	_tabs.set_tab_hidden(4, true)
 	_tabs.current_tab = 0
 	_shop.open_shop()
 	_refresh_shop()
@@ -1841,8 +2040,6 @@ func _close_shop() -> void:
 		return
 	_shop.visible = false
 	if _tabs.get_parent() == _shop.content:
-		_tabs.set_tab_hidden(3, false)
-		_tabs.set_tab_hidden(4, false)
 		_tabs.reparent(_drawer, false)
 
 
@@ -1853,24 +2050,13 @@ func _return_from_shop() -> void:
 
 func _on_home_deploy(idx: int) -> void:
 	# 按钮响应后营地立即收起，同一帧的重复按下不会再重铺一局。
-	if not _home.visible:
+	if not _home.visible or GameState.in_battle:
 		return
 	if GameState.start_battle(idx):
 		_close_home()
 		_close_shop()
 		_append_log("铺桌：「%s」%d 张牌摆上桌面" % [
 			GameData.region(idx).get("name", "?"), GameState.battle.size()])
-
-
-func _on_city_deploy(idx: int) -> void:
-	if _city == null or not _city.visible:
-		return
-	if GameState.start_battle(idx):
-		_close_city()
-		_close_home()
-		_close_shop()
-		_close_map()
-		_append_log("整备完成，重新铺桌：「%s」" % GameData.region(idx).get("name", "?"))
 
 
 func _default_region() -> int:
@@ -1905,10 +2091,10 @@ func _on_map_chosen(idx: int) -> void:
 
 
 func _on_map_deploy(idx: int) -> void:
+	if GameState.in_battle: return
 	if GameState.start_battle(idx):
 		_close_map()
 		_close_home()
-		_close_city()
 		_close_shop()
 		var r := GameData.region(idx)
 		_append_log("铺桌：「%s」%d 张牌摆上桌面" % [
@@ -1920,7 +2106,7 @@ func _refresh_map_panels() -> void:
 		return
 	var total := GameState.total_field_regions()
 	var done := GameState.cleared_count()
-	_map_progress.text = "已克服  %d / %d" % [done, total]
+	_map_progress.text = "已征服  %d / %d" % [done, total]
 
 	var parts := []
 	for rt in GameState.ROUTES:
@@ -1934,8 +2120,7 @@ func _refresh_map_panels() -> void:
 		parts.append("%s %d/%d" % [rt, c, n])
 	_map_legend.text = "　".join(parts)
 
-	_map_foot.text = "亮起的节点可以立刻开打　·　点节点看详情，点「铺这一桌」把牌铺到桌面上" \
-		+ "　·　当前：%s" % (_region_brief(_sel_idx) if _sel_idx > 0 else "未选")
+	_map_foot.text = _region_brief(_sel_idx) if _sel_idx > 0 else ""
 
 	_fill_map_left()
 	_fill_map_right()
@@ -1951,8 +2136,6 @@ func _region_brief(idx: int) -> String:
 func _fill_map_left() -> void:
 	_clear(_map_left)
 	_map_left.add_child(_mk_label("郡 · 势力 归属", 15, INK))
-	_map_left.add_child(_mk_label("同一个郡的节点在图上会抱成一团领土色块", 11,
-		INK_SOFT))
 
 	# 按路线分组列出郡
 	var by_route := {}
@@ -2004,7 +2187,7 @@ func _fill_map_right() -> void:
 	_clear(_map_right)
 	var idx := _sel_idx
 	if idx <= 0:
-		_map_right.add_child(_mk_label("点舆图上的一个节点", 13, Color(0.40, 0.34, 0.27)))
+		_map_right.add_child(_mk_label("未选择城池", 13, Color(0.40, 0.34, 0.27)))
 		return
 	var r := GameData.region(idx)
 	var status := GameState.region_status(idx)
@@ -2030,34 +2213,15 @@ func _fill_map_right() -> void:
 	# v1.0：新野已经不是"桌上没有牌"的序章了，删掉原先那条特殊分支，
 	# 让它和别的区域一样走下面的「守军 / 总血量 / 需要几拍」。
 
-	_map_right.add_child(_mk_label("守军　%d 张" % int(r.get("enemy_count", 0)), 14))
-	_map_right.add_child(_mk_label("城池牌堆　%d/%d 段" % [GameState.table_progress(idx), GameState.table_count(idx)], 14))
-	_map_right.add_child(_mk_label("下一段厚度　%s" % GameState.fmt(GameState.table_hp(idx)), 14))
-	_map_right.add_child(_mk_label("本轮时长　%.0f 秒 · %.2f 秒 / 拍" % [GameState.round_duration_value(), GameState.slap_interval()], 14))
-	_map_right.add_child(_mk_label("你的伤害　%.1f / 拍" % GameState.click_damage(), 14))
-	var need_slaps := GameState.slaps_needed(idx)
-	var my_slaps := int(ceil(GameState.round_duration_value() / GameState.slap_interval()))
-	var vtxt := "下一桌约需 %d 拍 · 本轮可拍约 %d 次" % [need_slaps, my_slaps]
-	var vcol := Color(0.13, 0.34, 0.21)
-	if need_slaps > my_slaps:
-		vtxt += " · 先赚金币升级"
-		vcol = Art.GOLD
-	_map_right.add_child(_mk_label(vtxt, 14, vcol))
-	_map_right.add_child(_mk_label("推荐战力　%s　·　你的战力 %.1f" % [
-		GameState.fmt(float(r.get("power", 0))), GameState.deck_power()], 13,
-		Color(0.28, 0.32, 0.38)))
-	_map_right.add_child(_mk_label("每拍即时赚钱；清桌自动续桌；结束后购买升级再来一轮。", 11,
-		Color(0.44, 0.36, 0.22)))
-	_map_right.add_child(_mk_label("", 6))
-
-	var city := str(r.get("city", ""))
-	if GameState.city_unlocked():
-		_map_right.add_child(_mk_label("克服后：获得城池卡「%s」　建筑槽位 %d" % [
-			city, GameState.city_slots(idx)], 12, Color(0.30, 0.34, 0.24)))
+	_map_right.add_child(_mk_label("已征服分区　%d / %d" % [GameState.table_progress(idx), GameState.zone_count(idx)], 14))
+	for zone in GameState.zone_details(idx):
+		var conquered := bool(zone.get("cleared", false))
+		var line := "%s　%s" % [str(zone.get("name", "分区")), "✓ 已征服" if conquered else "厚度 " + GameState.fmt(float(zone.get("hp", 0.0)))]
+		_map_right.add_child(_mk_label(line, 12, Color(0.18, 0.39, 0.25) if conquered else INK_DIM))
+	if status == "cleared":
+		_map_right.add_child(_mk_label("✓ 全城已征服，不再出现敌牌。", 14, Color(0.18, 0.39, 0.25)))
 	else:
-		_map_right.add_child(_mk_label("克服后：解锁相邻区域（城池要等 %s）" % GameState.city_unlock_text(),
-			12, Color(0.45, 0.36, 0.15)))
-
+		_map_right.add_child(_mk_label("每轮 %.0f 秒 · 拍力 %.1f · %.2f 秒 / 拍" % [GameState.round_duration_value(), GameState.click_damage(), GameState.slap_interval()], 13))
 	var unlocked_names := []
 	for n in r.get("unlocks", []):
 		unlocked_names.append(str(GameData.region(int(n)).get("name", "?")))
@@ -2076,25 +2240,32 @@ func _fill_map_right() -> void:
 	_map_right.add_child(_mk_label("", 8))
 	if status == "available":
 		var b := Button.new()
-		b.text = "开始赚钱  ▶"
+		b.text = "出征未清分区  ▶"
 		b.custom_minimum_size = Vector2(0, 46)
 		b.pressed.connect(func(): _on_map_deploy(idx))
 		_map_right.add_child(b)
 	elif status == "cleared":
-		_map_right.add_child(_mk_label("✓ 全城牌桌已经掌握", 14, Color(0.18, 0.39, 0.25)))
-		var practice_button := Button.new()
-		practice_button.text = "回这座城赚钱"
-		practice_button.custom_minimum_size.y = 42
-		practice_button.pressed.connect(_on_home_practice.bind(idx))
-		_map_right.add_child(practice_button)
-		_map_right.add_child(_mk_label("该区域已归入基建，可放置建筑获得挂机收益。", 11,
-			Color(0.40, 0.35, 0.28)))
-		var arr := GameState.city_buildings(idx)
-		if arr.size() > 0:
-			_map_right.add_child(_mk_label("城池建筑 %d/%d" % [GameState.city_used_slots(idx), GameState.city_slots(idx)],
-				12, Color(0.40, 0.35, 0.28)))
-	else:
+		var visit := Button.new()
+		visit.text = "巡城"
+		visit.custom_minimum_size.y = 42
+		visit.pressed.connect(_on_map_visit.bind(idx))
+		_map_right.add_child(visit)
+	elif status != "cleared":
 		_map_right.add_child(_mk_label("🔒 未解锁", 14, Color(0.45, 0.40, 0.33)))
+
+
+func _on_map_visit(idx: int) -> void:
+	if GameState.in_battle: return
+	if GameState.start_event_visit(idx):
+		_close_map()
+		_close_home()
+		_close_shop()
+
+
+func _refresh_map_events() -> void:
+	if _event_layer == null: return
+	_event_layer.visible = false
+	_event_layer.update_entries(GameState.map_event_entries())
 
 
 # =====================================================================
@@ -2107,6 +2278,7 @@ func _play_reveal(title: String, ids: Array, sub: String) -> void:
 
 
 func _do_buy_pack(i: int) -> void:
+	if GameState.in_battle: return
 	var got := GameState.buy_pack(i)
 	if got.is_empty():
 		return
@@ -2118,12 +2290,14 @@ func _do_buy_pack(i: int) -> void:
 
 
 func _do_ransom(id: String) -> void:
+	if GameState.in_battle: return
 	var nm := GameData.card_name(id)
 	if GameState.ransom(id):
 		_play_reveal("招降 · %s" % nm, [id], "入我帐下")
 
 
 func _do_synth(star: int) -> void:
+	if GameState.in_battle: return
 	var got := GameState.synthesize(star)
 	if got == "":
 		return
@@ -2137,15 +2311,13 @@ func _refresh_shop() -> void:
 	_fill_packs()
 	_fill_ransom()
 	_fill_synth()
-	_fill_cities()
-	_fill_routes()
 	_fill_collection()
 
 
 func _fill_packs() -> void:
 	var box: VBoxContainer = _shop_boxes["卡包"]
 	_clear(box)
-	box.add_child(_mk_label("按郡解锁牌池；每包补货涨5%，最多原价1.5倍。每10包保底一张当前池★3以上。", 12))
+	box.add_child(_mk_label("休息时开包；卡包固定价，折扣照常生效。各包每%d包保底★%d以上。" % [GameState.Progression.PACK_PITY_COUNT, GameState.Progression.PACK_PITY_STAR], 12))
 	for i in range(GameData.packs.size()):
 		var p: Dictionary = GameData.packs[i]
 		var unlocked := GameState.pack_unlocked(i)
@@ -2166,7 +2338,8 @@ func _fill_packs() -> void:
 		b.text = "%s · %s\n%d 金币　已开 %d" % [
 			p.get("name", "?"), p.get("scope", ""), price, bought]
 		b.disabled = not unlocked or GameState.gold < float(price)
-		b.tooltip_text = "每包 %d 张 · %s\n%s" % [p.get("cards", 5), p.get("pity", ""), p.get("unlock", "")]
+		var until_pity := GameState.Progression.PACK_PITY_COUNT - bought % GameState.Progression.PACK_PITY_COUNT
+		b.tooltip_text = "每包 %d 张 · 再开%d包保底★%d以上\n当前牌池最高★%d · %s" % [p.get("cards", 5), until_pity, GameState.Progression.PACK_PITY_STAR, mini(int(p.get("max_star", 3)), GameState.progression_star_cap()), p.get("unlock", "")]
 		b.pressed.connect(_do_buy_pack.bind(i))
 		box.add_child(b)
 
@@ -2205,7 +2378,7 @@ func _fill_ransom() -> void:
 func _fill_synth() -> void:
 	var box: VBoxContainer = _shop_boxes["合成"]
 	_clear(box)
-	box.add_child(_mk_label("士兵/装备：自由3张同星+金币→高一星，受当前进度上限约束。武将与建筑在构筑/基建同名合成。", 12))
+	box.add_child(_mk_label("士兵/装备：自由3张同星+金币→高一星，受当前进度上限约束。武将在构筑中同名合成。", 12))
 	for star in range(1, 6):
 		var cands := GameState._star_candidates(star)
 		var cost := GameState.synth_cost(star)
@@ -2214,42 +2387,6 @@ func _fill_synth() -> void:
 		b.disabled = cands.size() < 3 or GameState.gold < float(cost)
 		b.pressed.connect(func(): _do_synth(star))
 		box.add_child(b)
-
-
-func _fill_cities() -> void:
-	var box: VBoxContainer = _shop_boxes["城建"]
-	_clear(box)
-	box.add_child(_mk_label("城池提供槽位；建筑卡的来源、加成、追加与倍率组成挂机收益。", 12))
-	if not GameState.city_unlocked():
-		box.add_child(_mk_label("尚未解锁　·　%s" % GameState.city_unlock_text(), 14, Color(0.50, 0.36, 0.10)))
-		box.add_child(_mk_label("先把前几桌拍完 —— 本作故意让挂机晚一点登场。", 12, Color(0.44, 0.39, 0.32)))
-		return
-
-	box.add_child(_mk_label("建筑产出 %s / 小时　·　离线效率 %.0f%%" % [
-		GameState.fmt(GameState.gold_per_hour()), GameState.offline_efficiency() * 100.0], 13,
-		Color(0.13, 0.34, 0.21)))
-
-	var b := Button.new()
-	b.text = "进入基建（装配建筑 / 组合收益 / 同名合成）"
-	b.custom_minimum_size = Vector2(0, 44)
-	b.pressed.connect(func():
-		_set_drawer(false)
-		_open_city())
-	box.add_child(b)
-
-	# 一览：每处已克服城池的槽位占用（v1.0：新野克服后也在此列，它也有 1 个槽位）
-	for r in GameData.regions:
-		var i := int(r["idx"])
-		if GameState.region_status(i) != "cleared":
-			continue
-		var slots := GameState.city_slots(i)
-		box.add_child(_mk_label("%s　%s　槽位 %d/%d　%s/时" % [
-			str(r.get("county", "")), str(r.get("name", "?")), GameState.city_used_slots(i), slots,
-			GameState.fmt(city_output(i))], 12, Color(0.28, 0.36, 0.28)))
-
-
-func city_output(idx: int) -> float:
-	return float(GameState.city_combo(idx)["hourly"])
 
 
 func _fill_routes() -> void:
@@ -2288,7 +2425,10 @@ func _mk_route_row(rt: Dictionary) -> Control:
 func _fill_collection() -> void:
 	var box: VBoxContainer = _shop_boxes["收藏"]
 	_clear(box)
-	box.add_child(Art.label("三国牌谱 · %d 张" % GameData.cards.size(), 19, Art.RED))
+	var visible_count := 0
+	for card in GameData.cards:
+		if str(card.get("type", "")) != "建筑": visible_count += 1
+	box.add_child(Art.label("三国牌谱 · %d 张" % visible_count, 19, Art.RED))
 	var search := LineEdit.new()
 	search.placeholder_text = "搜索名称、效果或编号"
 	search.text = _collection_search
@@ -2296,7 +2436,7 @@ func _fill_collection() -> void:
 	var filters := HBoxContainer.new()
 	box.add_child(filters)
 	var types := OptionButton.new()
-	for type in ["全部类别", "初始武将", "武将", "士兵", "装备", "城池", "建筑"]:
+	for type in ["全部类别", "初始武将", "武将", "士兵", "装备", "城池"]:
 		types.add_item(type)
 		if type == _collection_type:
 			types.select(types.item_count - 1)
@@ -2333,6 +2473,7 @@ func _render_collection(box: VBoxContainer) -> void:
 	_clear(box)
 	var matches := 0
 	for c in GameData.cards:
+		if str(c.get("type", "")) == "建筑": continue
 		var id := str(c["id"])
 		var count := int(GameState.owned.get(id, 0))
 		if _collection_owned and count <= 0:
@@ -2405,7 +2546,7 @@ class _PoolCard extends PanelContainer:
 	var card_id := ""
 
 	func _get_drag_data(_at: Vector2) -> Variant:
-		if card_id == "" or host == null:
+		if card_id == "" or host == null or GameState.in_battle:
 			return null
 		# ⚠️ set_drag_preview() 只在**真实拖拽会话**里合法，否则引擎会打
 		#    "Condition !get_viewport()->gui_is_dragging() is true" 的 ERROR。
@@ -2427,15 +2568,16 @@ class _Slot extends PanelContainer:
 	var locked := false
 
 	func _can_drop_data(_at: Vector2, data: Variant) -> bool:
-		if locked or host == null:
+		if locked or host == null or GameState.in_battle:
 			return false
 		return data is Dictionary and str((data as Dictionary).get("paan_kind", "")) == "pool"
 
 	func _drop_data(_at: Vector2, data: Variant) -> void:
+		if GameState.in_battle: return
 		host._deploy_at(str((data as Dictionary).get("id", "")), slot_index)
 
 	func _gui_input(ev: InputEvent) -> void:
-		if locked or card_id == "":
+		if locked or card_id == "" or GameState.in_battle:
 			return
 		if ev is InputEventMouseButton:
 			var mb := ev as InputEventMouseButton

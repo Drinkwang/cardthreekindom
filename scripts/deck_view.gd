@@ -19,6 +19,7 @@ var _pool: GridContainer
 var _pool_note: Label
 var _cultivate: Button
 var _power: Label
+var _growth: Label
 var _fusion_note: Label
 var _add_button: Button
 var _traits: Script
@@ -29,6 +30,7 @@ func _ready() -> void:
 	size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	size_flags_vertical = Control.SIZE_EXPAND_FILL
 	custom_minimum_size = Vector2(0, 410)
+	resized.connect(func(): refresh.call_deferred())
 	refresh()
 
 
@@ -42,10 +44,10 @@ func refresh() -> void:
 	var qualities := {}
 	for id in GameState.owned:
 		if GameState.is_hero(str(id)):
-			qualities[str(id)] = [GameState.hero_quality(str(id)), GameState.hero_fusion_stock(str(id))]
+			qualities[str(id)] = [GameState.hero_quality(str(id)), GameState.hero_fusion_stock(str(id)), GameState.hero_level(str(id)), GameState.hero_xp_of(str(id))]
 	var next := str([GameState.carry, GameState.owned, qualities,
 		GameState.hero_equip, GameState.hero_troops, GameState.carry_max(),
-		GameState.equip_slots(), GameState.troop_slots(), _selected, _tab])
+		GameState.equip_slots(), GameState.troop_slots(), _selected, _tab, get_viewport_rect().size.y <= 740.0])
 	if next == _signature and _root != null:
 		refresh_values()
 		return
@@ -56,6 +58,7 @@ func refresh() -> void:
 	_cultivate = null
 	_add_button = null
 	_power = null
+	_growth = null
 	_fusion_note = null
 	_pool = null
 	_root = VBoxContainer.new()
@@ -101,13 +104,17 @@ func refresh_values() -> void:
 	if _power != null and is_instance_valid(_power):
 		_power.text = "战力 %s   ·   %s" % [_number(GameState.hero_card_power(_selected)),
 			GameState.hero_quality_name(_selected)] if GameState.is_hero(_selected) else "战力 %s   ·   士兵素材" % _number(GameState.hero_card_power(_selected))
+	if _growth != null and is_instance_valid(_growth):
+		var experience := "经验 %d/%d" % [GameState.hero_xp_of(_selected), GameState.hero_xp_required(_selected)] if GameState.hero_xp_required(_selected) > 0 else "已满级"
+		_growth.text = "Lv.%d · %s\n成长倍率 ×%.2f" % [GameState.hero_level(_selected), experience, GameState.hero_lv_mult(_selected)]
 	if _fusion_note != null and is_instance_valid(_fusion_note):
 		_fusion_note.text = "同名合成：3 张原版 → 精制，3 张精制 → 珍藏。\n品质只提高自身战力，接招条件保持不变。"
 	if _add_button != null and is_instance_valid(_add_button):
 		var full := GameState.carry.size() >= GameState.carry_max()
 		var assigned := GameState.in_troops(_selected)
 		_add_button.disabled = full or assigned
-		_add_button.text = "已在武将麾下" if assigned else ("阵位已满，先卸下一张" if full else "上阵")
+		_add_button.text = "已在麾下" if assigned else ("阵位已满" if full else "上阵")
+		_add_button.tooltip_text = "已在武将麾下，需先撤兵" if assigned else "阵位已满，先卸下一张" if full else ""
 
 
 func _first_owned() -> String:
@@ -156,34 +163,37 @@ func _build_slots() -> void:
 			var empty := VBoxContainer.new()
 			empty.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 			empty.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-			empty.add_theme_constant_override("separation", 7)
+			empty.add_theme_constant_override("separation", 3)
 			row.add_child(empty)
-			var plus := _title("＋", 38)
+			var plus := _title("＋", 28)
 			plus.add_theme_color_override("font_color", Art.DIM)
 			plus.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 			empty.add_child(plus)
 			var caption := _title("空阵位", 18)
 			caption.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 			empty.add_child(caption)
-			var count := Art.label("挑一张将牌", 12, Art.DIM)
-			count.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-			empty.add_child(count)
 			button.pressed.connect(_focus_warehouse)
 		else:
 			row.add_theme_constant_override("separation", 8)
-			var portrait := _portrait(id, Vector2(72, 72) if compact else Vector2(84, 84))
+			var portrait_size := (58 if compact else 64) if GameState.carry_max() >= 5 else (72 if compact else 84)
+			var portrait := _portrait(id, Vector2(portrait_size, portrait_size))
 			row.add_child(portrait)
 			var texts := VBoxContainer.new()
 			texts.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			texts.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 			row.add_child(texts)
-			texts.add_theme_constant_override("separation", 5)
+			texts.add_theme_constant_override("separation", 3)
 			texts.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 			var name_label := _title(GameData.card_name(id), 21)
+			name_label.clip_text = true
 			name_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 			texts.add_child(name_label)
-			texts.add_child(Art.label(GameData.star_text(int(GameData.card(id).get("star", 1))), 12, Art.GOLD))
+			var stars := Art.label(GameData.star_text(int(GameData.card(id).get("star", 1))), 12, Art.GOLD)
+			stars.clip_text = true
+			stars.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+			texts.add_child(stars)
 			var role := Art.label(_trait_tag(id), 12, Art.RED)
+			role.clip_text = true
 			role.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 			texts.add_child(role)
 			button.tooltip_text = _trait_description(id)
@@ -207,10 +217,6 @@ func _build_tabs() -> void:
 			_style_primary(button, 19, 8)
 		button.pressed.connect(_change_tab.bind(tab))
 		row.add_child(button)
-	var note := Art.label("星级决定能力，同名合成提高品质", 13, Art.DIM)
-	note.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	note.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-	row.add_child(note)
 
 
 func _build_selected() -> Control:
@@ -233,7 +239,6 @@ func _build_selected() -> Control:
 	scroll.add_child(content)
 	if _selected == "":
 		content.add_child(_title("尚无将牌", 25))
-		content.add_child(_wrap("先到婆婆的商店买卡包，再来配一套上阵将牌。", 16, Art.DIM))
 		return panel
 	var card := GameData.card(_selected)
 	var header := HBoxContainer.new()
@@ -258,6 +263,10 @@ func _build_selected() -> Control:
 	info.add_child(_role_label(_trait_tag(_selected), 13))
 	_power = _wrap("", 12, Art.DIM)
 	info.add_child(_power)
+	if GameState.is_hero(_selected):
+		_growth = _wrap("", 12, Art.INK)
+		_growth.name = "DeckHeroGrowth"
+		info.add_child(_growth)
 	var ability := _trait(_selected)
 	if not ability.is_empty():
 		content.add_child(_title(str(ability.get("title", ability.get("name", "构筑能力"))), 18))
@@ -294,6 +303,8 @@ func _build_selected() -> Control:
 		_add_button = Button.new()
 		_add_button.name = "DeckAdd"
 		_add_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		_add_button.clip_text = true
+		_add_button.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 		_add_button.custom_minimum_size.y = 36
 		_style_primary(_add_button, 19, 8)
 		_add_button.pressed.connect(_add)
@@ -341,8 +352,6 @@ func _build_team(parent: VBoxContainer) -> void:
 	description.custom_minimum_size.x = 232
 	description.max_lines_visible = 2 if compact else 3
 	text.add_child(description)
-	if not compact:
-		text.add_child(Art.label("起手附印  →  接招引爆", 12, Art.DIM))
 	var chains_row := HBoxContainer.new()
 	chains_row.name = "DeckComboScroll"
 	chains_row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -376,7 +385,7 @@ func _build_team(parent: VBoxContainer) -> void:
 		row.add_child(_combo_actor(str(pair[1])))
 		chain.add_child(row)
 	if chains == 0:
-		var hint := _wrap("选一位起手将，再配一位接招将。\n雷印、烈火、追击可以混搭。", 14, Art.DIM)
+		var hint := _wrap("暂无接招组合", 14, Art.DIM)
 		hint.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 		chains_row.add_child(hint)
 	panel.tooltip_text = _list_text(summary.get("missing", "")) + "\n按各自的触发条件自动接招"
@@ -393,6 +402,7 @@ func _combo_actor(id: String) -> Control:
 		portrait.modulate = Color(0.85, 0.79, 0.70, 0.52)
 	actor.add_child(portrait)
 	var label := _title(GameData.card_name(id), 15)
+	label.clip_text = true
 	label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	actor.add_child(label)
@@ -509,6 +519,7 @@ func _warehouse_card(id: String) -> Button:
 	texts.add_theme_constant_override("separation", 3)
 	row.add_child(texts)
 	var title := _title(GameData.card_name(id), 23)
+	title.clip_text = true
 	title.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	texts.add_child(title)
 	var rarity := GameData.star_text(int(card.get("star", 1)))
@@ -519,6 +530,7 @@ func _warehouse_card(id: String) -> Button:
 	footer.add_theme_constant_override("separation", 4)
 	texts.add_child(footer)
 	var tag := Art.label(_trait_tag(id), 12, Art.RED)
+	tag.clip_text = true
 	tag.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	tag.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	footer.add_child(tag)
@@ -551,12 +563,17 @@ func _build_equipment(parent: VBoxContainer) -> void:
 	var heading := HBoxContainer.new()
 	heading.add_theme_constant_override("separation", 9)
 	heading.add_child(Art.stamp("器", Vector2(30, 33)))
-	heading.add_child(_title("装备巢 · 只作用于这名武将", 25))
+	heading.add_child(_title("装备巢 · 强化本将已有特性", 25))
 	parent.add_child(heading)
-	parent.add_child(_wrap("一件装备只在一名武将身上；选择其他武将的装备会直接转移。", 13, Art.DIM))
+	parent.add_child(_wrap("只增加本将已有的同名参数，不契合不生效；选择他人的装备会直接转移。", 13, Art.DIM))
 	if not GameState.has_equip_nest(_selected):
 		parent.add_child(_wrap("只有武将拥有装备巢。点击上方武将，再给他搭配装备。", 16, Art.DIM))
 		return
+	var parameters := GameState.hero_trait_params(_selected)
+	var current := "本将特性：" + GameData.effect_text(GameData.card(_selected))
+	if parameters.has("gather_distance"):
+		current = "本将聚拢距离 %s（含契合装备）；范围260，每掌一次" % _number(float(parameters["gather_distance"]))
+	parent.add_child(_wrap(current, 14))
 	var scroll := ScrollContainer.new()
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
@@ -581,7 +598,7 @@ func _build_equipment(parent: VBoxContainer) -> void:
 		var id := GameState.hero_equipped_in_slot(_selected, str(subtype))
 		if id != "":
 			row.add_child(Art.image(id, Vector2(55, 59)))
-		var caption := _wrap("空槽 · " + str(GameState.EQUIP_SLOT_DESC.get(subtype, "")) if id == "" else GameData.card_name(id) + "  " + GameData.effect_text(GameData.card(id)), 14)
+		var caption := _wrap("空槽 · 选择与本将已有特性契合的装备" if id == "" else GameData.card_name(id) + "\n" + GameState.equipment_effect_text(_selected, id), 14)
 		caption.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		row.add_child(caption)
 		row.add_child(_equipment_menu(str(subtype)))
@@ -607,7 +624,7 @@ func _equipment_menu(subtype: String) -> MenuButton:
 			continue
 		var owner := GameState.equip_owner(str(id))
 		var tag := "" if owner == "" or owner == _selected else "（在%s身上）" % GameData.card_name(owner)
-		popup.add_icon_item(Art.texture(str(id)), GameData.card_name(str(id)) + "  " + GameData.effect_text(card) + tag)
+		popup.add_icon_item(Art.texture(str(id)), GameData.card_name(str(id)) + "  " + GameState.equipment_effect_text(_selected, str(id)) + tag)
 		popup.set_item_metadata(popup.item_count - 1, str(id))
 	if popup.item_count == 0:
 		popup.add_item("仓库暂无该类装备")
@@ -763,6 +780,9 @@ func _role_label(text: String, font_size: int = 13) -> PanelContainer:
 	var panel := PanelContainer.new()
 	panel.add_theme_stylebox_override("panel", Art.panel(Color("f3e4c6"), 4, Color("baa178"), 1))
 	var label := Art.label(text, font_size, Art.RED)
+	label.clip_text = true
+	label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	label.tooltip_text = text
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	panel.add_child(label)
 	return panel

@@ -1,0 +1,68 @@
+{
+  "date": "2026-10-18",
+  "generator": "built-in image_gen",
+  "status": "reference-only; not integrated",
+  "direction": "Single coherent background per city, not separately placed building sprites. Existing game code and assets remain unchanged.",
+  "reference": "../terrain-style-options-v16/06-cel-animation.png",
+  "variants": [
+    {
+      "option": 1,
+      "city_index": 1,
+      "city": "新野",
+      "title": "新野 · 一体式庭院背景",
+      "file": "01-xinye-courtyard.png",
+      "source": "/Users/arthurwang/.codex/generated_images/01a148ad-f3ee-7241-b34a-f88e50a4b09d/exec-69612a94-0452-4080-a5da-551bc614d568.png",
+      "dimensions": [
+        1585,
+        992
+      ],
+      "prompt": "Use case: precise-object-edit / stylized-concept. Edit the attached illustrated game screenshot into ONE complete coherent standalone environment BACKGROUND, not a screenshot. REMOVE every HUD bar, button, minimap, text, number, portrait card, character card, target circle, health bar and all interface marks; naturally paint environment through those areas and extend the scene to the full canvas. No UI or text anywhere. Retain the selected premium Chinese historical hand-painted cel-animation art style: elegant crisp drawn architecture, blue-grey tiled roofs, warm timber, refined matte stone and earth, clear restrained two-tone shading, soft warm sunlight. Landscape widescreen composition. HIGH near-overhead RTS camera, unified ground plane, consistent perspective and upper-left light across ALL buildings, stairs, trees and ground. THIS MUST BE A SINGLE PLACE DESIGNED AS A WHOLE: continuous ground and connected walkable routes, architecture rooted at the perimeter with foundations and correct contact shadows, no floating building cutouts, no modular sprite arrangement, no texture atlas, no tile pattern, no separate vignettes or panels. Reserve the central roughly70 percent as open calm flat low-contrast playable ground for future card placement. Beautiful but simple: broad clean materials, narrow quiet paving joints if appropriate, sparse large foliage shapes at the perimeter only. No scattered leaves, weeds, pebbly noise, dense flowers, stalls packed with props or dramatic shadows across the center. No people, cards, modern objects, labels, watermark, grids or frame. Create a naturally enclosed small-town stone forecourt. One coherent line of modest connected tiled timber shop houses follows the left/top-left courtyard boundary; doors and their shallow foundation steps face the open courtyard. A short continuous grey boundary wall turns toward a modest open gate near the upper-center/right. The gate opening and broad shallow steps align with a quiet paved route into the open forecourt, no tree or prop blocks the entrance. One golden ginkgo grows outside the far left edge and casts a soft perimeter shadow. The continuous warm ivory-grey slab ground occupies most of the frame; smaller restrained paving follows the building foundations. Keep the bottom and center open rather than making an elaborate foreground garden. Every wall, foundation and roof belongs to this courtyard, not free-standing models on paving."
+    },
+    {
+      "option": 2,
+      "city_index": 8,
+      "city": "夏口",
+      "title": "夏口 · 一体式江岸背景",
+      "file": "02-xiakou-quay.png",
+      "source": "/Users/arthurwang/.codex/generated_images/01a148ad-f3ee-7241-b34a-f88e50a4b09d/exec-7a4dd8b4-a44b-44c1-bb85-67240f937605.png",
+      "dimensions": [
+        1585,
+        992
+      ],
+      "prompt": "Use case: precise-object-edit / stylized-concept. Edit the attached illustrated game screenshot into ONE complete coherent standalone environment BACKGROUND, not a screenshot. REMOVE every HUD bar, button, minimap, text, number, portrait card, character card, target circle, health bar and all interface marks; naturally paint environment through those areas and extend the scene to the full canvas. No UI or text anywhere. Retain the selected premium Chinese historical hand-painted cel-animation art style: elegant crisp drawn architecture, blue-grey tiled roofs, warm timber, refined matte stone and earth, clear restrained two-tone shading, soft warm sunlight. Landscape widescreen composition. HIGH near-overhead RTS camera, unified ground plane, consistent perspective and upper-left light across ALL buildings, stairs, trees and ground. THIS MUST BE A SINGLE PLACE DESIGNED AS A WHOLE: continuous ground and connected walkable routes, architecture rooted at the perimeter with foundations and correct contact shadows, no floating building cutouts, no modular sprite arrangement, no texture atlas, no tile pattern, no separate vignettes or panels. Reserve the central roughly70 percent as open calm flat low-contrast playable ground for future card placement. Beautiful but simple: broad clean materials, narrow quiet paving joints if appropriate, sparse large foliage shapes at the perimeter only. No scattered leaves, weeds, pebbly noise, dense flowers, stalls packed with props or dramatic shadows across the center. No people, cards, modern objects, labels, watermark, grids or frame. Create one coherent riverside landing plaza in Xiakou. The central and left area is a broad clean cool blue-grey paved quay. A continuous gently curving stone embankment defines the right edge with ONE connected teal river beyond it, not an isolated little water patch under a boat. One modest tiled riverside waiting pavilion stands on a raised foundation along the upper-left boundary with its entrance facing the plaza. A short supported timber jetty attaches to the embankment at upper-right via broad clear steps; one small boat is moored alongside, tied to a post. Stone railing follows the bank but leaves a logical gap at the stairs. All routes connect safely to the land; no path ends abruptly in water, no building sits in the river. A few willow branches at the outer edge only, center uncluttered. The waterfront should read as a believable single continuous place."
+    },
+    {
+      "option": 3,
+      "city_index": 9,
+      "city": "夷陵",
+      "title": "夷陵 · 一体式山口背景",
+      "file": "03-yiling-terrace.png",
+      "source": "/Users/arthurwang/.codex/generated_images/01a148ad-f3ee-7241-b34a-f88e50a4b09d/exec-2ab5270a-6574-4e68-a268-52ed25117e60.png",
+      "dimensions": [
+        1586,
+        992
+      ],
+      "prompt": "Use case: precise-object-edit / stylized-concept. Edit the attached illustrated game screenshot into ONE complete coherent standalone environment BACKGROUND, not a screenshot. REMOVE every HUD bar, button, minimap, text, number, portrait card, character card, target circle, health bar and all interface marks; naturally paint environment through those areas and extend the scene to the full canvas. No UI or text anywhere. Retain the selected premium Chinese historical hand-painted cel-animation art style: elegant crisp drawn architecture, blue-grey tiled roofs, warm timber, refined matte stone and earth, clear restrained two-tone shading, soft warm sunlight. Landscape widescreen composition. HIGH near-overhead RTS camera, unified ground plane, consistent perspective and upper-left light across ALL buildings, stairs, trees and ground. THIS MUST BE A SINGLE PLACE DESIGNED AS A WHOLE: continuous ground and connected walkable routes, architecture rooted at the perimeter with foundations and correct contact shadows, no floating building cutouts, no modular sprite arrangement, no texture atlas, no tile pattern, no separate vignettes or panels. Reserve the central roughly70 percent as open calm flat low-contrast playable ground for future card placement. Beautiful but simple: broad clean materials, narrow quiet paving joints if appropriate, sparse large foliage shapes at the perimeter only. No scattered leaves, weeds, pebbly noise, dense flowers, stalls packed with props or dramatic shadows across the center. No people, cards, modern objects, labels, watermark, grids or frame. Create one coherent Yiling mountain-pass terrace. Central70 percent is a broad smooth flat pale sandstone and warm compacted-earth platform, with only a few broad integrated rock planes, not noisy gravel. A continuous low retaining wall along the far and right edge, layered rock outcrops at the upper-left edge, and a gently sloping entrance path explain the plateau's height. A small stone pass gate sits on a grounded flat foundation at the upper-right perimeter, integrated into the retaining wall; its open passage connects via a shallow ramp to the main platform. Two restrained pines grow in rock pockets outside the playable clearing. Hints of lower mountain slopes outside the boundary but NO eye-level horizon. No isolated rocky islands, no floating fortress, no bamboo village, no scattered buildings. Gentle cel-painted rock planes distinguish the mountain city while the playable middle stays calm and flat."
+    },
+    {
+      "option": 4,
+      "city_index": 11,
+      "city": "沅陵",
+      "title": "沅陵 · 一体式竹村背景",
+      "file": "04-yuanling-village.png",
+      "source": "/Users/arthurwang/.codex/generated_images/01a148ad-f3ee-7241-b34a-f88e50a4b09d/exec-705c48d7-417b-4e58-9389-22b2ac987700.png",
+      "dimensions": [
+        1585,
+        992
+      ],
+      "prompt": "Use case: precise-object-edit / stylized-concept. Edit the attached illustrated game screenshot into ONE complete coherent standalone environment BACKGROUND, not a screenshot. REMOVE every HUD bar, button, minimap, text, number, portrait card, character card, target circle, health bar and all interface marks; naturally paint environment through those areas and extend the scene to the full canvas. No UI or text anywhere. Retain the selected premium Chinese historical hand-painted cel-animation art style: elegant crisp drawn architecture, blue-grey tiled roofs, warm timber, refined matte stone and earth, clear restrained two-tone shading, soft warm sunlight. Landscape widescreen composition. HIGH near-overhead RTS camera, unified ground plane, consistent perspective and upper-left light across ALL buildings, stairs, trees and ground. THIS MUST BE A SINGLE PLACE DESIGNED AS A WHOLE: continuous ground and connected walkable routes, architecture rooted at the perimeter with foundations and correct contact shadows, no floating building cutouts, no modular sprite arrangement, no texture atlas, no tile pattern, no separate vignettes or panels. Reserve the central roughly70 percent as open calm flat low-contrast playable ground for future card placement. Beautiful but simple: broad clean materials, narrow quiet paving joints if appropriate, sparse large foliage shapes at the perimeter only. No scattered leaves, weeds, pebbly noise, dense flowers, stalls packed with props or dramatic shadows across the center. No people, cards, modern objects, labels, watermark, grids or frame. Create one coherent Yuanling bamboo village clearing. A broad smooth light ochre compacted-earth village square fills the middle and foreground. One modest connected thatch-and-timber farmstead follows the upper-right edge, firmly on a shallow stone foundation, doorway facing the clearing. A continuous low bamboo fence forms the far boundary and opens at an upper-left village lane; this lane naturally broadens into the central clearing and a quiet branch leads to the hut doorway. An airy bamboo grove grows only behind the fence and at the far-left border, not randomly inside the square. A shallow drainage run follows the outside of the house foundation and leaves the square dry and walkable. Restrained jade foliage, straw roof and warm earth palette. Soft bamboo shade at the edge, no strong shadow across the middle. No stone courtyard shops, mountain fortress, river-dock vignette, rice-field clutter or floating props."
+    }
+  ],
+  "scope": "Four full-scene reference images with no cards or interface. Not a complete 21-city implementation or a validated playable map.",
+  "notes": [
+    "Architecture, entrances, stairs, roads and boundaries are painted together in one background.",
+    "Central clearings are intended for later cards, but actual card placement and HUD occlusion have not been verified.",
+    "These images have a fixed painted perspective; future integration must fit the gameplay geometry rather than stretch this image to every city.",
+    "Final runtime art may need lower-contrast ground textures and reduced perimeter shadows for card readability."
+  ]
+}

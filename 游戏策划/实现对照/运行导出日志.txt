@@ -1,0 +1,5 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+[GameData] 卡牌 169 / 区域 21 / 路线 4 / 卡包 9 / 建筑 30
+[GameState] 引擎版本 4.7.2-stable (official) ✓
+[Planning export] cards=169 regions=21 packs=9 buildings=30 upgrades=10 stories=12 sample={"carry":["S01","S02","S03"],"damage":1.9,"deck_power":0.9,"duration":30.0,"gold":0.0,"interval":0.6,"owned":{"I01":1,"S01":2,"S02":2,"S03":1},"pile_cards":21,"pile_hp":304.0,"radius":40.0}

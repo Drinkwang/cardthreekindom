@@ -6,7 +6,6 @@ signal closed()
 signal request_home()
 signal request_map()
 signal deploy(idx: int)
-const START := 1
 const INK := Color("2b211a")
 const INK2 := Color("554634")
 const DIM := Color("74654f")
@@ -54,18 +53,19 @@ class BuildingCard extends Button:
 	var quality := 0
 	var slot := -1
 	func _get_drag_data(_position: Vector2) -> Variant:
-		if building_id == "" or disabled:
+		if building_id == "" or disabled or GameState.in_battle:
 			return null
 		var preview := preload("res://scripts/ui/print_art.gd").image(building_id, Vector2(100, 100))
 		set_drag_preview(preview)
 		return {"kind": "building_card", "id": building_id, "quality": quality, "city": host._sel if slot >= 0 else -1, "slot": slot}
 	func _can_drop_data(_position: Vector2, data: Variant) -> bool:
-		if slot < 0 or not data is Dictionary or data.get("kind", "") != "building_card":
+		if GameState.in_battle or slot < 0 or not data is Dictionary or data.get("kind", "") != "building_card":
 			return false
 		if int(data.get("city", -1)) == host._sel:
 			return true
 		return building_id == "" and int(data.get("city", -1)) == -1 and not GameState.city_buildings(host._sel).has(str(data.get("id", "")))
 	func _drop_data(_position: Vector2, data: Variant) -> void:
+		if GameState.in_battle: return
 		if int(data.get("city", -1)) == host._sel:
 			GameState.move_building_slot(host._sel, int(data["slot"]), slot)
 			host._slot = slot
@@ -88,7 +88,9 @@ func _ready() -> void:
 	resized.connect(_on_layout_resized)
 	refresh()
 
-func open_city() -> void:
+func open_city(region_idx: int = -1) -> void:
+	if GameState.in_battle: return
+	if region_idx > 0: _sel = region_idx
 	_fit_to_parent()
 	visible = true
 	refresh()
@@ -191,7 +193,7 @@ func _build_top() -> Control:
 	var title := _column()
 	_title = _label("基建 · 建筑构筑", 34)
 	title.add_child(_title)
-	title.add_child(_label("装配建筑卡，让产出接起来", 12, DIM))
+	title.add_child(_label("装配建筑组合，辅助手动拍击", 12, DIM))
 	row.add_child(title)
 	_list_box = _column()
 	_list_box.name = "CityBook"
@@ -217,7 +219,7 @@ func refresh() -> void:
 		return
 	_refresh_after_drag = false
 	_ensure_sel()
-	var key := JSON.stringify([GameState.cities, GameState.city_quality, GameState.building_refined, _building_stock(), _sel, _slot, _warehouse_tab, GameState.bonus, _card_height()])
+	var key := JSON.stringify([GameState.cities, GameState.city_quality, GameState.building_refined, _building_stock(), _cleared_regions(), GameState.city_slots(_sel), _sel, _slot, _warehouse_tab, GameState.bonus, _card_height()])
 	if key != _content_key:
 		_content_key = key
 		var horizontal := _side_scroll.scroll_horizontal
@@ -227,8 +229,6 @@ func refresh() -> void:
 		_fill_side()
 		_side_scroll.set_deferred("scroll_horizontal", horizontal)
 	_stats.text = "金币 %s" % GameState.fmt(GameState.gold)
-	if is_instance_valid(_income):
-		_income.text = "全城产出 %s / 分" % GameState.fmt(GameState.gold_per_hour() / 60.0)
 	for tab in _tab_buttons:
 		(_tab_buttons[tab] as Button).button_pressed = tab == _warehouse_tab
 	var result_key := JSON.stringify([GameState.last_outcome, GameState.in_battle, GameState.battle_region])
@@ -250,7 +250,7 @@ func _building_stock() -> Dictionary:
 func _cleared_regions() -> Array:
 	var result := []
 	for region in GameData.regions:
-		if int(region["idx"]) != START and GameState.region_status(int(region["idx"])) == "cleared":
+		if GameState.table_progress(int(region["idx"])) > 0:
 			result.append(region)
 	return result
 
@@ -271,7 +271,7 @@ func _fill_list() -> void:
 	_city_picker.custom_minimum_size.y = 34
 	for region in _cleared_regions():
 		var idx := int(region["idx"])
-		_city_picker.add_item(str(region.get("name", "?")), idx)
+		_city_picker.add_item("%s · 已征服%d区" % [str(region.get("name", "?")), GameState.table_progress(idx)], idx)
 		if idx == _sel:
 			_city_picker.select(_city_picker.item_count - 1)
 	_city_picker.disabled = _sel < 0
@@ -281,12 +281,12 @@ func _fill_list() -> void:
 func _fill_detail() -> void:
 	_clear(_detail_box)
 	if _sel < 0:
-		_detail_box.add_child(_label("克服三处，开启建筑构筑", 25, ACCENT))
+		_detail_box.add_child(_label("征服一个分区，开放一个基建位", 25, ACCENT))
 		_detail_box.add_child(Art.image("B06", Vector2(0, 170)))
 		_detail_box.add_child(_wrapped(GameState.city_unlock_text(), 16, DIM))
 		return
 	var heading := _heading("筑", "已装配 %d / %d" % [GameState.city_used_slots(_sel), GameState.city_slots(_sel)])
-	heading.add_child(_label("点击查看 · 拖动换位", 12, DIM))
+	heading.add_child(_label("已征服 %d/%d 区 · 点击查看 · 拖动换位" % [GameState.table_progress(_sel), GameState.zone_count(_sel)], 12, DIM))
 	_detail_box.add_child(heading)
 	var grid := GridContainer.new()
 	grid.name = "CitySlots"
@@ -297,7 +297,7 @@ func _fill_detail() -> void:
 	for slot in range(GameState.city_slots(_sel)):
 		grid.add_child(_slot_card(slot))
 	_detail_box.add_child(grid)
-	_detail_box.add_child(_label("—  换卡即重算组合  ·  追加不触发追加  —", 11, DIM))
+	_detail_box.add_child(_label("—  换卡即重算助力  ·  收藏组合不产金  —", 11, DIM))
 
 func _slot_card(slot: int) -> Control:
 	var id := GameState._building_at(_sel, slot)
@@ -355,7 +355,7 @@ func _slot_card(slot: int) -> Control:
 		stars.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 		title.add_child(stars)
 		inner.add_child(_wrapped(_short_effect(id, button.quality), 12, INK2))
-		button.tooltip_text = "%s·%s\n%s" % [GameData.card_name(id), Traits.quality_name(button.quality), GameData.effect_text(GameData.building(id))]
+		button.tooltip_text = "%s·%s\n%s" % [GameData.card_name(id), Traits.quality_name(button.quality), _short_effect(id, button.quality)]
 	_ignore_mouse(inner)
 	return button
 
@@ -364,38 +364,27 @@ func _fill_combo() -> void:
 	_clear(_combo_yield)
 	_clear(_combo_actions)
 	_combo_box.add_child(_heading("链", "当前组合"))
-	_income = _label("", 13, COIN)
+	_income = _label("金币仅由手拍拍翻敌牌获得", 13, INK2)
 	_income.name = "BaseIncome"
 	_combo_box.add_child(_income)
 	if _sel < 0:
-		_combo_box.add_child(_wrapped("先克服城池，再装配建筑卡。", 14, DIM))
+		_combo_box.add_child(_wrapped("先征服任意一个分区，再装配建筑卡。", 14, DIM))
 		return
-	var combo := GameState.city_combo(_sel)
 	var chain := VBoxContainer.new()
 	chain.name = "BuildingComboChain"
 	chain.add_theme_constant_override("separation", 2)
 	_combo_box.add_child(chain)
-	for source in combo["sources"]:
-		_append_chain(chain, _chain_card(str(source["id"]), "基础产出 %s 金币 / 10秒" % _number(float(source["base"])), true))
 	var equipped := GameState.city_buildings(_sel)
-	for slot in range(equipped.size()):
-		var id := str(equipped[slot])
-		var rule: Dictionary = Traits.RULES.get(id, {})
-		if rule.has("flat") or rule.has("tag_pct") or rule.has("all_pct") or rule.has("diverse_pct"):
-			_append_chain(chain, _chain_card(id, _short_effect(id, GameState.building_quality(_sel, slot)), float(combo["normal"]) > 0.0))
-	for repeat in combo["repeats"]:
-		var subtotal := float(repeat["value"]) / (1.0 + float(combo["extra_pct"]))
-		var description := "每%d次，额外结算 %s 金币" % [int(repeat["period"]), _number(subtotal)] if repeat["active"] else "等待产出来源 / 所需类型"
-		_append_chain(chain, _chain_card(str(repeat["id"]), description, bool(repeat["active"])))
 	var functions := _column()
 	functions.add_theme_constant_override("separation", 4)
 	for slot in range(equipped.size()):
 		var id := str(equipped[slot])
-		var rule: Dictionary = Traits.RULES.get(id, {})
-		if rule.has("extra_pct"):
-			_append_chain(chain, _chain_card(id, _short_effect(id, GameState.building_quality(_sel, slot)), combo["repeats"].any(func(repeat): return bool(repeat["active"]))))
-		elif id != "" and rule.is_empty():
-			functions.add_child(_chain_card(id, _short_effect(id, GameState.building_quality(_sel, slot)), true))
+		if id == "": continue
+		var description := _short_effect(id, GameState.building_quality(_sel, slot))
+		if Traits.RULES.has(id):
+			_append_chain(chain, _chain_card(id, description, false))
+		else:
+			functions.add_child(_chain_card(id, description, id not in ["B25", "B27"]))
 	if functions.get_child_count() > 0:
 		_combo_box.add_child(_label("全局助力", 14, COIN))
 		_combo_box.add_child(functions)
@@ -406,65 +395,27 @@ func _fill_combo() -> void:
 	var total := _column()
 	total.add_theme_constant_override("separation", 4)
 	summary.add_child(total)
-	var preview := _income_preview(combo)
-	var cycle := _label("组合循环 · 每%d秒" % int(preview["seconds"]), 13, INK2)
+	var cycle := _label("金币与成长 · 手动拍翻结算", 13, INK2)
 	cycle.name = "BuildingComboPeriod"
 	total.add_child(cycle)
-	var formula := _label(str(preview["formula"]), 19, ACCENT)
+	var formula := _label("未拍翻不发放收益", 19, ACCENT)
 	formula.name = "BuildingComboFormula"
 	formula.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
-	formula.tooltip_text = str(preview["formula"])
+	formula.tooltip_text = "只有手拍拍翻敌牌才获得金币与成长，打伤未翻不结算。"
 	total.add_child(formula)
 	var ribbon := PanelContainer.new()
 	ribbon.name = "BuildingComboIncomeRibbon"
 	ribbon.add_theme_stylebox_override("panel", Art.panel(Color("f1ddba"), 5, Color("c59d6d"), 1))
-	var per_minute := float(combo["hourly"]) / 60.0
-	var displayed_income := _number(per_minute) if per_minute < 10000.0 else GameState.fmt(per_minute)
-	var average := _label("平均产出 %s 金币 / 分" % displayed_income, 22, ACCENT)
+	var average := _label("等待与离线均无收入", 22, DIM)
 	average.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	average.tooltip_text = average.text
 	ribbon.add_child(average)
 	total.add_child(ribbon)
 	_combo_yield.add_child(summary)
-	if float(combo["normal"]) <= 0:
-		var missing := _label("缺少产出来源：需要搭配产出卡。", 12, DIM)
-		missing.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
-		_combo_yield.add_child(missing)
-	else:
-		var note := "追加不再触发追加。"
-		if float(combo["extra_pct"]) > 0 and not combo["repeats"].is_empty():
-			note = "追加总倍率 ×%s；追加不再触发追加。" % _number(1.0 + float(combo["extra_pct"]))
-		_combo_yield.add_child(_label(note, 11, DIM))
+	var note := _label("收藏组合不产金，功能建筑提供助力。", 11, DIM)
+	note.tooltip_text = "战力、卡包折扣、时长、装备与招降加成可随装配生效。"
+	_combo_yield.add_child(note)
 	_combo_actions.add_child(_selected_slot())
-
-func _income_preview(combo: Dictionary) -> Dictionary:
-	# 与真实结算共用 payout；按完整周期取样，合成品相与全局助力均计入。
-	var cycles := 1
-	for repeat in combo["repeats"]:
-		if not bool(repeat["active"]):
-			continue
-		var period := int(repeat["period"])
-		var a := cycles
-		var b := period
-		while b != 0:
-			var remainder := a % b
-			a = b
-			b = remainder
-		cycles = int(float(cycles * period) / maxi(1, a))
-	var local_hourly := float(combo["average"]) * 360.0
-	var global_scale := float(combo["hourly"]) / local_hourly if local_hourly > 0 else 1.0
-	var amount := Traits.payout(combo, 0, cycles) * global_scale
-	var formula := ""
-	if cycles <= 5:
-		var payouts := PackedStringArray()
-		for step in range(cycles):
-			payouts.append(_number(Traits.payout(combo, step, 1) * global_scale))
-		formula = " + ".join(payouts)
-		formula += " = %s 金币" % _number(amount) if cycles > 1 else " 金币"
-	else:
-		var basic := float(combo["normal"]) * cycles * global_scale
-		formula = "基础 %s + 追加 %s = %s 金币" % [_number(basic), _number(amount - basic), _number(amount)]
-	return {"seconds": int(cycles * Traits.CYCLE), "formula": formula}
 
 func _selected_slot() -> Control:
 	var panel := _panel(7)
@@ -522,7 +473,7 @@ func _warehouse_card(id: String, quality: int) -> Control:
 	button.name = "PlaceBuilding" + id + ("Q%d" % quality if quality > 0 else "")
 	button.custom_minimum_size = Vector2(184, 83)
 	button.disabled = _sel < 0 or GameState.city_used_slots(_sel) >= GameState.city_slots(_sel) or GameState.city_buildings(_sel).has(id)
-	button.tooltip_text = GameData.effect_text(GameData.building(id)) + ("\n同城已装配；可在合成页升级仓库副本" if _sel >= 0 and GameState.city_buildings(_sel).has(id) else "\n点击或拖入空槽装配")
+	button.tooltip_text = _short_effect(id, quality) + ("\n同城已装配；可在合成页升级仓库副本" if _sel >= 0 and GameState.city_buildings(_sel).has(id) else "\n点击或拖入空槽装配")
 	button.pressed.connect(_on_place.bind(id, quality, -1))
 	button.add_theme_stylebox_override("normal", _card_style(false))
 	button.add_theme_stylebox_override("hover", _card_style(true))
@@ -570,7 +521,7 @@ func _fusion_card(id: String, quality: int) -> Control:
 	button.disabled = have < 3
 	button.add_theme_font_override("font", Art.title_font())
 	button.add_theme_font_size_override("font_size", 16)
-	button.tooltip_text = "数值 ×%.2f → ×%.2f · 名称、星级与技能保留\n只消耗仓库材料，已装配卡受到保护。" % [Traits.quality_mult(quality), Traits.quality_mult(quality + 1)]
+	button.tooltip_text = "%s → %s\n只消耗仓库材料，已装配卡受到保护。" % [_short_effect(id, quality), _short_effect(id, quality + 1)]
 	button.pressed.connect(_on_fuse.bind(id, quality))
 	column.add_child(button)
 	return panel
@@ -581,7 +532,7 @@ func _fill_outcome() -> void:
 	var result: Dictionary = GameState.last_outcome
 	var idx := int(result.get("region", 0))
 	var valid := idx > 0 and not GameData.region(idx).is_empty() and str(result.get("result", "")) in ["cleared", "settled"]
-	var headline := "建筑替你积累，整备好再出发"
+	var headline := "整备好建筑，拍翻敌牌再收获"
 	var detail := "装配建筑形成组合；卸下保留品相。同名合成只消耗仓库卡。"
 	var mark := "营"
 	var primary_text := "返回大本营"
@@ -595,7 +546,7 @@ func _fill_outcome() -> void:
 		mark = "财"
 		headline = "%s · 本轮已收钱" % GameData.region(idx).get("name", "?")
 		detail = "收获 %s 金币　·　%d 次拍击　·　清桌 %d 次" % [GameState.fmt(float(result.get("gold", 0))), int(result.get("slaps", 0)), int(result.get("tables_flipped", 0))]
-		primary_text = "再来一轮"
+		primary_text = "继续未清分区" if GameState.region_status(idx) == "available" else "选择下一座城"
 		primary = _on_deploy.bind(idx)
 	_outcome_box.add_child(Art.stamp(mark, Vector2(43, 52)))
 	var words := _column()
@@ -645,6 +596,7 @@ func _on_tab(tab: String) -> void:
 	refresh()
 
 func _on_place(id: String, quality: int = 0, target: int = -1) -> void:
+	if GameState.in_battle: return
 	if target < 0 and GameState._building_at(_sel, _slot) == "":
 		target = _slot
 	if GameState.place_building(_sel, id, quality, target):
@@ -652,10 +604,12 @@ func _on_place(id: String, quality: int = 0, target: int = -1) -> void:
 	refresh()
 
 func _on_remove(idx: int, slot: int) -> void:
+	if GameState.in_battle: return
 	GameState.remove_building(idx, slot)
 	refresh()
 
 func _on_fuse(id: String, quality: int) -> void:
+	if GameState.in_battle: return
 	GameState.fuse_building(id, quality)
 	refresh()
 
@@ -691,7 +645,8 @@ func _chain_card(id: String, description: String, active: bool) -> Control:
 		var slot := GameState.city_buildings(_sel).find(id)
 		if slot >= 0:
 			_on_slot(slot))
-	button.tooltip_text = GameData.effect_text(GameData.building(id))
+	var equipped_slot := GameState.city_buildings(_sel).find(id)
+	button.tooltip_text = _short_effect(id, GameState.building_quality(_sel, equipped_slot))
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 8)
 	row.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -718,33 +673,16 @@ func _append_chain(chain: VBoxContainer, card: Control) -> void:
 	chain.add_child(card)
 
 func _short_effect(id: String, quality: int) -> String:
-	var rule: Dictionary = Traits.RULES.get(id, {})
+	if Traits.RULES.has(id): return "收藏组合 · 不产金"
 	var scale := Traits.quality_mult(quality)
-	if float(rule.get("base", 0.0)) > 0.0:
-		if rule.has("period"):
-			return "10秒产%s金币 · 三类型追加%s%%" % [_number(float(rule["base"]) * scale), _number(float(rule["repeat"]) * scale * 100.0)]
-		return "每10秒产出 %s 金币" % _number(float(rule["base"]) * scale)
-	if rule.has("flat"):
-		return "%s每次产出 +%s 金币" % [str(rule.get("target", "全部")), _number(float(rule["flat"]) * scale)]
-	if rule.has("tag_pct"):
-		return "%s基础产出 +%s%%" % [str(rule.get("target", "全部")), _number(float(rule["tag_pct"]) * scale * 100.0)]
-	if rule.has("all_pct"):
-		return "同城基础产出 +%s%%" % _number(float(rule["all_pct"]) * scale * 100.0)
-	if rule.has("diverse_pct"):
-		return "每种产出类型，基础收益 +%s%%" % _number(float(rule["diverse_pct"]) * scale * 100.0)
-	if rule.has("extra_pct"):
-		return "追加结算收益 ×%s" % _number(1.0 + float(rule["extra_pct"]) * scale)
-	if rule.has("period"):
-		var target := "" if str(rule.get("target", "全部")) == "全部" else str(rule["target"])
-		return "每%d次%s产出，追加 %s%%" % [int(rule["period"]), target, _number(float(rule["repeat"]) * scale * 100.0)]
 	var building := GameData.building(id)
 	var amount := _number(float(building.get("effect_value", 0.0)) * scale)
 	match str(building.get("effect_type", "none")):
 		"combat_power_pct": return "卡组战力 +%s%%" % amount
 		"pack_price_pct": return "卡包价格 −%s%%" % amount
-		"offline_hours": return "离线时长 +%s 小时" % amount
+		"offline_hours": return "离线收益暂停 · 收藏不产金"
 		"stamina_flat": return "每轮时长 +%s 秒" % _number(float(building.get("effect_value", 0.0)) * scale * 2.0)
-		"building_output_pct": return "全城建筑收益 +%s%%" % amount
+		"building_output_pct": return "产金强化暂停 · 收藏不产金"
 		"equip_pct": return "装备效果 +%s%%" % amount
 		"ransom_pct": return "招降成本 −%s%%" % amount
 	return GameData.effect_text(building)

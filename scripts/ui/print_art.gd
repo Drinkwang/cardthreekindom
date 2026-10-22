@@ -44,6 +44,7 @@ static func catalog() -> Dictionary:
 		_apply_portrait_overrides()
 		_apply_scenic_overrides()
 		_apply_unified_hero_overrides()
+		_apply_unified_hero_overrides("res://assets/art_v14/female_heroes_catalog.json")
 		_apply_ancient_portrait_aliases()
 	return _catalog
 
@@ -155,8 +156,8 @@ static func _apply_scenic_overrides() -> void:
 
 ## v8 武将全部按固定 ID 顺序排在同风格图集中。
 ## 只覆盖通过校验的格位；没有新图的卡仍使用 v7/v3/v2 对应图像。
-static func _apply_unified_hero_overrides() -> void:
-	var file := FileAccess.open("res://assets/art_v8/heroes_catalog.json", FileAccess.READ)
+static func _apply_unified_hero_overrides(catalog_path: String = "res://assets/art_v8/heroes_catalog.json") -> void:
+	var file := FileAccess.open(catalog_path, FileAccess.READ)
 	if file == null:
 		return
 	var parsed: Variant = JSON.parse_string(file.get_as_text())
@@ -167,7 +168,7 @@ static func _apply_unified_hero_overrides() -> void:
 		return
 	var occupied := {}
 	for id in overrides:
-		if (not str(id).begins_with("G") and id != "I01") or not _catalog.has(id) or not overrides[id] is Dictionary:
+		if (not str(id).begins_with("G") and id != "I01") or GameData.card(id).is_empty() or not overrides[id] is Dictionary:
 			continue
 		var entry: Dictionary = overrides[id]
 		var path := str(entry.get("atlas", ""))
@@ -183,11 +184,11 @@ static func _apply_unified_hero_overrides() -> void:
 		var source := _valid_texture(path)
 		if source == null or source.get_width() < columns or source.get_height() < rows:
 			continue
-		var updated: Dictionary = _catalog[id].duplicate()
+		var updated: Dictionary = _catalog.get(id, GameData.card(id)).duplicate()
 		for field in ["atlas", "columns", "rows", "index", "inset", "icon_focus", "icon_scale"]:
 			if entry.has(field):
 				updated[field] = entry[field]
-		updated["art_version"] = "print-v8-unified-heroes"
+		updated["art_version"] = str(parsed.get("version", "print-v8-unified-heroes"))
 		_catalog[id] = updated
 
 

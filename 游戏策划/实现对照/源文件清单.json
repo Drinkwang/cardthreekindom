@@ -1,0 +1,219 @@
+{
+  "baseline_client_date": "2026-10-16",
+  "snapshot_utc": "2026-10-16T08:18:23Z",
+  "engine": "4.7.2-stable (official)",
+  "git_head": "e477a33a01d48cc393f0895e654301403bb5122f",
+  "tracked_changes": [
+    "README.md",
+    "data/routes.json",
+    "scripts/ancient_setting.gd",
+    "scripts/autoload/game_state.gd",
+    "scripts/build_traits.gd",
+    "scripts/city_layout.gd",
+    "scripts/city_view.gd",
+    "scripts/deck_view.gd",
+    "scripts/home_view.gd",
+    "scripts/main.gd",
+    "scripts/main_menu.gd",
+    "scripts/map_view.gd",
+    "scripts/progression_rules.gd",
+    "scripts/reveal_view.gd",
+    "scripts/ui/city_minimap.gd",
+    "scripts/upgrade_view.gd",
+    "tests/building_combo_test.gd",
+    "tests/city_exploration_test.gd",
+    "tests/city_pile_test.gd",
+    "tests/incremental_test.gd",
+    "tests/screenshot.gd",
+    "tests/ui_interaction_test.gd",
+    "tests/upgrade_art_test.gd"
+  ],
+  "note": "Current manual zone-conquest working tree; fresh-save schema only; includes uncommitted changes. Historical baseline is archived separately.",
+  "files": [
+    {
+      "path": "assets/art_v2/catalog.json",
+      "bytes": 31111,
+      "sha256": "ee818c090df99e99f07dc3410677deb254dd84921e38f23f80f1a72d69cc3468"
+    },
+    {
+      "path": "assets/art_v3/portrait_overrides.json",
+      "bytes": 356,
+      "sha256": "7099fd55221a2483f5e56713208d3a326cc06d3c9687a0de19dacb8083de9cfa"
+    },
+    {
+      "path": "assets/art_v8/heroes_catalog.json",
+      "bytes": 16719,
+      "sha256": "9d5149820a8e779e3b52f606b2fe13559ba2a2e162e776384c81cb330b5a338e"
+    },
+    {
+      "path": "data/buildings.json",
+      "bytes": 7297,
+      "sha256": "6c234b0e1712b76a961a546dacbfd9e81b5626a27bafb54702f061b779a8d826"
+    },
+    {
+      "path": "data/cards.json",
+      "bytes": 61250,
+      "sha256": "efdaf24bb5c5db5a2bcd233453b32acdcbb1d47076ca9743b69632f35078deb4"
+    },
+    {
+      "path": "data/enemies.json",
+      "bytes": 12685,
+      "sha256": "0c7fcf9b457abf7e7577bed512c302fc72e515a62fb890628207512f300655d2"
+    },
+    {
+      "path": "data/packs.json",
+      "bytes": 2152,
+      "sha256": "c7ee356ca87f99510e387b5857c14e8c9c387bd7f7b8de7779e1bce4101e1f5e"
+    },
+    {
+      "path": "data/regions.json",
+      "bytes": 8910,
+      "sha256": "b98a0c67291a1e132aed58a13210d290703d889d16d83e14c0b8579244474c77"
+    },
+    {
+      "path": "data/routes.json",
+      "bytes": 1891,
+      "sha256": "33102d09fd4f502ee43ca85c95d4dcbbc49ce6041dc7733dc1d5d0c51014d006"
+    },
+    {
+      "path": "project.godot",
+      "bytes": 1037,
+      "sha256": "d44857276ba49ba9316b473893dd48d397c775988a72e56624a1fe65a48c587e"
+    },
+    {
+      "path": "scenes/Main.tscn",
+      "bytes": 309,
+      "sha256": "d37e468ef79d7029dac81419b3cb572ff637ab89003bba867c11c15a9d4a1110"
+    },
+    {
+      "path": "scenes/MainMenu.tscn",
+      "bytes": 292,
+      "sha256": "1af664deab8632659cd12e4ad5ac07032b12633a9372789121c4baa811913cad"
+    },
+    {
+      "path": "scripts/ancient_setting.gd",
+      "bytes": 2135,
+      "sha256": "dcddf6358e1e8137548c699171ae7532bc57d6bc4ce639e4ea6e48bec32be25a"
+    },
+    {
+      "path": "scripts/autoload/game_data.gd",
+      "bytes": 3853,
+      "sha256": "5576a6028f8fca162d3daff0c9e4231a00caa310632aa600d0bb6c04e1ae87f2"
+    },
+    {
+      "path": "scripts/autoload/game_state.gd",
+      "bytes": 113649,
+      "sha256": "cdd13b2c57700356c6675efe5ba5fa4b2f6ab515a3d87e93350eba6466805719"
+    },
+    {
+      "path": "scripts/build_traits.gd",
+      "bytes": 4090,
+      "sha256": "f4fc2dd170a9ed2e8944ddbdefbdc9815ef6f7eb1a6804b1efe2a59de2e90b27"
+    },
+    {
+      "path": "scripts/building_traits.gd",
+      "bytes": 5522,
+      "sha256": "788eb7b533a00073df7ffea9962bff47ecf53f86950747feb116dd5ecc7f10d1"
+    },
+    {
+      "path": "scripts/city_layout.gd",
+      "bytes": 3157,
+      "sha256": "e754bfdd254f78803e206e09e96b64888a56cf0a876183efdbb9e84f6815ee6b"
+    },
+    {
+      "path": "scripts/city_view.gd",
+      "bytes": 34522,
+      "sha256": "5db0336a48876a04d463f544bc89dde36418edeb2e05f1994454284f8674c2a5"
+    },
+    {
+      "path": "scripts/deck_view.gd",
+      "bytes": 36036,
+      "sha256": "266b41c968106fad54245ea0c0882c455c5f043969b18a2dae7f588f048b89c4"
+    },
+    {
+      "path": "scripts/home_view.gd",
+      "bytes": 49821,
+      "sha256": "9c52b4e2f47d9143dd0a8fffffcafc16efdfe2fc8f52bbfe40bae6c4dc95f71d"
+    },
+    {
+      "path": "scripts/main.gd",
+      "bytes": 97892,
+      "sha256": "c1674b79a7619f1a8927817d9278a8a251df45a65c9f55c6942894e8b71113e0"
+    },
+    {
+      "path": "scripts/main_menu.gd",
+      "bytes": 8444,
+      "sha256": "03a496ae395902b56d184169254ccc84ca3baa73dfc2476df7433442b4f95577"
+    },
+    {
+      "path": "scripts/map_view.gd",
+      "bytes": 15019,
+      "sha256": "500561ada4c81497189c772a2b572b85e3e88cab55ad2174b7c96b65497db402"
+    },
+    {
+      "path": "scripts/progression_rules.gd",
+      "bytes": 2015,
+      "sha256": "2deafa03199a90e1c60868cfaabb12e8e2576bf0ac7d60626019e5f1ef1869b2"
+    },
+    {
+      "path": "scripts/reveal_view.gd",
+      "bytes": 17237,
+      "sha256": "6d27d18c3d56e9fc307749e71495e317f3665301aba8daa6c6e76e739b92863f"
+    },
+    {
+      "path": "scripts/shop_view.gd",
+      "bytes": 3803,
+      "sha256": "04b255d99f5d660d9b6931275833ab5fbb8309d581f299fe9b3282e82ae90fc2"
+    },
+    {
+      "path": "scripts/story_book.gd",
+      "bytes": 10168,
+      "sha256": "dd69a4c51b01fefe4203a13d28db5065b41a8fe46fd9a21717f026f92fee0244"
+    },
+    {
+      "path": "scripts/story_view.gd",
+      "bytes": 10825,
+      "sha256": "e7b2364890c864a47301908d2f59c0f561cc351f792f3c5b44a0cf51b017d215"
+    },
+    {
+      "path": "scripts/ui/city_minimap.gd",
+      "bytes": 12625,
+      "sha256": "9047ebaa2643f9c8ab718063cd4aedfd96c1ce1bf997d8e3a16198a7ec146f4b"
+    },
+    {
+      "path": "scripts/ui/ink_impact.gd",
+      "bytes": 1887,
+      "sha256": "f44876937ea485df3255579101f091cc727188afe1875743521b3172278449ac"
+    },
+    {
+      "path": "scripts/ui/paper_chrome.gd",
+      "bytes": 6968,
+      "sha256": "93c2d908dbbf63cd1681442debd82981e129c87ccdd74b18034350a1a5013bd5"
+    },
+    {
+      "path": "scripts/ui/print_art.gd",
+      "bytes": 27319,
+      "sha256": "9815f3879b035779bac564e1ce5d0d2f204784e84056faa9a5cfec0f88b54296"
+    },
+    {
+      "path": "scripts/ui/slap_cursor.gd",
+      "bytes": 5274,
+      "sha256": "d7f2cefa3b18ee6946e452350a1ed7fc1217dc70e3b55e30793529fb863b9782"
+    },
+    {
+      "path": "scripts/ui/slap_feedback.gd",
+      "bytes": 3590,
+      "sha256": "dc9ac5042f7a9a0748ab38a4dff958c7b48e225a9dbfcdf707de45ca378722c5"
+    },
+    {
+      "path": "scripts/ui/ui_skin.gd",
+      "bytes": 3786,
+      "sha256": "dbf1666d0be78d7c328c195018df4ba0072bda54bb5f802e94b2ee5ab3c41b9b"
+    },
+    {
+      "path": "scripts/upgrade_view.gd",
+      "bytes": 19606,
+      "sha256": "5bdcaa883f56cad031488b03e44cf294cc88d92ecc8b7785481822caea10ad7a"
+    }
+  ]
+}

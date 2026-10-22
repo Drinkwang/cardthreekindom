@@ -361,8 +361,9 @@ func _draw_tooltip() -> void:
 		return
 	var p: Vector2 = _pts[idx]
 	var status := GameState.region_status(idx)
-	var status_text := {"cleared": "已克服", "available": "可挑战", "locked": "未解锁"}
+	var status_text := {"cleared": "已征服 · 经营基建", "available": "可出征", "locked": "未解锁"}
 	var lines := ["%s · %s" % [r0.get("name", "?"), status_text.get(status, "未解锁")]]
+	lines.append("分区 %d/%d 已征服" % [GameState.table_progress(idx), GameState.zone_count(idx)])
 
 	var fs := maxi(12, int(round(12.0 * _fs_scale)))
 	var w := 0.0

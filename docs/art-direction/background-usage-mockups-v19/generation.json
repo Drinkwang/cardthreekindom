@@ -1,0 +1,79 @@
+{
+  "date": "2026-10-19",
+  "generator": "built-in image_gen",
+  "status": "generated usage concepts; not runtime captures; not integrated",
+  "ui_reference": "docs/shots/terrain-v17/city-01.png",
+  "background_references": "docs/art-direction/background-scene-options-v18/",
+  "variants": [
+    {
+      "option": 1,
+      "city": "新野",
+      "file": "01-xinye-gameplay.png",
+      "dimensions": [
+        1586,
+        992
+      ],
+      "source": "/Users/arthurwang/.codex/generated_images/01a148ad-f3ee-7241-b34a-f88e50a4b09d/exec-eac6a6b9-7cc6-4477-8ec0-0095413a6336.png",
+      "referenced_images": [
+        "docs/shots/terrain-v17/city-01.png",
+        "docs/art-direction/background-scene-options-v18/01-xinye-courtyard.png"
+      ],
+      "prompt": "Use case: compositing. Create ONE concept gameplay usage mockup by editing IMAGE 1, the 1280x800 real game screenshot. IMAGE 1 is the LOCKED UI AND CARDS edit target. IMAGE 2 is the NEW SINGLE COHERENT BACKGROUND insert. Output one 1280x800 full screenshot, same framing as IMAGE 1, no surrounding device or extra panel. Replace ONLY the central map environment, approximately x=0..1279, y=86..636, with the beautifully illustrated full-scene background from IMAGE 2. Completely remove IMAGE 1's old tiled flooring and separately placed building strips. Use IMAGE 2's integrated architecture, roads, foundations and natural boundaries as one continuous environment; never add floating/pasted building props. Respect the existing WIDE SHORT map viewport: adapt the framing using a sensible crop and natural side extension if necessary, NOT by horizontally stretching or vertically flattening architecture. Keep recognizable city landmarks and their ground connections visible within this map viewport, not hidden by HUD. Keep the open playable clearing behind all three cards. LOCK all of IMAGE 1's top parchment HUD at y=0..85 and bottom parchment HUD at y=637..799: exact geometry, layout, colors, thin frames, all buttons, seals, typography, numbers, bottom card slots, one player portrait, mini-map frame and zoom toolbar at upper left must remain unchanged. Do NOT redesign, beautify, remove or add UI controls. LOCK the THREE existing field cards at the same exact positions, sizes, rotations, portraits, text, borders, bars and drop shadows as IMAGE 1. Do NOT add any characters or cards, do not replace cards with famous-hero mockups, do not enlarge them. Cards must be on the central flat dry open ground, never on roof, stairs, water, walls or trees. Only two UI content adjustments are permitted: update city name and minimap city-name title to the city requested below, and replace the thumbnail inside the same existing minimap frame with a matching overview of the new background while retaining its markers/view box styling. All other HUD labels and counters remain those of IMAGE 1 for comparison. Preserve IMAGE 2's premium Chinese historical hand-painted cel-animation style, blue-grey roofs, warm materials, consistent overhead perspective and warm sunlight. Quiet ground behind cards, restrained perimeter shadows, no clutter. No caption, no new logo, no watermark, no extra HUD. This is a visual concept, not a new layout.\nCity: 新野. Top city name 新野; minimap title 新野全图. Retain the integrated stone courtyard, tiled timber frontage along the left edge, open gateway into the courtyard and modest garden boundary at the far right from IMAGE 2. The three cards stand on the broad calm stone plaza. Architecture must sit at the perimeter, not float among the cards.",
+      "cleanup_prompt": "Use case: precise-object-edit. Image1 is the edit target, the Xinye courtyard gameplay concept. Image2 is ONLY the original UI card-count reference. Fix ONE issue in Image1: its bottom-left HUD wrongly has ONE portrait card followed by FOUR empty plus-sign slots. It must contain ONE portrait card followed by exactly THREE empty plus-sign slots, FOUR card rectangles total, just like Image2. Remove ONLY the rightmost extra empty slot nearest the vertical bottom-panel divider (approximately x=475..570, y=825..925 on Image1); fill that removed rectangle with matching blank parchment. Keep the three earlier empty slots and the portrait card in their existing positions. Do not add any replacement slot. Leave the rest of Image1 unchanged: the complete courtyard background, all three field cards, top HUD, bottom divider, remaining labels, minimap, button positions, canvas size and framing. Do not redesign the UI, do not alter counts anywhere else, no text captions. This is a small local cleanup only.",
+      "cleanup_reason": "Initial concept added a fourth empty dock slot. Final concept corrected to one portrait plus three empty slots."
+    },
+    {
+      "option": 2,
+      "city": "夏口",
+      "file": "02-xiakou-gameplay.png",
+      "dimensions": [
+        1586,
+        992
+      ],
+      "source": "/Users/arthurwang/.codex/generated_images/01a148ad-f3ee-7241-b34a-f88e50a4b09d/exec-fd75657a-d8d6-4c03-9918-f51f57b86842.png",
+      "referenced_images": [
+        "docs/shots/terrain-v17/city-01.png",
+        "docs/art-direction/background-scene-options-v18/02-xiakou-quay.png"
+      ],
+      "prompt": "Use case: compositing. Create ONE concept gameplay usage mockup by editing IMAGE 1, the 1280x800 real game screenshot. IMAGE 1 is the LOCKED UI AND CARDS edit target. IMAGE 2 is the NEW SINGLE COHERENT BACKGROUND insert. Output one 1280x800 full screenshot, same framing as IMAGE 1, no surrounding device or extra panel. Replace ONLY the central map environment, approximately x=0..1279, y=86..636, with the beautifully illustrated full-scene background from IMAGE 2. Completely remove IMAGE 1's old tiled flooring and separately placed building strips. Use IMAGE 2's integrated architecture, roads, foundations and natural boundaries as one continuous environment; never add floating/pasted building props. Respect the existing WIDE SHORT map viewport: adapt the framing using a sensible crop and natural side extension if necessary, NOT by horizontally stretching or vertically flattening architecture. Keep recognizable city landmarks and their ground connections visible within this map viewport, not hidden by HUD. Keep the open playable clearing behind all three cards. LOCK all of IMAGE 1's top parchment HUD at y=0..85 and bottom parchment HUD at y=637..799: exact geometry, layout, colors, thin frames, all buttons, seals, typography, numbers, bottom card slots, one player portrait, mini-map frame and zoom toolbar at upper left must remain unchanged. Do NOT redesign, beautify, remove or add UI controls. LOCK the THREE existing field cards at the same exact positions, sizes, rotations, portraits, text, borders, bars and drop shadows as IMAGE 1. Do NOT add any characters or cards, do not replace cards with famous-hero mockups, do not enlarge them. Cards must be on the central flat dry open ground, never on roof, stairs, water, walls or trees. Only two UI content adjustments are permitted: update city name and minimap city-name title to the city requested below, and replace the thumbnail inside the same existing minimap frame with a matching overview of the new background while retaining its markers/view box styling. All other HUD labels and counters remain those of IMAGE 1 for comparison. Preserve IMAGE 2's premium Chinese historical hand-painted cel-animation style, blue-grey roofs, warm materials, consistent overhead perspective and warm sunlight. Quiet ground behind cards, restrained perimeter shadows, no clutter. No caption, no new logo, no watermark, no extra HUD. This is a visual concept, not a new layout.\nCity: 夏口. Top city name 夏口; minimap title 夏口全图. Retain IMAGE 2's coherent continuous river along the right, stone embankment, supported wooden jetty connected by clear stairs, moored boat and grounded pavilion along the left. Keep the full dock-to-plaza stair connection readable near the upper-right boundary. All three cards sit on the dry broad quay plaza well away from railings and river."
+    },
+    {
+      "option": 3,
+      "city": "夷陵",
+      "file": "03-yiling-gameplay.png",
+      "dimensions": [
+        1586,
+        992
+      ],
+      "source": "/Users/arthurwang/.codex/generated_images/01a148ad-f3ee-7241-b34a-f88e50a4b09d/exec-f66a9945-20f4-44c5-b731-7579b3db0930.png",
+      "referenced_images": [
+        "docs/shots/terrain-v17/city-01.png",
+        "docs/art-direction/background-scene-options-v18/03-yiling-terrace.png"
+      ],
+      "prompt": "Use case: compositing. Create ONE concept gameplay usage mockup by editing IMAGE 1, the 1280x800 real game screenshot. IMAGE 1 is the LOCKED UI AND CARDS edit target. IMAGE 2 is the NEW SINGLE COHERENT BACKGROUND insert. Output one 1280x800 full screenshot, same framing as IMAGE 1, no surrounding device or extra panel. Replace ONLY the central map environment, approximately x=0..1279, y=86..636, with the beautifully illustrated full-scene background from IMAGE 2. Completely remove IMAGE 1's old tiled flooring and separately placed building strips. Use IMAGE 2's integrated architecture, roads, foundations and natural boundaries as one continuous environment; never add floating/pasted building props. Respect the existing WIDE SHORT map viewport: adapt the framing using a sensible crop and natural side extension if necessary, NOT by horizontally stretching or vertically flattening architecture. Keep recognizable city landmarks and their ground connections visible within this map viewport, not hidden by HUD. Keep the open playable clearing behind all three cards. LOCK all of IMAGE 1's top parchment HUD at y=0..85 and bottom parchment HUD at y=637..799: exact geometry, layout, colors, thin frames, all buttons, seals, typography, numbers, bottom card slots, one player portrait, mini-map frame and zoom toolbar at upper left must remain unchanged. Do NOT redesign, beautify, remove or add UI controls. LOCK the THREE existing field cards at the same exact positions, sizes, rotations, portraits, text, borders, bars and drop shadows as IMAGE 1. Do NOT add any characters or cards, do not replace cards with famous-hero mockups, do not enlarge them. Cards must be on the central flat dry open ground, never on roof, stairs, water, walls or trees. Only two UI content adjustments are permitted: update city name and minimap city-name title to the city requested below, and replace the thumbnail inside the same existing minimap frame with a matching overview of the new background while retaining its markers/view box styling. All other HUD labels and counters remain those of IMAGE 1 for comparison. Preserve IMAGE 2's premium Chinese historical hand-painted cel-animation style, blue-grey roofs, warm materials, consistent overhead perspective and warm sunlight. Quiet ground behind cards, restrained perimeter shadows, no clutter. No caption, no new logo, no watermark, no extra HUD. This is a visual concept, not a new layout.\nCity: 夷陵. Top city name 夷陵; minimap title 夷陵全图. Retain IMAGE 2's unified mountain terrace, pale sandstone clearing, rocky perimeter and gate integrated into its retaining wall. Keep the gate's ground passage and continuous step landing clearly attached to the playable platform; do not hide the connecting landing behind trees. The three cards stand on the flat open center, never on cliff or sloping stairs."
+    },
+    {
+      "option": 4,
+      "city": "沅陵",
+      "file": "04-yuanling-gameplay.png",
+      "dimensions": [
+        1586,
+        992
+      ],
+      "source": "/Users/arthurwang/.codex/generated_images/01a148ad-f3ee-7241-b34a-f88e50a4b09d/exec-6c45efcc-a7ee-4206-8a38-05bff6b6e098.png",
+      "referenced_images": [
+        "docs/shots/terrain-v17/city-01.png",
+        "docs/art-direction/background-scene-options-v18/04-yuanling-village.png"
+      ],
+      "prompt": "Use case: compositing. Create ONE concept gameplay usage mockup by editing IMAGE 1, the 1280x800 real game screenshot. IMAGE 1 is the LOCKED UI AND CARDS edit target. IMAGE 2 is the NEW SINGLE COHERENT BACKGROUND insert. Output one 1280x800 full screenshot, same framing as IMAGE 1, no surrounding device or extra panel. Replace ONLY the central map environment, approximately x=0..1279, y=86..636, with the beautifully illustrated full-scene background from IMAGE 2. Completely remove IMAGE 1's old tiled flooring and separately placed building strips. Use IMAGE 2's integrated architecture, roads, foundations and natural boundaries as one continuous environment; never add floating/pasted building props. Respect the existing WIDE SHORT map viewport: adapt the framing using a sensible crop and natural side extension if necessary, NOT by horizontally stretching or vertically flattening architecture. Keep recognizable city landmarks and their ground connections visible within this map viewport, not hidden by HUD. Keep the open playable clearing behind all three cards. LOCK all of IMAGE 1's top parchment HUD at y=0..85 and bottom parchment HUD at y=637..799: exact geometry, layout, colors, thin frames, all buttons, seals, typography, numbers, bottom card slots, one player portrait, mini-map frame and zoom toolbar at upper left must remain unchanged. Do NOT redesign, beautify, remove or add UI controls. LOCK the THREE existing field cards at the same exact positions, sizes, rotations, portraits, text, borders, bars and drop shadows as IMAGE 1. Do NOT add any characters or cards, do not replace cards with famous-hero mockups, do not enlarge them. Cards must be on the central flat dry open ground, never on roof, stairs, water, walls or trees. Only two UI content adjustments are permitted: update city name and minimap city-name title to the city requested below, and replace the thumbnail inside the same existing minimap frame with a matching overview of the new background while retaining its markers/view box styling. All other HUD labels and counters remain those of IMAGE 1 for comparison. Preserve IMAGE 2's premium Chinese historical hand-painted cel-animation style, blue-grey roofs, warm materials, consistent overhead perspective and warm sunlight. Quiet ground behind cards, restrained perimeter shadows, no clutter. No caption, no new logo, no watermark, no extra HUD. This is a visual concept, not a new layout.\nCity: 沅陵. Top city name 沅陵; minimap title 沅陵全图. Retain IMAGE 2's single bamboo village clearing: continuous light ochre earth, connected bamboo fence and lane opening, modest farmstead with stone foundations and doorway facing the clearing. All three cards are on open dry earth; keep bamboo, hut and foundation steps to the map perimeter. Do not turn it into a stone courtyard, river dock or scattered props."
+    }
+  ],
+  "limitations": [
+    "Generated composites approximate the existing interface, but typography, card scale, HUD proportions and pixel positions drift; do not treat these as engine screenshots or pixel-exact UI.",
+    "For visual comparison, existing Xinye counters, field-card selection and five-district minimap marker scheme are reused; these are not the actual Xiakou/Yiling/Yuanling rules, roster or district counts.",
+    "Minimap thumbnail and city labels are illustrative. Actual camera/world mapping and mouse behavior are not validated by these images.",
+    "No game code, runtime textures, gameplay data or saves were modified.",
+    "Actual output dimensions are 1586x992, despite prompt requesting the 1280x800 reference canvas."
+  ],
+  "visual_review": "All four final concepts show three field cards on flat continuous ground, connected scenery, and one portrait plus three empty dock slots."
+}

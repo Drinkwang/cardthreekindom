@@ -1,0 +1,48 @@
+{
+  "date": "2026-10-19",
+  "generator": "built-in image_gen",
+  "status": "visual correction concepts only; not runtime captures or implemented maps",
+  "user_feedback": "四周有东西，中间平路可以移动；不要桥或建筑产生挡住鼠标的感觉。",
+  "design_rules": [
+    "One continuous level low-contrast playfield; open passages visually extend to all four viewport edges.",
+    "Sparse scenery clipped to outer corners; no full structures projecting into the playfield, no enclosing courtyard.",
+    "No bridges, water, walls, railings, gates, steps or raised platforms in the map.",
+    "Preserve existing UI/card structure in the concept; do not modify game code or input handling."
+  ],
+  "design_targets": {
+    "clear_ground": "central at least85 percent (prompt target; not a measured pixel coverage)",
+    "scenery": "outermost5-8 percent/corners, discontinuous (prompt target)"
+  },
+  "variants": [
+    {
+      "option": "A",
+      "name": "石板平路 · 开放边景",
+      "file": "A-open-stone-gameplay.png",
+      "dimensions": [
+        1586,
+        992
+      ],
+      "source": "/Users/arthurwang/.codex/generated_images/01a148ad-f3ee-7241-b34a-f88e50a4b09d/exec-f63453a9-fd69-4636-a757-801b1edcfc79.png",
+      "edit_target": "docs/art-direction/background-usage-mockups-v19/02-xiakou-gameplay.png",
+      "prompt": "Use case: precise-object-edit. Correct the attached gameplay mockup based on the player's feedback: the environment must look freely traversable by the mouse, NOT like a decorative courtyard with obstacles. Keep the top parchment HUD, bottom parchment HUD, zoom controls, minimap frame, three field cards and one bottom portrait plus THREE empty slots, their overall layout and artwork unchanged. Change ONLY the MAP BACKGROUND and the matching small minimap terrain thumbnail. Do not add UI, text, cards or characters. COMPLETELY REPLACE the old environment; old buildings and water are NOT composition constraints. Design one seamless wide OPEN LEVEL GROUND spanning the entire map viewport, hand-painted Chinese historical cel-animation style. The middle at least85 percent is ONE broad flat continuous low-contrast surface with no height changes, and clear ground reaches each of the four screen edges through WIDE openings. This is not a narrow path, not an enclosed garden, not a room, not a boxed arena, not a board framed by walls. ALL decoration lives ONLY in the extreme outermost5 to8 percent of the map viewport or tiny clipped corners; sparse glimpses of foliage and at most a small roof eave outside the field, mostly cropped by the screen. Do NOT put a full building in the visible map. No rigid decorative boundary, no complete fence ring. Remove every bridge, boat, jetty, pond, river, canal, gate, wall, railing, steps, raised platform, cliff, large boulder, stall or any architecture projecting into the traversable ground. No water anywhere. No foreground building at either bottom corner. Nothing should visually obstruct sweeping the cursor from the cards to any screen edge. The three field cards remain on this clear flat ground with a wide clear ground margin in all directions. Ground has beautiful subtle painted material, not flat placeholder color: broad quiet tonal variation, low contrast, no repeated motifs, no dense cracks, weeds, fallen leaves, confetti, noisy gravel, dramatic tree shadows or artificial path borders. High nearly overhead camera, consistent plane, gentle diffuse warm daylight. The scenery must suggest a larger world OUTSIDE the frame, not objects placed inside the playfield. Preserve original screenshot framing/aspect, HUD type, button positions, card count and portrait identity. No captions or watermark.\nMaterial direction A: continuous clean warm grey broad limestone flagstones across the WHOLE map, with very thin understated joints. Not irregular cobble clutter, no grass patches interrupting paving. At the extreme upper-left corner allow only a clipped hint of blue tiled eave beyond the field; at the other outer corners only tiny cropped ginkgo/soft shrub edges. Open ground must reach the center of all four viewport edges without crossing any wall, fence, water, stairs or threshold. Sparse outer corner hints establish the historical town, but the dominant read is flat expansive open walkable ground. Keep center lighting soft and nearly uniform. Update minimap ground and corner vegetation to match, no river left in minimap."
+    },
+    {
+      "option": "B",
+      "name": "竹林土路 · 开放边景",
+      "file": "B-open-earth-gameplay.png",
+      "dimensions": [
+        1586,
+        992
+      ],
+      "source": "/Users/arthurwang/.codex/generated_images/01a148ad-f3ee-7241-b34a-f88e50a4b09d/exec-b929c9fb-a5f8-4549-9936-aca12a82a363.png",
+      "edit_target": "docs/art-direction/background-usage-mockups-v19/04-yuanling-gameplay.png",
+      "prompt": "Use case: precise-object-edit. Correct the attached gameplay mockup based on the player's feedback: the environment must look freely traversable by the mouse, NOT like a decorative courtyard with obstacles. Keep the top parchment HUD, bottom parchment HUD, zoom controls, minimap frame, three field cards and one bottom portrait plus THREE empty slots, their overall layout and artwork unchanged. Change ONLY the MAP BACKGROUND and the matching small minimap terrain thumbnail. Do not add UI, text, cards or characters. COMPLETELY REPLACE the old environment; old buildings and water are NOT composition constraints. Design one seamless wide OPEN LEVEL GROUND spanning the entire map viewport, hand-painted Chinese historical cel-animation style. The middle at least85 percent is ONE broad flat continuous low-contrast surface with no height changes, and clear ground reaches each of the four screen edges through WIDE openings. This is not a narrow path, not an enclosed garden, not a room, not a boxed arena, not a board framed by walls. ALL decoration lives ONLY in the extreme outermost5 to8 percent of the map viewport or tiny clipped corners; sparse glimpses of foliage and at most a small roof eave outside the field, mostly cropped by the screen. Do NOT put a full building in the visible map. No rigid decorative boundary, no complete fence ring. Remove every bridge, boat, jetty, pond, river, canal, gate, wall, railing, steps, raised platform, cliff, large boulder, stall or any architecture projecting into the traversable ground. No water anywhere. No foreground building at either bottom corner. Nothing should visually obstruct sweeping the cursor from the cards to any screen edge. The three field cards remain on this clear flat ground with a wide clear ground margin in all directions. Ground has beautiful subtle painted material, not flat placeholder color: broad quiet tonal variation, low contrast, no repeated motifs, no dense cracks, weeds, fallen leaves, confetti, noisy gravel, dramatic tree shadows or artificial path borders. High nearly overhead camera, consistent plane, gentle diffuse warm daylight. The scenery must suggest a larger world OUTSIDE the frame, not objects placed inside the playfield. Preserve original screenshot framing/aspect, HUD type, button positions, card count and portrait identity. No captions or watermark.\nMaterial direction B: continuous clean pale ochre packed earth across the WHOLE map, smooth and flat with extremely subtle painted tonal variation. REMOVE the entire thatch house, foundation steps, bamboo fence, scattered rocks and any doorway. Bamboo and small grasses may only be partial cropped slivers in the outermost side/corner margins, sparse and discontinuous. The bamboo must not form a wall or forest enclosing the player. The center of each viewport edge remains wide open level earth leading off screen. Do not draw a special winding narrow trail or a contained village square: the entire visible open ground is walkable in any direction. No large foreground leaves protruding in front of cards, no dense leaf shadows. Update minimap to the same open earth with tiny perimeter greenery, no hut or fence left."
+    }
+  ],
+  "limitations": [
+    "These generated images correct visual obstruction, not actual input collision or mouse event propagation.",
+    "No game code, runtime art, saves or gameplay data changed.",
+    "Chinese typography, counters, HUD/card dimensions and minimap geometry remain generative approximations, not pixel-exact engine output.",
+    "Ground texture still has visible fine detail; these are reference directions, not final production assets."
+  ]
+}

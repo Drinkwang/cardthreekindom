@@ -1,0 +1,67 @@
+{
+  "date": "2026-10-17",
+  "generator": "Built-in image_gen.imagegen",
+  "purpose": "User reference cultivation graph and district art iteration",
+  "reference": "User attachment codex-clipboard-977d459c-e648-4113-a3e3-1c3fe55074fc.png",
+  "assets": [
+    {
+      "file": "res://assets/art_v13/skill_icons.png",
+      "pixels": [
+        1254,
+        1254
+      ],
+      "use": "九项技能图集，3×3，行序为拍力/拍速/范围、时长/携带位/暴击、财路/装备槽/带兵",
+      "prompt": "Use case: stylized-concept. Asset type: a single 3 by 3 square sprite atlas for an ancient Chinese Three Kingdoms cultivation skill-tree game UI. Reference image 1 is STYLE REFERENCE ONLY: emulate its crisp black woodcut engraving, aged ivory paper, restrained vermilion motion strokes and antique book illustrations; do not recreate the UI, words, arrows or frames. Create exactly 9 equally-sized SQUARE cells in a strict 3-column 3-row grid, invisible grid no gutters. Each icon is centered in its cell with 18% blank margin on all sides and nothing crossing a cell boundary. Opaque flat warm ivory paper #f8f0dc in every cell. Top row left to right: (1 power) one upright open palm with a cuff, a few sharp vermilion impact rays; (2 speed) two elegant overlapping hand silhouettes with swift vermilion motion strokes, readable not anatomical confusion; (3 radius) one small hand inside widening concentric vermilion ripples. Middle row left to right: (4 duration) an ancient Chinese water clock, simple and dignified; (5 carry) a fan of three illustrated ancient general portrait cards with blank borders; (6 critical hit) a strong clenched fist with a vermilion starburst. Bottom row left to right: (7 fortune) a cloth pouch with three round Chinese coins with square holes, black and muted gold; (8 equipment) a spear and lamellar cuirass arranged together; (9 troops) a commanding Chinese general bust in front of two small soldier silhouettes. Keep all subjects at equal perceptual scale. Flat premium hand-engraved printed illustration, fine confident black hatch, limited red and subtle ochre, no glossy rendering. NO circles or medallion borders: code will crop to circles. NO text, NO letters, NO numbers, NO labels, NO UI, NO watermark. Output one square image at least 1536x1536."
+    },
+    {
+      "file": "res://assets/art_v13/cultivation_landscape.png",
+      "pixels": [
+        1586,
+        992
+      ],
+      "use": "修炼图低对比山水背景",
+      "prompt": "Use case: stylized-concept. Asset type: wide opaque background illustration behind a clickable cultivation skill graph in a Three Kingdoms paper-card game. Reference image 1 is a style reference only: its extremely pale ink landscape in the skill-tree panel. Generate ONLY the background, no interface. Wide 16:10 composition. Antique warm ivory rice paper #f8f0dc, delicate softly faded sepia ink wash, small distant Chinese walled city and pine grove only in bottom-left corner, misty mountain ridges only along bottom and far upper-right edge, a few graceful pine branches framing the upper-left and far right. About 80 percent quiet near-blank central paper, very low contrast so black/red circular skill icons and connecting lines remain legible over it. The corner trees should look hand-engraved and atmospheric but nearly translucent. Subtle fibers, restrained authentic ink hatching. Absolutely no text, no characters, no cards, no circles, no arrows, no UI, no icons, no frames, no rectangular panel divisions, no logos. Output landscape image."
+    },
+    {
+      "file": "res://assets/art_v13/district_market.png",
+      "pixels": [
+        1473,
+        1068
+      ],
+      "use": "坊市首轮，保留用于迭代对照，运行时不用",
+      "prompt": "Use case: historical-scene / stylized-concept. Asset type: one game-ready district ground texture for a Three Kingdoms hand-slapping card game, opaque landscape about 18:13. Input image 1 is the current full-city illustration, STYLE reference only; input image 2 is the game's antique printed skill-tree STYLE reference only. Do NOT copy their UI, labels or cards. Primary request: paint a beautifully legible ancient Chinese MARKET WARD viewed from high near-top-down orthographic view, not an enclosed whole city and not a poster. This is one walkable urban district, its illustration fills a rectangular world tile. Warm pale limestone square and mellow ochre packed earth form a broad quiet continuous playable central court. Elegant thin black/sepia woodcut ink contours, small muted vermilion details, dark indigo roof tiles, dusty jade foliage, restrained warm daylight and soft architectural shadows, nostalgic hand-printed book pigments. Detailed but lower-contrast ground so foreground portrait cards will be most readable. Arrange a few wooden shop eaves and closed cloth market stalls only in the far top-right and lower-left corners, one ginkgo and stacked baskets at extreme edges. At least 70% of image remains open uncluttered ground; x16%-84%, y18%-85% is clear. Quiet broad worn stone routes exit at the midpoint of all four edges so adjacent districts can connect; edge exits must NOT be blocked. Ground has gentle irregular pavers, grass seams, a few rubbed circular marks, subtle texture without repetitive swirls. Crisp near-view detail, not a blurry miniaturized full map. No enclosing outer city wall, no hard border, no rectangular region outline, no grid, no labels, no text, no letters, no numbers, no UI, no cards, no people or units, no coins or treasure objects. No photorealistic or 3D render. Output one richly crafted but spacious game background."
+    },
+    {
+      "file": "res://assets/art_v13/district_market_v2.png",
+      "pixels": [
+        1472,
+        1068
+      ],
+      "use": "坊市第二轮，运行采用",
+      "prompt": "Use case: precise-object-edit. Input image1 is the EDIT TARGET: a game-ready ancient Chinese market ward ground texture. Change ONLY the broad playable ground surface to improve visual quiet and foreground card contrast. Keep exact canvas composition, buildings, stalls, roofs, foliage, roads, scale, viewpoint, color harmony and corner placement unchanged. Remove the repetitive decorative swirls and scribbled patterns across all tan open-ground areas. Replace them with calm subtly worn PALE SANDSTONE and compacted ivory-beige earth, very low contrast, fine sparse scuff marks and a few small irregular paver clusters; reduce central ground contrast about25%. Keep edge architecture crisp. Preserve the four stone-road exits and central crossing. The result should be refined clear card-game ground rather than noisy wallpaper. Keep warm printed-book woodcut illustration style, opaque image, no text, no labels, no UI, no cards, no people or units, no border."
+    },
+    {
+      "file": "res://assets/art_v13/district_garrison.png",
+      "pixels": [
+        1472,
+        1068
+      ],
+      "use": "军营分区，运行采用",
+      "prompt": "Use case: historical-scene / stylized-concept. Asset type: one game-ready GARRISON COURT district ground texture, opaque landscape 18:13. Input image 1 is a STYLE AND SCALE reference of the adjacent market ward; create a DIFFERENT district with identical ink-weight, warm ivory/ochre palette, roof scale, high near-top-down orthographic view and edge-road alignment. This is one district tile, not a whole enclosed city. Broad pale worn flagstone training court centered on a faint circular stone military motif, a few finely engraved paver cracks, muted sand and thin moss at edges. Strong dark-slate ancient Chinese military lodge eaves only at top-left corner and far lower-right, a few racks of spears, two restrained vermilion pennants and military tent awnings at extreme edge corners. No people. At least 70% clear playable ground; x16%-84%, y18%-85% clear so cards can be placed there. Broad muted stone roads connect midpoint of all 4 edges at the same positions as image1. Calm atmospheric printed-book color with confident crisp black/sepia woodcut ink contours, pale ground, muted jade foliage and soft short shadows. Central ground lower-contrast than cards and roof corners. No enclosing wall, no fort boundary around tile, no map outline, no UI, no cards, no letters, no Chinese text, no labels, no numbers, no icons, no circles of UI, no photorealism or 3D. Render one premium ancient city district background, texture fully fills canvas."
+    },
+    {
+      "file": "res://assets/art_v13/district_garden.png",
+      "pixels": [
+        1473,
+        1068
+      ],
+      "use": "园林分区，运行采用",
+      "prompt": "Use case: historical-scene / stylized-concept. Asset type: one game-ready GARDEN WARD ground texture for a Three Kingdoms hand-slapping card game, opaque landscape 18:13. Input image1 is adjacent market ward STYLE AND SCALE reference, NOT an edit target. Create a different garden district with identical crisp sepia woodcut lineweight, muted old-book pigments, dark indigo roofs, and high near-top-down orthographic camera. The playable center is a spacious PALE GRAY-BEIGE FLAGSTONE TERRACE, with large irregular quiet stone slabs and a little moss in seams, not dense tan dirt patterns. Midpoints of all 4 edges have the same broad stone paths as reference, connecting to a broad open central terrace. Far top-left corner: a small jade-green lotus pond, rocks, and a low pavilion roof; far bottom-right corner: a curved stone bridge over a narrow teal stream and willow. Remaining edge corners sparse trees and short ancient garden eaves. Everything decorative stays at edge corners, x16%-84% and y18%-85% remain unobstructed low-contrast flat ground. At least70% playable open space. Fine confident hand-printed Chinese ink contours, soft short shadows, subdued warm afternoon light, pale airy color, premium boardgame illustration. A playable court, not a scenic landscape with a horizon. No enclosing city wall, no region border, no grid, no UI, no text, no cards, no people, no letters, no numbers, no modern objects. Avoid dense repeating swirls or artificial scribbles. Output one district texture."
+    }
+  ],
+  "notes": [
+    "Art only; nine existing skills, skill-point cost and all zone geometry are unchanged.",
+    "District illustrations repeat across existing zones; these are three district types, not 21 unique city maps.",
+    "The original city artwork remains only underneath district tiles to fill outer, non-combat space."
+  ]
+}

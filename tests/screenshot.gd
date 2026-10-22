@@ -51,7 +51,6 @@ func _ready() -> void:
 	var upgrade_scroll := 0
 	var camera_zoom := -1.0
 	var camera_target := Vector2(-1, -1)
-	var minimap_collapsed := false
 	var minimap_gui_demo := false
 	var aim_card := -1
 	var radius_level := -1
@@ -59,14 +58,17 @@ func _ready() -> void:
 	var area_click := false
 	var outcome := ""
 	var build_demo := false
+	var female_demo := false
 	var building_combo := false
 	var fusion_demo := false
 	var no_story := false
 	for a in OS.get_cmdline_user_args():
-		if a == "--minimap-gui-demo":
+		if a == "--female-demo":
+			female_demo = true
+			open_home = true
+			section = "deck"
+		elif a == "--minimap-gui-demo":
 			minimap_gui_demo = true
-		elif a == "--minimap-collapsed":
-			minimap_collapsed = true
 		elif a.begins_with("--camera-target="):
 			var coords := a.substr(16).split(",")
 			if coords.size() == 2: camera_target = Vector2(float(coords[0]), float(coords[1]))
@@ -186,6 +188,7 @@ func _ready() -> void:
 	if mid or ((open_home or open_city) and not fresh):
 		# 中期存档：前 4 处已克服（城建解锁）、升级树点了一截、上阵 5 张、装备槽 2 格
 		GameState.new_game()
+		GameState.retreat()
 		GameState.runs = 37
 		GameState.up["stamina"] = 9
 		GameState.up["power"] = 4
@@ -200,6 +203,8 @@ func _ready() -> void:
 			GameState.region_state[int(r["idx"])] = "locked"
 		for i in [1, 2, 3, 4]:
 			GameState.region_state[i] = "cleared"
+			GameState.cleared_zones[i] = range(GameState.zone_count(i))
+			GameState.table_wins[i] = GameState.zone_count(i)
 		GameState.region_state[5] = "available"
 		GameState._recompute_bonus()
 
@@ -292,7 +297,7 @@ func _ready() -> void:
 			GameState.building_refined.clear()
 			for building in GameData.buildings:
 				GameState.owned[str(building["id"])] = 4
-			for id in ["B06", "B08", "B11", "B12"]:
+			for id in ["B06", "B08", "B11", "B12", "B23", "B26"]:
 				GameState.place_building(2, id, 0)
 		GameState.gold = 4820.0
 		GameState.leave_battle()
@@ -334,6 +339,11 @@ func _ready() -> void:
 		GameState.region_state[battle_idx] = "available"
 		GameState.start_battle(battle_idx)
 	if radius_level >= 0: GameState.up["radius"] = clampi(radius_level, 0, 20)
+	if open_home or open_city or open_map:
+		GameState.retreat()
+	if female_demo:
+		for card_index in range(57, 65): GameState.owned["G%02d" % card_index] = 1
+		GameState.carry = ["G57", "G58", "G59"]
 	var inst = load(scene_path).instantiate()
 	if no_story:
 		GameState.story_seen = []
@@ -385,6 +395,7 @@ func _ready() -> void:
 
 	if pack >= 0:
 		var root1 := inst as Control
+		root1._open_shop()
 		if GameState.gold < 500.0:
 			GameState.gold = 500.0
 		root1._do_buy_pack(pack)
@@ -409,6 +420,7 @@ func _ready() -> void:
 		var root5 := inst as Control
 		root5._open_city()
 		if building_combo:
+			root5._city._on_pick(2)
 			root5._city._on_slot(2)
 			if fusion_demo:
 				root5._city._on_tab("合成")
@@ -451,7 +463,6 @@ func _ready() -> void:
 			if not await _exercise_minimap_gui(inst):
 				get_tree().quit(1)
 				return
-		if minimap_collapsed: inst._minimap.set_expanded(false)
 		if aim_card >= 0 and aim_card < inst._cards.size():
 			var card: Dictionary = inst._cards[aim_card]
 			aim = card.rest_pos + card.size * 0.5
@@ -478,6 +489,11 @@ func _ready() -> void:
 		var tb := _find_table(inst)
 		print("[dbg] root=", rootD.size, " table=", (tb.size if tb != null else Vector2.ZERO),
 			" table_pos=", (tb.global_position if tb != null else Vector2.ZERO))
+		if not menu:
+			print("[dbg] camera zoom=", rootD._camera_zoom, " pan=", rootD._camera_pan,
+				" view=", rootD._viewport_world_rect(), " target_zone=", GameState.next_zone(GameState.battle_region),
+				" first_enemy=", GameState.get_enemy_world_center(0), " pointer=", rootD._pointer_position,
+				" table_mouse=", rootD._table.get_local_mouse_position(), " focused=", rootD._window_focused)
 		print("[dbg] drawer vis/size=", rootD._drawer.visible, "/", rootD._drawer.size,
 			"  map vis/size=", rootD._map_layer.visible, "/", rootD._map_layer.size,
 			"  home vis/size=", rootD._home.visible, "/", rootD._home.size,
@@ -558,26 +574,20 @@ func _exercise_minimap_gui(main) -> bool:
 	var mini = main._minimap
 	var slaps: int = GameState.round_slaps
 	var gold: float = GameState.gold
+	var map_size: Vector2 = mini.size
+	var focus: Vector2 = main._screen_to_world(main._table.size * 0.5)
+	var no_toggle: bool = mini.find_child("ToggleMap", true, false) == null
 	var key := InputEventKey.new()
 	key.keycode = KEY_M
 	key.pressed = true
 	get_viewport().push_input(key)
 	await get_tree().process_frame
-	var collapsed: bool = not mini.expanded
-	key.pressed = false
-	get_viewport().push_input(key)
-	key.pressed = true
-	get_viewport().push_input(key)
-	await get_tree().process_frame
-	var expanded: bool = mini.expanded
+	var key_preserves_map: bool = mini.size.is_equal_approx(map_size) and main._screen_to_world(main._table.size * 0.5).distance_to(focus) < 0.1
 	key.pressed = false
 	get_viewport().push_input(key)
 	_gui_click(mini.global_position + Vector2(38, 18))
 	await get_tree().process_frame
-	var title_works: bool = not mini.expanded
-	_gui_click(mini.toggle_button.get_global_rect().get_center())
-	await get_tree().process_frame
-	var button_works: bool = mini.expanded
+	var title_preserves_map: bool = mini.size.is_equal_approx(map_size) and main._screen_to_world(main._table.size * 0.5).distance_to(focus) < 0.1
 	var destination: Vector2 = main._world_size * 0.5 + Vector2(80, 70)
 	var point: Vector2 = mini.global_position + mini.world_to_minimap(destination)
 	_gui_click(point)
@@ -592,8 +602,8 @@ func _exercise_minimap_gui(main) -> bool:
 	get_viewport().push_input(wheel)
 	await get_tree().process_frame
 	var guarded: bool = GameState.round_slaps == slaps and GameState.gold == gold and is_equal_approx(main._camera_zoom, before_zoom)
-	print("[minimap-gui] M-collapse=%s M-expand=%s title=%s button=%s navigate=%s no-slap-or-zoom=%s" % [collapsed, expanded, title_works, button_works, navigation, guarded])
-	var ok := collapsed and expanded and title_works and button_works and navigation and guarded
+	print("[minimap-gui] no-toggle=%s M-preserves-map=%s title-preserves-map=%s navigate=%s no-slap-or-zoom=%s" % [no_toggle, key_preserves_map, title_preserves_map, navigation, guarded])
+	var ok := no_toggle and key_preserves_map and title_preserves_map and navigation and guarded
 	if not ok: push_error("小地图真实GUI交互验证未通过")
 	return ok
 

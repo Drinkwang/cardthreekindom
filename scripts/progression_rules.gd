@@ -14,6 +14,9 @@ const DAMAGE_PAY := 0.45
 const KILL_PAY := 0.12
 const TABLE_BONUS := 0.20
 const CITY_BONUS := 0.25
+const STARTER_PACK_PRICE := 40
+const PACK_PITY_COUNT := 10
+const PACK_PITY_STAR := 3
 
 static func apply(cards: Array, regions: Array) -> void:
 	for c in cards:
