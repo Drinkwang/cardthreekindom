@@ -186,6 +186,7 @@ func _test_camera_and_map(main) -> void:
 	var anchor: Vector2 = main._table.size * 0.5
 	var world_anchor: Vector2 = main._screen_to_world(anchor)
 	var initial_view: Rect2 = world_view(main)
+	check(is_equal_approx(main._camera_zoom, 6.0) and main._zoom_label.text == "0%", "开局使用实际倍率6并显示默认0%")
 	check(initial_view.size.x < main._world_size.x and initial_view.size.y < main._world_size.y, "默认镜头只看部分城池，需要探索屏幕外区域")
 	var outside := 0
 	for point in centres(main):
@@ -221,7 +222,7 @@ func _test_camera_and_map(main) -> void:
 		check(clamped.position.x >= -0.02 and clamped.position.y >= -0.02 and clamped.end.x <= main._world_size.x + 0.02 and clamped.end.y <= main._world_size.y + 0.02, "镜头平移到极限也不越出城池")
 	main._reset_camera()
 	await frames()
-	check(is_equal_approx(main._camera_zoom, 4.0) and main._zoom_label.text == "0%", "回目标区恢复原400%视野并标为0%")
+	check(is_equal_approx(main._camera_zoom, 6.0) and main._zoom_label.text == "0%", "回目标区恢复实际倍率6并显示默认0%")
 	check(approximate_rect(world_view(main), initial_view), "回目标区同时恢复开局城区位置")
 	map_matches_scene(main, "恢复默认后")
 

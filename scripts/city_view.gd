@@ -1,6 +1,7 @@
 extends Control
 class_name PaanCity
 const Art = preload("res://scripts/ui/print_art.gd")
+const UISkin = preload("res://scripts/ui/ui_skin.gd")
 const Traits = preload("res://scripts/building_traits.gd")
 signal closed()
 signal request_home()
@@ -106,8 +107,11 @@ func _build() -> void:
 	for side in ["left", "right", "top", "bottom"]:
 		outer.add_theme_constant_override("margin_" + side, 16)
 	add_child(outer)
-	var frame := _panel(10)
+	var frame := PanelContainer.new()
+	frame.name = "BaseShellFrame"
+	frame.add_theme_stylebox_override("panel", UISkin.lacquer_panel(10))
 	outer.add_child(frame)
+	UISkin.chrome(frame, "lacquer")
 	var page := _column()
 	page.add_theme_constant_override("separation", 8)
 	frame.add_child(page)
@@ -177,38 +181,46 @@ func _build() -> void:
 	_side_box = HBoxContainer.new()
 	_side_box.add_theme_constant_override("separation", 9)
 	_side_scroll.add_child(_side_box)
-	var result := _panel(12)
+	var result := PanelContainer.new()
 	result.name = "BaseOutcome"
+	result.add_theme_stylebox_override("panel", UISkin.lacquer_panel(12))
 	result.custom_minimum_size.y = 68
 	page.add_child(result)
+	UISkin.chrome(result, "lacquer_footer")
 	_outcome_box = HBoxContainer.new()
 	_outcome_box.add_theme_constant_override("separation", 12)
 	result.add_child(_outcome_box)
 
 func _build_top() -> Control:
+	var header := PanelContainer.new()
+	header.name = "BaseShellHeader"
+	header.add_theme_stylebox_override("panel", UISkin.lacquer_panel(0, 0))
+	UISkin.chrome(header, "lacquer")
 	var row := HBoxContainer.new()
 	row.custom_minimum_size.y = 60
 	row.add_theme_constant_override("separation", 12)
-	row.add_child(Art.stamp("城", Vector2(43, 48)))
+	header.add_child(row)
+	row.add_child(UISkin.lacquer_stamp("城", Vector2(43, 48)))
 	var title := _column()
-	_title = _label("基建 · 建筑构筑", 34)
+	_title = _label("基建 · 建筑构筑", 34, UISkin.LACQUER_TEXT)
 	title.add_child(_title)
-	title.add_child(_label("装配建筑组合，辅助手动拍击", 12, DIM))
+	title.add_child(_label("装配建筑组合，辅助手动拍击", 12, UISkin.LACQUER_MUTED))
 	row.add_child(title)
 	_list_box = _column()
 	_list_box.name = "CityBook"
 	_list_box.custom_minimum_size.x = 172
 	_list_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	row.add_child(_list_box)
-	_stats = _label("", 15, INK2)
+	_stats = _label("", 15, UISkin.LACQUER_MUTED)
 	row.add_child(_stats)
 	var back := Button.new()
 	back.name = "BaseReturnToCamp"
 	back.text = "← 返回大本营"
 	back.custom_minimum_size = Vector2(159, 44)
+	UISkin.lacquer_button(back)
 	back.pressed.connect(func(): request_home.emit())
 	row.add_child(back)
-	return row
+	return header
 
 func refresh() -> void:
 	if _detail_box == null:
@@ -269,6 +281,8 @@ func _fill_list() -> void:
 	_city_picker = OptionButton.new()
 	_city_picker.name = "CitySelector"
 	_city_picker.custom_minimum_size.y = 34
+	_city_picker.add_theme_font_size_override("font_size", 14)
+	UISkin.lacquer_button(_city_picker)
 	for region in _cleared_regions():
 		var idx := int(region["idx"])
 		_city_picker.add_item("%s · 已征服%d区" % [str(region.get("name", "?")), GameState.table_progress(idx)], idx)
@@ -548,11 +562,11 @@ func _fill_outcome() -> void:
 		detail = "收获 %s 金币　·　%d 次拍击　·　清桌 %d 次" % [GameState.fmt(float(result.get("gold", 0))), int(result.get("slaps", 0)), int(result.get("tables_flipped", 0))]
 		primary_text = "继续未清分区" if GameState.region_status(idx) == "available" else "选择下一座城"
 		primary = _on_deploy.bind(idx)
-	_outcome_box.add_child(Art.stamp(mark, Vector2(43, 52)))
+	_outcome_box.add_child(UISkin.lacquer_stamp(mark, Vector2(43, 52)))
 	var words := _column()
 	words.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	words.add_child(_label(headline, 28))
-	_foot = _wrapped(detail, 13, INK2)
+	words.add_child(_label(headline, 28, UISkin.LACQUER_TEXT))
+	_foot = _wrapped(detail, 13, UISkin.LACQUER_MUTED)
 	words.add_child(_foot)
 	_outcome_box.add_child(words)
 	var action := Button.new()
@@ -562,10 +576,7 @@ func _fill_outcome() -> void:
 	action.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	action.add_theme_font_override("font", Art.title_font())
 	action.add_theme_font_size_override("font_size", 22)
-	for state in ["normal", "hover", "pressed"]:
-		action.add_theme_stylebox_override(state, Art.panel(Art.RED, 12, Art.RED, 1))
-	for state in ["font_color", "font_hover_color", "font_pressed_color"]:
-		action.add_theme_color_override(state, Art.PAPER_LIGHT)
+	UISkin.lacquer_button(action, true)
 	action.pressed.connect(primary)
 	_outcome_box.add_child(action)
 	if secondary.is_valid():
@@ -576,6 +587,7 @@ func _fill_outcome() -> void:
 		other.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 		other.add_theme_font_override("font", Art.title_font())
 		other.add_theme_font_size_override("font_size", 21)
+		UISkin.lacquer_button(other)
 		other.pressed.connect(secondary)
 		_outcome_box.add_child(other)
 

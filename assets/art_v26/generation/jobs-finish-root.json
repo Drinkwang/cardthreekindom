@@ -1,0 +1,112 @@
+{
+  "created": "2026-10-23",
+  "tool": "built-in image_gen",
+  "note": "city11 and city21 are square replacements for intermediate wide reference copies; original approved references stay unchanged",
+  "jobs": [
+    {
+      "name": "city_11",
+      "city": 11,
+      "kind": "scene",
+      "replace_intermediate": true,
+      "prompt": "Create ONE square finished terrain background for a premium AA-quality Three Kingdoms card-strategy game. Exceptionally crisp refined semi-realistic hand-painted 2.5D art, coherent material scale and believable matte stone/soil/wood/foliage, controlled contact shadows and soft sunlight; no watercolor blur, plastic toy look, haze, bloom, or depth of field. True steep overhead ORTHOGRAPHIC map view, no sky or horizon. Central 80% of the whole canvas is OPEN, EMPTY, CONTINUOUS FLAT GROUND traversable in all four directions. All scenic elements frame only the narrow outer 10% fringe; do not place obstacles or shadows across the center. Ground is detailed but calm and low-contrast for readable foreground cards, not giant repeated diamonds or a checkerboard. No bridge, river, pond, waterway, staircases, elevation change, central monument, dividing wall, people, cards, UI, text, icons, logo or watermark. This is ONE continuous city ground, not districts, panels or a collection of tiles.\nUnique city art direction: 沅陵, 青石竹庭. Ground: calm warm-gray blue slate in finely fitted smaller slabs with restrained pale mineral veins. Peripheral framing: elegant bamboo clusters, cropped charcoal-blue ceramic eaves, a few small natural stones and low foliage confined to the extreme edge. Refined palette compatible with cream parchment, aged gold and vermilion UI."
+    },
+    {
+      "name": "city_15",
+      "city": 15,
+      "kind": "scene",
+      "replace_intermediate": false,
+      "prompt": "Create ONE square finished terrain background for a premium AA-quality Three Kingdoms card-strategy game. Exceptionally crisp refined semi-realistic hand-painted 2.5D art, coherent material scale and believable matte stone/soil/wood/foliage, controlled contact shadows and soft sunlight; no watercolor blur, plastic toy look, haze, bloom, or depth of field. True steep overhead ORTHOGRAPHIC map view, no sky or horizon. Central 80% of the whole canvas is OPEN, EMPTY, CONTINUOUS FLAT GROUND traversable in all four directions. All scenic elements frame only the narrow outer 10% fringe; do not place obstacles or shadows across the center. Ground is detailed but calm and low-contrast for readable foreground cards, not giant repeated diamonds or a checkerboard. No bridge, river, pond, waterway, staircases, elevation change, central monument, dividing wall, people, cards, UI, text, icons, logo or watermark. This is ONE continuous city ground, not districts, panels or a collection of tiles.\nUnique city art direction: 攸县, 麦色土坪. Ground: smooth wheat-colored compacted earth, fine dry mineral grains, tiny embedded flat stones and restrained natural wear, no tracks. Peripheral framing: dry wheat grasses, small shrubs and cropped warm-timber farmstead corners strictly at the perimeter. Refined palette compatible with cream parchment, aged gold and vermilion UI."
+    },
+    {
+      "name": "ground_15",
+      "city": 15,
+      "kind": "detail",
+      "replace_intermediate": false,
+      "prompt": "Create ONE square native-resolution seamless REPEATABLE CLOSE-UP GROUND MATERIAL for a premium AA-quality Three Kingdoms card-strategy game. True vertical overhead orthographic view of ONLY the ground itself, no scene framing. Finely resolved natural micro-grain, restrained wear and very delicate material contrast; beautiful semi-realistic hand-painted material with physically convincing matte roughness, not watercolor blur or photographic dirt noise. Uniform diffuse lighting across every edge, no light gradient or cast shadows. Modest small-to-medium features, no enormous paving slabs. Design horizontal and vertical edges to join seamlessly: paving courses and stone joints must continue through opposite edges. No buildings, roofs, foliage, props, footsteps, deep cracks, channels, borders, labels, UI, cards, people, symbols, watermark, perspective, lens blur or central motifs. It must read as an unobstructed flat walkable surface.\nUnique material for 攸县, 麦色土坪: smooth wheat-colored compacted earth, fine dry mineral grains, tiny embedded flat stones and restrained natural wear, no tracks. No peripheral scenery at all. Use a distinctive natural material layout that feels different from other city textures, with excellent close-up clarity and minimal repetitive motifs."
+    },
+    {
+      "name": "city_16",
+      "city": 16,
+      "kind": "scene",
+      "replace_intermediate": false,
+      "prompt": "Create ONE square finished terrain background for a premium AA-quality Three Kingdoms card-strategy game. Exceptionally crisp refined semi-realistic hand-painted 2.5D art, coherent material scale and believable matte stone/soil/wood/foliage, controlled contact shadows and soft sunlight; no watercolor blur, plastic toy look, haze, bloom, or depth of field. True steep overhead ORTHOGRAPHIC map view, no sky or horizon. Central 80% of the whole canvas is OPEN, EMPTY, CONTINUOUS FLAT GROUND traversable in all four directions. All scenic elements frame only the narrow outer 10% fringe; do not place obstacles or shadows across the center. Ground is detailed but calm and low-contrast for readable foreground cards, not giant repeated diamonds or a checkerboard. No bridge, river, pond, waterway, staircases, elevation change, central monument, dividing wall, people, cards, UI, text, icons, logo or watermark. This is ONE continuous city ground, not districts, panels or a collection of tiles.\nUnique city art direction: 临湘, 桂荫暖石. Ground: warm pale limestone in small subtly irregular rectangular slabs with tight fine joints and delicate ivory grain. Peripheral framing: small osmanthus canopies, a few tiny pale flowers, dark timber courtyard corners and blue ceramic eaves strictly at the perimeter. Refined palette compatible with cream parchment, aged gold and vermilion UI."
+    },
+    {
+      "name": "ground_16",
+      "city": 16,
+      "kind": "detail",
+      "replace_intermediate": false,
+      "prompt": "Create ONE square native-resolution seamless REPEATABLE CLOSE-UP GROUND MATERIAL for a premium AA-quality Three Kingdoms card-strategy game. True vertical overhead orthographic view of ONLY the ground itself, no scene framing. Finely resolved natural micro-grain, restrained wear and very delicate material contrast; beautiful semi-realistic hand-painted material with physically convincing matte roughness, not watercolor blur or photographic dirt noise. Uniform diffuse lighting across every edge, no light gradient or cast shadows. Modest small-to-medium features, no enormous paving slabs. Design horizontal and vertical edges to join seamlessly: paving courses and stone joints must continue through opposite edges. No buildings, roofs, foliage, props, footsteps, deep cracks, channels, borders, labels, UI, cards, people, symbols, watermark, perspective, lens blur or central motifs. It must read as an unobstructed flat walkable surface.\nUnique material for 临湘, 桂荫暖石: warm pale limestone in small subtly irregular rectangular slabs with tight fine joints and delicate ivory grain. No peripheral scenery at all. Use a distinctive natural material layout that feels different from other city textures, with excellent close-up clarity and minimal repetitive motifs."
+    },
+    {
+      "name": "city_17",
+      "city": 17,
+      "kind": "scene",
+      "replace_intermediate": false,
+      "prompt": "Create ONE square finished terrain background for a premium AA-quality Three Kingdoms card-strategy game. Exceptionally crisp refined semi-realistic hand-painted 2.5D art, coherent material scale and believable matte stone/soil/wood/foliage, controlled contact shadows and soft sunlight; no watercolor blur, plastic toy look, haze, bloom, or depth of field. True steep overhead ORTHOGRAPHIC map view, no sky or horizon. Central 80% of the whole canvas is OPEN, EMPTY, CONTINUOUS FLAT GROUND traversable in all four directions. All scenic elements frame only the narrow outer 10% fringe; do not place obstacles or shadows across the center. Ground is detailed but calm and low-contrast for readable foreground cards, not giant repeated diamonds or a checkerboard. No bridge, river, pond, waterway, staircases, elevation change, central monument, dividing wall, people, cards, UI, text, icons, logo or watermark. This is ONE continuous city ground, not districts, panels or a collection of tiles.\nUnique city art direction: 耒阳, 草影青石. Ground: muted charcoal-blue slate, small offset rectangular paving, extremely subtle mineral veins and dry matte wear. Peripheral framing: graceful grassy clumps, restrained gray masonry and cropped blue tiled eaves only on the extreme edge. Refined palette compatible with cream parchment, aged gold and vermilion UI."
+    },
+    {
+      "name": "ground_17",
+      "city": 17,
+      "kind": "detail",
+      "replace_intermediate": false,
+      "prompt": "Create ONE square native-resolution seamless REPEATABLE CLOSE-UP GROUND MATERIAL for a premium AA-quality Three Kingdoms card-strategy game. True vertical overhead orthographic view of ONLY the ground itself, no scene framing. Finely resolved natural micro-grain, restrained wear and very delicate material contrast; beautiful semi-realistic hand-painted material with physically convincing matte roughness, not watercolor blur or photographic dirt noise. Uniform diffuse lighting across every edge, no light gradient or cast shadows. Modest small-to-medium features, no enormous paving slabs. Design horizontal and vertical edges to join seamlessly: paving courses and stone joints must continue through opposite edges. No buildings, roofs, foliage, props, footsteps, deep cracks, channels, borders, labels, UI, cards, people, symbols, watermark, perspective, lens blur or central motifs. It must read as an unobstructed flat walkable surface.\nUnique material for 耒阳, 草影青石: muted charcoal-blue slate, small offset rectangular paving, extremely subtle mineral veins and dry matte wear. No peripheral scenery at all. Use a distinctive natural material layout that feels different from other city textures, with excellent close-up clarity and minimal repetitive motifs."
+    },
+    {
+      "name": "city_18",
+      "city": 18,
+      "kind": "scene",
+      "replace_intermediate": false,
+      "prompt": "Create ONE square finished terrain background for a premium AA-quality Three Kingdoms card-strategy game. Exceptionally crisp refined semi-realistic hand-painted 2.5D art, coherent material scale and believable matte stone/soil/wood/foliage, controlled contact shadows and soft sunlight; no watercolor blur, plastic toy look, haze, bloom, or depth of field. True steep overhead ORTHOGRAPHIC map view, no sky or horizon. Central 80% of the whole canvas is OPEN, EMPTY, CONTINUOUS FLAT GROUND traversable in all four directions. All scenic elements frame only the narrow outer 10% fringe; do not place obstacles or shadows across the center. Ground is detailed but calm and low-contrast for readable foreground cards, not giant repeated diamonds or a checkerboard. No bridge, river, pond, waterway, staircases, elevation change, central monument, dividing wall, people, cards, UI, text, icons, logo or watermark. This is ONE continuous city ground, not districts, panels or a collection of tiles.\nUnique city art direction: 郴县, 樟荫赤土. Ground: smooth reddish ochre compacted sandy earth, refined fine mineral freckles and subtle worn variation, no ruts or obstacles. Peripheral framing: camphor foliage, a few ferns and cropped warm timber courtyard corners only on the extreme edge. Refined palette compatible with cream parchment, aged gold and vermilion UI."
+    },
+    {
+      "name": "ground_18",
+      "city": 18,
+      "kind": "detail",
+      "replace_intermediate": false,
+      "prompt": "Create ONE square native-resolution seamless REPEATABLE CLOSE-UP GROUND MATERIAL for a premium AA-quality Three Kingdoms card-strategy game. True vertical overhead orthographic view of ONLY the ground itself, no scene framing. Finely resolved natural micro-grain, restrained wear and very delicate material contrast; beautiful semi-realistic hand-painted material with physically convincing matte roughness, not watercolor blur or photographic dirt noise. Uniform diffuse lighting across every edge, no light gradient or cast shadows. Modest small-to-medium features, no enormous paving slabs. Design horizontal and vertical edges to join seamlessly: paving courses and stone joints must continue through opposite edges. No buildings, roofs, foliage, props, footsteps, deep cracks, channels, borders, labels, UI, cards, people, symbols, watermark, perspective, lens blur or central motifs. It must read as an unobstructed flat walkable surface.\nUnique material for 郴县, 樟荫赤土: smooth reddish ochre compacted sandy earth, refined fine mineral freckles and subtle worn variation, no ruts or obstacles. No peripheral scenery at all. Use a distinctive natural material layout that feels different from other city textures, with excellent close-up clarity and minimal repetitive motifs."
+    },
+    {
+      "name": "city_19",
+      "city": 19,
+      "kind": "scene",
+      "replace_intermediate": false,
+      "prompt": "Create ONE square finished terrain background for a premium AA-quality Three Kingdoms card-strategy game. Exceptionally crisp refined semi-realistic hand-painted 2.5D art, coherent material scale and believable matte stone/soil/wood/foliage, controlled contact shadows and soft sunlight; no watercolor blur, plastic toy look, haze, bloom, or depth of field. True steep overhead ORTHOGRAPHIC map view, no sky or horizon. Central 80% of the whole canvas is OPEN, EMPTY, CONTINUOUS FLAT GROUND traversable in all four directions. All scenic elements frame only the narrow outer 10% fringe; do not place obstacles or shadows across the center. Ground is detailed but calm and low-contrast for readable foreground cards, not giant repeated diamonds or a checkerboard. No bridge, river, pond, waterway, staircases, elevation change, central monument, dividing wall, people, cards, UI, text, icons, logo or watermark. This is ONE continuous city ground, not districts, panels or a collection of tiles.\nUnique city art direction: 观阳, 浅草白石. Ground: pale chalky limestone with delicate warm-gray grain, small naturally varied blocks and closely fitted irregular joints. Peripheral framing: sparse pale grasses, small shrubs, whitewashed late-Han courtyard walls and slate eaves strictly around the extreme edge. Refined palette compatible with cream parchment, aged gold and vermilion UI."
+    },
+    {
+      "name": "ground_19",
+      "city": 19,
+      "kind": "detail",
+      "replace_intermediate": false,
+      "prompt": "Create ONE square native-resolution seamless REPEATABLE CLOSE-UP GROUND MATERIAL for a premium AA-quality Three Kingdoms card-strategy game. True vertical overhead orthographic view of ONLY the ground itself, no scene framing. Finely resolved natural micro-grain, restrained wear and very delicate material contrast; beautiful semi-realistic hand-painted material with physically convincing matte roughness, not watercolor blur or photographic dirt noise. Uniform diffuse lighting across every edge, no light gradient or cast shadows. Modest small-to-medium features, no enormous paving slabs. Design horizontal and vertical edges to join seamlessly: paving courses and stone joints must continue through opposite edges. No buildings, roofs, foliage, props, footsteps, deep cracks, channels, borders, labels, UI, cards, people, symbols, watermark, perspective, lens blur or central motifs. It must read as an unobstructed flat walkable surface.\nUnique material for 观阳, 浅草白石: pale chalky limestone with delicate warm-gray grain, small naturally varied blocks and closely fitted irregular joints. No peripheral scenery at all. Use a distinctive natural material layout that feels different from other city textures, with excellent close-up clarity and minimal repetitive motifs."
+    },
+    {
+      "name": "city_20",
+      "city": 20,
+      "kind": "scene",
+      "replace_intermediate": false,
+      "prompt": "Create ONE square finished terrain background for a premium AA-quality Three Kingdoms card-strategy game. Exceptionally crisp refined semi-realistic hand-painted 2.5D art, coherent material scale and believable matte stone/soil/wood/foliage, controlled contact shadows and soft sunlight; no watercolor blur, plastic toy look, haze, bloom, or depth of field. True steep overhead ORTHOGRAPHIC map view, no sky or horizon. Central 80% of the whole canvas is OPEN, EMPTY, CONTINUOUS FLAT GROUND traversable in all four directions. All scenic elements frame only the narrow outer 10% fringe; do not place obstacles or shadows across the center. Ground is detailed but calm and low-contrast for readable foreground cards, not giant repeated diamonds or a checkerboard. No bridge, river, pond, waterway, staircases, elevation change, central monument, dividing wall, people, cards, UI, text, icons, logo or watermark. This is ONE continuous city ground, not districts, panels or a collection of tiles.\nUnique city art direction: 泉陵, 蕨影青石. Ground: subdued jade-gray fine stone paving, smaller offset fitted flagstones with restrained soft wear and tiny joint moss, dry matte finish. Peripheral framing: delicate ferns, isolated small rock formations, cropped dark tiled timber eaves strictly at the outer fringe. Refined palette compatible with cream parchment, aged gold and vermilion UI."
+    },
+    {
+      "name": "ground_20",
+      "city": 20,
+      "kind": "detail",
+      "replace_intermediate": false,
+      "prompt": "Create ONE square native-resolution seamless REPEATABLE CLOSE-UP GROUND MATERIAL for a premium AA-quality Three Kingdoms card-strategy game. True vertical overhead orthographic view of ONLY the ground itself, no scene framing. Finely resolved natural micro-grain, restrained wear and very delicate material contrast; beautiful semi-realistic hand-painted material with physically convincing matte roughness, not watercolor blur or photographic dirt noise. Uniform diffuse lighting across every edge, no light gradient or cast shadows. Modest small-to-medium features, no enormous paving slabs. Design horizontal and vertical edges to join seamlessly: paving courses and stone joints must continue through opposite edges. No buildings, roofs, foliage, props, footsteps, deep cracks, channels, borders, labels, UI, cards, people, symbols, watermark, perspective, lens blur or central motifs. It must read as an unobstructed flat walkable surface.\nUnique material for 泉陵, 蕨影青石: subdued jade-gray fine stone paving, smaller offset fitted flagstones with restrained soft wear and tiny joint moss, dry matte finish. No peripheral scenery at all. Use a distinctive natural material layout that feels different from other city textures, with excellent close-up clarity and minimal repetitive motifs."
+    },
+    {
+      "name": "city_21",
+      "city": 21,
+      "kind": "scene",
+      "replace_intermediate": true,
+      "prompt": "Create ONE square finished terrain background for a premium AA-quality Three Kingdoms card-strategy game. Exceptionally crisp refined semi-realistic hand-painted 2.5D art, coherent material scale and believable matte stone/soil/wood/foliage, controlled contact shadows and soft sunlight; no watercolor blur, plastic toy look, haze, bloom, or depth of field. True steep overhead ORTHOGRAPHIC map view, no sky or horizon. Central 80% of the whole canvas is OPEN, EMPTY, CONTINUOUS FLAT GROUND traversable in all four directions. All scenic elements frame only the narrow outer 10% fringe; do not place obstacles or shadows across the center. Ground is detailed but calm and low-contrast for readable foreground cards, not giant repeated diamonds or a checkerboard. No bridge, river, pond, waterway, staircases, elevation change, central monument, dividing wall, people, cards, UI, text, icons, logo or watermark. This is ONE continuous city ground, not districts, panels or a collection of tiles.\nUnique city art direction: 江陵, 松影汉庭. Ground: warm light-gray refined limestone courtyard paving, smaller precise slabs, fine chisel-cut grain and restrained edge wear. Peripheral framing: small pine canopies, imposing late-Han gray masonry corners, bronze lamps and dark timber gateposts only on the extreme outer fringe. Refined palette compatible with cream parchment, aged gold and vermilion UI."
+    },
+    {
+      "name": "ground_21",
+      "city": 21,
+      "kind": "detail",
+      "replace_intermediate": false,
+      "prompt": "Create ONE square native-resolution seamless REPEATABLE CLOSE-UP GROUND MATERIAL for a premium AA-quality Three Kingdoms card-strategy game. True vertical overhead orthographic view of ONLY the ground itself, no scene framing. Finely resolved natural micro-grain, restrained wear and very delicate material contrast; beautiful semi-realistic hand-painted material with physically convincing matte roughness, not watercolor blur or photographic dirt noise. Uniform diffuse lighting across every edge, no light gradient or cast shadows. Modest small-to-medium features, no enormous paving slabs. Design horizontal and vertical edges to join seamlessly: paving courses and stone joints must continue through opposite edges. No buildings, roofs, foliage, props, footsteps, deep cracks, channels, borders, labels, UI, cards, people, symbols, watermark, perspective, lens blur or central motifs. It must read as an unobstructed flat walkable surface.\nUnique material for 江陵, 松影汉庭: warm light-gray refined limestone courtyard paving, smaller precise slabs, fine chisel-cut grain and restrained edge wear. No peripheral scenery at all. Use a distinctive natural material layout that feels different from other city textures, with excellent close-up clarity and minimal repetitive motifs."
+    }
+  ]
+}

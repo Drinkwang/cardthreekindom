@@ -255,12 +255,14 @@ func _test_default_camera() -> void:
 	var anchor: Vector2 = main._table.size * 0.5
 	var initial_pan: Vector2 = main._camera_pan
 	var initial_world: Vector2 = main._screen_to_world(anchor)
-	check(is_equal_approx(main._camera_zoom, 4.0) and main._zoom_label.text == "0%", "原400%实际开局视野现在标为默认0%")
-	for pair in [[5.0, "+25%"], [2.0, "-50%"], [4.0, "0%"]]:
+	check(is_equal_approx(main._camera_zoom, 6.0) and main._zoom_label.text == "0%", "原+50%实际倍率6现在作为开局默认0%")
+	var expected_scale := minf(main._table.size.x / main._world_size.x, main._table.size.y / main._world_size.y) * 6.0
+	check(is_equal_approx(main._camera_scale, expected_scale) and main._viewport_world_rect().size.distance_to(main._table.size / expected_scale) < 0.02, "默认0%使用实际倍率6的摄像机比例和世界视野")
+	for pair in [[7.5, "+25%"], [3.0, "-50%"], [6.0, "0%"], [4.0, "-33%"]]:
 		main._set_camera_zoom(float(pair[0]), anchor)
 		check(is_equal_approx(main._camera_zoom, float(pair[0])) and main._zoom_label.text == str(pair[1]), "镜头相对默认比例显示" + str(pair[1]))
 	main._set_camera_zoom(100.0, anchor)
-	check(is_equal_approx(main._camera_zoom, 8.0) and main._zoom_label.text == "+100%", "默认0%之后仍可继续放大到+100%")
+	check(is_equal_approx(main._camera_zoom, 8.0) and main._zoom_label.text == "+33%", "实际放大上限仍为8，相对新默认显示+33%")
 	main._set_camera_zoom(0.01, anchor)
 	check(is_equal_approx(main._camera_zoom, 0.65), "保留原有全城缩小下限")
 	var reset: Button
@@ -269,7 +271,7 @@ func _test_default_camera() -> void:
 	check(reset != null, "镜头工具栏有回目标区按钮")
 	if reset != null:
 		await press(reset)
-		check(is_equal_approx(main._camera_zoom, 4.0) and main._zoom_label.text == "0%", "真实回目标区按钮恢复0%倍率")
+		check(is_equal_approx(main._camera_zoom, 6.0) and main._zoom_label.text == "0%", "真实回目标区按钮恢复实际倍率6并显示0%")
 		check(main._camera_pan.is_equal_approx(initial_pan) and main._screen_to_world(anchor).distance_to(initial_world) < 0.02, "真实回目标区按钮恢复与初次进入完全相同的城区位置")
 	main.queue_free()
 	await frames()

@@ -1,0 +1,33 @@
+{
+  "recorded_on": "2026-10-23",
+  "tool": "built-in image_gen",
+  "artifact_type": "UI concept references, not runtime screenshots",
+  "runtime_ui_modified": false,
+  "native_size": [1672, 941],
+  "full_original_prompts_available": false,
+  "provenance_note": "The original complete prompts were not recovered. Style directions below are retrospective descriptions, not verbatim generation prompts.",
+  "referenced_files": [
+    "docs/shots/zoom-v24/city-01-720-default.png",
+    "docs/art-direction/aa-terrain-v25/01-xinye-warm-stone.png"
+  ],
+  "outputs": [
+    {
+      "file": "01-paper-ink.png",
+      "direction": "A: warm parchment, fine gold borders, vermilion accents and pale ink landscape",
+      "original": "/Users/arthurwang/.codex/generated_images/01a148ad-f3ee-7241-b34a-f88e50a4b09d/exec-f3bc28a1-14c2-4e33-9187-562c612f8234.png",
+      "sha256": "cdbda37238dd46f6d0545c3096ec1af18d379904b3d7991f712f647be6a44ab8"
+    },
+    {
+      "file": "02-lacquer-gold.png",
+      "direction": "B: charcoal wood lacquer, warm gold framing and ivory text",
+      "original": "/Users/arthurwang/.codex/generated_images/01a148ad-f3ee-7241-b34a-f88e50a4b09d/exec-951cc441-2408-40e4-8a1d-342300129f57.png",
+      "sha256": "abc08cde013468ac165a8ffdadd6ddaf13fcb75f4157c49233e95c216eaf9f1a"
+    },
+    {
+      "file": "03-silk-landscape.png",
+      "direction": "C: pale ivory silk, quiet mountain wash and pine branches",
+      "original": "/Users/arthurwang/.codex/generated_images/01a148ad-f3ee-7241-b34a-f88e50a4b09d/exec-6d022406-9783-4e26-97f3-d17fab08113d.png",
+      "sha256": "1f03c2ea1ff62b3931939dbbe3cb7a43e3d938b8b70a5a745e0e775a58d3322c"
+    }
+  ]
+}

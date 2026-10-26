@@ -5,6 +5,7 @@ const SlapCursor = preload("res://scripts/ui/slap_cursor.gd")
 const CityMinimap = preload("res://scripts/ui/city_minimap.gd")
 const MapEventLayer = preload("res://scripts/ui/map_event_layer.gd")
 const DistrictArt = preload("res://scripts/ui/district_art.gd")
+const CityTerrainView = preload("res://scripts/ui/city_terrain_view.gd")
 const SlapFeedback = preload("res://scripts/ui/slap_feedback.gd")
 const UISkin = preload("res://scripts/ui/ui_skin.gd")
 ## 《拍案三国》单界面 —— 限时拍击、赚钱与长期升级。
@@ -65,13 +66,14 @@ const PAPER := Color(0.933, 0.894, 0.796)
 # ---------- 桌面 ----------
 var _table: Control
 const WORLD_SIZE := Vector2(2400, 1500)
-const DEFAULT_ZOOM := 4.0
+const DEFAULT_ZOOM := 6.0
 const ZOOM_MIN := 0.65
 const ZOOM_MAX := 8.0
 const EDGE_PAN_BAND := 16.0
 const EDGE_PAN_SPEED := 460.0
 var _world_size := WORLD_SIZE
 var _pile_layer: Control
+var _terrain_layer: Control
 var _zone_layer: Control
 var _event_layer
 var _slap_cursor: Control
@@ -345,11 +347,11 @@ func _build_topbar() -> Control:
 	var panel := PanelContainer.new()
 	panel.name = "CityHUD"
 	panel.custom_minimum_size.y = 82
-	var style := UISkin.panel(Art.PAPER_LIGHT, 12, Art.GOLD)
+	var style := UISkin.lacquer_panel(12)
 	style.content_margin_left = EDGE_PAN_BAND
 	style.content_margin_right = EDGE_PAN_BAND
 	panel.add_theme_stylebox_override("panel", style)
-	UISkin.chrome(panel, "header")
+	UISkin.chrome(panel, "lacquer_header")
 	var hb := HBoxContainer.new()
 	hb.add_theme_constant_override("separation", 6)
 	panel.add_child(hb)
@@ -361,32 +363,33 @@ func _build_topbar() -> Control:
 	brand.alignment = BoxContainer.ALIGNMENT_CENTER
 	brand.add_theme_constant_override("separation", 0)
 	masthead.add_child(brand)
-	var title := Art.label("拍案三国", 32, Art.INK)
+	var title := Art.label("拍案三国", 32, UISkin.LACQUER_TEXT)
 	title.add_theme_font_override("font", Art.title_font())
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	brand.add_child(title)
-	var sub := Art.label("拍 牌 聚 财  ·  经 营 荆 州", 10, Art.DIM)
+	var sub := Art.label("拍 牌 聚 财  ·  经 营 荆 州", 10, UISkin.LACQUER_MUTED)
 	sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	brand.add_child(sub)
-	var seal := Art.stamp("荆州", Vector2(25, 46))
+	var seal := UISkin.lacquer_stamp("荆州", Vector2(25, 46))
 	seal.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	masthead.add_child(seal)
 	hb.add_child(masthead)
 	var place_frame := PanelContainer.new()
+	place_frame.name = "RegionPlaque"
 	place_frame.custom_minimum_size.x = 96
 	place_frame.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	place_frame.add_theme_stylebox_override("panel", UISkin.panel(Color("ead8b4"), 9, Art.GOLD))
-	UISkin.chrome(place_frame, "card")
+	place_frame.add_theme_stylebox_override("panel", UISkin.lacquer_panel(9))
+	UISkin.chrome(place_frame, "lacquer_card")
 	hb.add_child(place_frame)
 	var place := VBoxContainer.new()
 	place.alignment = BoxContainer.ALIGNMENT_CENTER
 	place.add_theme_constant_override("separation", 1)
 	place_frame.add_child(place)
-	_lbl_region = Art.label("", 25)
+	_lbl_region = Art.label("", 25, UISkin.LACQUER_TEXT)
 	_lbl_region.add_theme_font_override("font", Art.title_font())
 	_lbl_region.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	place.add_child(_lbl_region)
-	_lbl_route = Art.label("", 11, Art.DIM)
+	_lbl_route = Art.label("", 11, UISkin.LACQUER_MUTED)
 	_lbl_route.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	place.add_child(_lbl_route)
 	var money_group := HBoxContainer.new()
@@ -402,13 +405,13 @@ func _build_topbar() -> Control:
 	money.alignment = BoxContainer.ALIGNMENT_CENTER
 	money.add_theme_constant_override("separation", 1)
 	money_group.add_child(money)
-	_lbl_gold = Art.label("", 25, Art.INK)
+	_lbl_gold = Art.label("", 25, UISkin.LACQUER_TEXT)
 	_lbl_gold.name = "GoldAmount"
 	money.add_child(_lbl_gold)
-	_lbl_income = Art.label("", 11, Art.GOLD)
+	_lbl_income = Art.label("", 11, UISkin.LACQUER_GOLD)
 	_lbl_income.clip_text = true
 	money.add_child(_lbl_income)
-	_lbl_dmg = Art.label("", 11, Art.DIM)
+	_lbl_dmg = Art.label("", 11, UISkin.LACQUER_MUTED)
 	money.add_child(_lbl_dmg)
 	hb.add_child(_vsep())
 	var timer_group := HBoxContainer.new()
@@ -416,7 +419,7 @@ func _build_topbar() -> Control:
 	timer_group.custom_minimum_size.x = 176
 	timer_group.add_theme_constant_override("separation", 5)
 	hb.add_child(timer_group)
-	var clock := UISkin.emblem("clock", Vector2(26, 34))
+	var clock := UISkin.emblem("clock", Vector2(26, 34), true)
 	clock.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	timer_group.add_child(clock)
 	var stamina := VBoxContainer.new()
@@ -424,18 +427,18 @@ func _build_topbar() -> Control:
 	stamina.alignment = BoxContainer.ALIGNMENT_CENTER
 	stamina.add_theme_constant_override("separation", 1)
 	timer_group.add_child(stamina)
-	_lbl_stamina = Art.label("", 20)
+	_lbl_stamina = Art.label("", 20, UISkin.LACQUER_TEXT)
 	_lbl_stamina.name = "RoundTime"
 	stamina.add_child(_lbl_stamina)
 	_stamina_bar = ProgressBar.new()
 	_stamina_bar.custom_minimum_size = Vector2(145, 5)
 	_stamina_bar.show_percentage = false
-	_stamina_bar.add_theme_stylebox_override("background", UISkin.panel(Color("ddcfaf"), 0, Art.RULE, 1))
+	_stamina_bar.add_theme_stylebox_override("background", UISkin.panel(UISkin.LACQUER_RAISED, 0, UISkin.LACQUER_RULE, 1))
 	_stamina_bar.add_theme_stylebox_override("fill", UISkin.panel(Art.RED, 0, Art.RED, 0))
 	stamina.add_child(_stamina_bar)
-	_lbl_combo = Art.label("", 11, Art.DIM)
+	_lbl_combo = Art.label("", 11, UISkin.LACQUER_MUTED)
 	stamina.add_child(_lbl_combo)
-	_lbl_pace = Art.label("", 11, Art.RED)
+	_lbl_pace = Art.label("", 11, UISkin.LACQUER_RED)
 	_lbl_pace.name = "RoundSlapPace"
 	stamina.add_child(_lbl_pace)
 	var space := Control.new()
@@ -448,7 +451,7 @@ func _build_topbar() -> Control:
 	_btn_upgrade.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	_btn_upgrade.add_theme_font_size_override("font_size", 23)
 	_btn_upgrade.tooltip_text = "技能点 %d" % GameState.skill_points
-	UISkin.button(_btn_upgrade, true)
+	UISkin.lacquer_button(_btn_upgrade, true)
 	_btn_upgrade.pressed.connect(_open_upgrade)
 	hb.add_child(_btn_upgrade)
 	_btn_map = _nav_button("舆图", "map", _open_map)
@@ -461,7 +464,9 @@ func _build_topbar() -> Control:
 	_btn_retreat.text = "返回休息"
 	_btn_retreat.custom_minimum_size = Vector2(102, 40)
 	_btn_retreat.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	UISkin.button(_btn_retreat, false, true)
+	_btn_retreat.add_theme_font_override("font", Art.body_font())
+	_btn_retreat.add_theme_font_size_override("font_size", 15)
+	UISkin.lacquer_button(_btn_retreat, true, true)
 	_btn_retreat.tooltip_text = "结束本轮"
 	_btn_retreat.pressed.connect(_return_to_rest)
 	hb.add_child(_btn_retreat)
@@ -478,7 +483,7 @@ func _nav_button(title: String, kind: String, action: Callable) -> Button:
 	button.add_theme_font_size_override("font_size", 14)
 	button.custom_minimum_size = Vector2(62 if title.length() < 3 else 76, 42)
 	button.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	UISkin.button(button, false, true)
+	UISkin.lacquer_button(button, false, true)
 	button.tooltip_text = "打开" + title
 	button.pressed.connect(action)
 	return button
@@ -505,12 +510,11 @@ func _build_table() -> Control:
 	_pile_layer.size = WORLD_SIZE
 	_pile_layer.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	layer.add_child(_pile_layer)
-	var background := ColorRect.new()
-	background.name = "CityCourtyardArt"
-	background.color = DistrictArt.GROUND
-	background.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	background.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_pile_layer.add_child(background)
+	_terrain_layer = CityTerrainView.new()
+	_terrain_layer.name = "CityCourtyardArt"
+	_terrain_layer.size = _world_size
+	_pile_layer.add_child(_terrain_layer)
+	_terrain_layer.set_terrain(_world_size, GameState.battle_region)
 	_zone_layer = Control.new()
 	_zone_layer.name = "CityZones"
 	_zone_layer.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
@@ -542,8 +546,8 @@ func _build_table() -> Control:
 func _build_camera_toolbar() -> Control:
 	var panel := PanelContainer.new()
 	panel.name = "CameraControls"
-	panel.add_theme_stylebox_override("panel", UISkin.panel(Art.PAPER_LIGHT, 7, Art.GOLD, 1))
-	UISkin.chrome(panel, "paper")
+	panel.add_theme_stylebox_override("panel", UISkin.lacquer_panel(7))
+	UISkin.chrome(panel, "lacquer")
 	panel.z_index = 110
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 4)
@@ -551,11 +555,11 @@ func _build_camera_toolbar() -> Control:
 	var minus := Button.new()
 	minus.text = "−"
 	minus.custom_minimum_size = Vector2(34, 30)
-	UISkin.button(minus, false, true)
+	UISkin.lacquer_button(minus, false, true)
 	minus.tooltip_text = "缩小镜头（鼠标滚轮向下）"
 	minus.pressed.connect(func(): _set_camera_zoom(_camera_zoom / 1.15, _table.size * 0.5))
 	row.add_child(minus)
-	_zoom_label = Art.label("0%", 13)
+	_zoom_label = Art.label("0%", 13, UISkin.LACQUER_TEXT)
 	_zoom_label.tooltip_text = "以默认视野为0%；正数放大，负数缩小"
 	_zoom_label.custom_minimum_size.x = 48
 	_zoom_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -564,7 +568,7 @@ func _build_camera_toolbar() -> Control:
 	var plus := Button.new()
 	plus.text = "+"
 	plus.custom_minimum_size = Vector2(34, 30)
-	UISkin.button(plus, false, true)
+	UISkin.lacquer_button(plus, false, true)
 	plus.tooltip_text = "放大镜头（鼠标滚轮向上）"
 	plus.pressed.connect(func(): _set_camera_zoom(_camera_zoom * 1.15, _table.size * 0.5))
 	row.add_child(plus)
@@ -572,7 +576,7 @@ func _build_camera_toolbar() -> Control:
 	reset.text = "回目标区"
 	reset.tooltip_text = "回到当前未清分区，恢复默认视野（0%）"
 	reset.custom_minimum_size = Vector2(76, 30)
-	UISkin.button(reset, false, true)
+	UISkin.lacquer_button(reset, false, true)
 	reset.pressed.connect(_reset_camera)
 	row.add_child(reset)
 	return panel
@@ -772,13 +776,13 @@ func _build_bottombar() -> Control:
 	var panel := PanelContainer.new()
 	panel.name = "CompactDeployBar"
 	panel.custom_minimum_size.y = 112
-	var style := UISkin.panel(Art.PAPER_LIGHT, 10, Art.GOLD, 1)
+	var style := UISkin.lacquer_panel(10)
 	style.content_margin_left = EDGE_PAN_BAND
 	style.content_margin_right = EDGE_PAN_BAND
 	style.content_margin_top = 8
 	style.content_margin_bottom = 8
 	panel.add_theme_stylebox_override("panel", style)
-	UISkin.chrome(panel, "footer")
+	UISkin.chrome(panel, "lacquer_footer")
 	_bar = panel
 	var hb := HBoxContainer.new()
 	hb.add_theme_constant_override("separation", 12)
@@ -787,14 +791,14 @@ func _build_bottombar() -> Control:
 	legend.custom_minimum_size.x = 44
 	legend.alignment = BoxContainer.ALIGNMENT_CENTER
 	legend.add_theme_constant_override("separation", 3)
-	var deploy_stamp := Art.stamp("上阵", Vector2(38, 62))
+	var deploy_stamp := UISkin.lacquer_stamp("上阵", Vector2(38, 62))
 	var caption := deploy_stamp.get_child(0) as Label
 	var font_size := caption.get_theme_font_size("font_size")
 	while font_size > 1 and Art.title_font().get_multiline_string_size(caption.text, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).y > deploy_stamp.custom_minimum_size.y - 12:
 		font_size -= 1
 		caption.add_theme_font_size_override("font_size", font_size)
 	legend.add_child(deploy_stamp)
-	_lbl_bar = Art.label("", 10, Art.DIM)
+	_lbl_bar = Art.label("", 10, UISkin.LACQUER_MUTED)
 	_lbl_bar.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	legend.add_child(_lbl_bar)
 	hb.add_child(legend)
@@ -826,10 +830,10 @@ func _build_bottombar() -> Control:
 	info.alignment = BoxContainer.ALIGNMENT_CENTER
 	info.add_theme_constant_override("separation", 6)
 	hb.add_child(info)
-	_lbl_progress = Art.label("", 13, Art.DIM)
+	_lbl_progress = Art.label("", 14, UISkin.LACQUER_TEXT)
 	_lbl_progress.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	info.add_child(_lbl_progress)
-	_log_lbl = Art.label("", 12, Art.GOLD)
+	_log_lbl = Art.label("", 12, UISkin.LACQUER_GOLD)
 	_log_lbl.clip_text = true
 	info.add_child(_log_lbl)
 	_btn_pool = Button.new()
@@ -838,7 +842,7 @@ func _build_bottombar() -> Control:
 	_btn_pool.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	_btn_pool.add_theme_font_override("font", Art.title_font())
 	_btn_pool.add_theme_font_size_override("font_size", 18)
-	UISkin.button(_btn_pool, false, false)
+	UISkin.lacquer_button(_btn_pool, false, false)
 	_btn_pool.tooltip_text = "展开已有将兵，把牌拖到上阵槽"
 	_btn_pool.pressed.connect(func(): _set_pool(not _pool_open))
 	hb.add_child(_btn_pool)
@@ -949,8 +953,8 @@ func _fmt_pow(v: float) -> String:
 
 func _slot_style(filled: bool, locked: bool) -> StyleBox:
 	if filled:
-		return UISkin.panel(Art.PAPER_LIGHT, 6, Art.GOLD if locked else Art.INK, 1)
-	return UISkin.panel(Color("e8dec8"), 6, Art.RULE, 1)
+		return UISkin.panel(Art.PAPER_LIGHT, 6, UISkin.LACQUER_GOLD if locked else Art.GOLD, 1)
+	return UISkin.lacquer_panel(6)
 
 
 func _mk_slot_node(card_id: String, slot_index: int, locked: bool) -> Control:
@@ -965,10 +969,13 @@ func _mk_slot_node(card_id: String, slot_index: int, locked: bool) -> Control:
 	rest_style.content_margin_top = 3
 	rest_style.content_margin_bottom = 3
 	var hover_style := UISkin.panel(Color("fff4d8"), 6, Art.GOLD if locked else Art.RED, 2)
+	if not filled:
+		hover_style.bg_color = UISkin.LACQUER_RAISED
+		hover_style.border_color = UISkin.LACQUER_GOLD
 	hover_style.content_margin_top = 3
 	hover_style.content_margin_bottom = 3
 	slot.add_theme_stylebox_override("panel", rest_style)
-	UISkin.chrome(slot, "card")
+	UISkin.chrome(slot, "card" if filled else "lacquer_card")
 	slot.mouse_filter = Control.MOUSE_FILTER_STOP
 	slot.mouse_default_cursor_shape = Control.CURSOR_ARROW if locked or GameState.in_battle else Control.CURSOR_POINTING_HAND
 	slot.mouse_entered.connect(func(): slot.add_theme_stylebox_override("panel", hover_style))
@@ -978,12 +985,12 @@ func _mk_slot_node(card_id: String, slot_index: int, locked: bool) -> Control:
 	v.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	slot.add_child(v)
 	if not filled:
-		var plus := Art.label("＋", 28, Art.RULE)
+		var plus := Art.label("＋", 28, UISkin.LACQUER_GOLD)
 		plus.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		plus.size_flags_vertical = Control.SIZE_EXPAND_FILL
 		plus.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 		v.add_child(plus)
-		var tip := Art.label("空同行位" if GameState.in_battle else "拖入将兵", 11, Art.DIM)
+		var tip := Art.label("空同行位" if GameState.in_battle else "拖入将兵", 11, UISkin.LACQUER_MUTED)
 		tip.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		v.add_child(tip)
 		slot.add_child(EmptySlotOutline.new())
@@ -1197,6 +1204,7 @@ func _flat(bg: Color, border: Color, w: int, radius: int) -> StyleBoxFlat:
 func _vsep() -> Control:
 	var s := VSeparator.new()
 	s.custom_minimum_size = Vector2(2, 0)
+	s.add_theme_stylebox_override("separator", UISkin.panel(UISkin.LACQUER_RULE, 0, UISkin.LACQUER_RULE, 0))
 	return s
 
 
@@ -1301,7 +1309,7 @@ func _update_topbar() -> void:
 		var route := str(r.get("route", ""))
 		_lbl_region.text = str(r.get("name", "?"))
 		_lbl_route.text = "%s · %d/%d区" % [route, GameState.table_progress(GameState.battle_region), GameState.zone_count(GameState.battle_region)]
-		_lbl_region.add_theme_color_override("font_color", Art.INK)
+		_lbl_region.add_theme_color_override("font_color", UISkin.LACQUER_TEXT)
 		var alive := 0
 		for e in GameState.battle:
 			if float(e["hp"]) > 0.0:
@@ -1436,6 +1444,9 @@ func _layout_cards() -> void:
 	if _zone_layer != null: _zone_layer.size = _world_size
 	if _event_layer != null: _event_layer.size = _world_size
 	if _pile_layer != null: _pile_layer.size = _world_size
+	if _terrain_layer != null:
+		_terrain_layer.size = _world_size
+		_terrain_layer.set_terrain(_world_size, GameState.battle_region)
 	if _minimap != null: _minimap.set_world(null, _world_size)
 	_apply_camera(true)
 	var area := _table.size
@@ -1490,7 +1501,6 @@ func _card_center(i: int) -> Vector2:
 func _draw_zones() -> void:
 	if not GameState.in_battle: return
 	var zones := GameState.zone_details(GameState.battle_region)
-	DistrictArt.draw_background(_zone_layer, Rect2(Vector2.ZERO, _world_size), _world_size, zones, GameState.battle_region)
 	for zone in zones:
 		var rect: Rect2 = zone.get("rect", Rect2())
 		var conquered := bool(zone.get("cleared", false))
@@ -1822,11 +1832,11 @@ func _flip_card(i: int) -> void:
 
 func _build_map_layer() -> Control:
 	var layer := PanelContainer.new()
+	layer.name = "MapShellFrame"
 	layer.set_anchors_preset(Control.PRESET_FULL_RECT)
 	layer.mouse_filter = Control.MOUSE_FILTER_STOP
-	layer.add_theme_stylebox_override("panel",
-		_paper_or_flat(TEX_DIR + "paper.png", 0.0, 1.0,
-			Color(0.90, 0.86, 0.75), Color(0.20, 0.21, 0.24), 0, 0))
+	layer.add_theme_stylebox_override("panel", UISkin.lacquer_panel(8))
+	UISkin.chrome(layer, "lacquer")
 	layer.visible = false
 
 	var vb := VBoxContainer.new()
@@ -1835,24 +1845,26 @@ func _build_map_layer() -> Control:
 
 	# ---- 顶栏 ----
 	var top := PanelContainer.new()
+	top.name = "MapShellHeader"
 	top.custom_minimum_size = Vector2(0, 58)
-	top.add_theme_stylebox_override("panel",
-		_paper_or_flat(UI_DIR + "panel.png", PANEL_MARGIN, 0.30,
-			Color(0.12, 0.13, 0.15), Color(0.26, 0.27, 0.31), 1, 0))
+	top.add_theme_stylebox_override("panel", UISkin.lacquer_panel(12))
+	UISkin.chrome(top, "lacquer")
 	var th := HBoxContainer.new()
 	th.add_theme_constant_override("separation", 16)
 	top.add_child(th)
-	_map_title = _mk_label("荆州舆图", 22, INK)
+	_map_title = _mk_label("荆州舆图", 22, UISkin.LACQUER_TEXT)
 	th.add_child(_map_title)
-	_map_progress = _mk_label("", 14, INK_DIM)
+	_map_progress = _mk_label("", 14, UISkin.LACQUER_MUTED)
 	th.add_child(_map_progress)
 	var sp := Control.new()
 	sp.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	th.add_child(sp)
-	_map_legend = _mk_label("", 13, INK_SOFT)
+	_map_legend = _mk_label("", 13, UISkin.LACQUER_MUTED)
 	th.add_child(_map_legend)
 	var bc := Button.new()
+	bc.name = "MapReturnToCamp"
 	bc.text = "← 返回大本营"
+	UISkin.lacquer_button(bc)
 	bc.pressed.connect(_return_from_map)
 	th.add_child(bc)
 	vb.add_child(top)
@@ -1861,7 +1873,12 @@ func _build_map_layer() -> Control:
 	var mid := HBoxContainer.new()
 	mid.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	mid.add_theme_constant_override("separation", 0)
-	vb.add_child(mid)
+	var paper_body := PanelContainer.new()
+	paper_body.name = "MapShellPaperBody"
+	paper_body.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	paper_body.add_theme_stylebox_override("panel", UISkin.panel(Art.PAPER, 0, Art.RULE, 0))
+	vb.add_child(paper_body)
+	paper_body.add_child(mid)
 
 	var lp := PanelContainer.new()
 	lp.custom_minimum_size = Vector2(318, 0)
@@ -1906,11 +1923,11 @@ func _build_map_layer() -> Control:
 
 	# ---- 底栏 ----
 	var bot := PanelContainer.new()
+	bot.name = "MapShellFooter"
 	bot.custom_minimum_size = Vector2(0, 46)
-	bot.add_theme_stylebox_override("panel",
-		_paper_or_flat(UI_DIR + "panel.png", PANEL_MARGIN, 0.26,
-			Color(0.12, 0.13, 0.15), Color(0.26, 0.27, 0.31), 1, 0))
-	_map_foot = _mk_label("", 13, Color(0.24, 0.33, 0.22))
+	bot.add_theme_stylebox_override("panel", UISkin.lacquer_panel(12))
+	UISkin.chrome(bot, "lacquer_footer")
+	_map_foot = _mk_label("", 13, UISkin.LACQUER_MUTED)
 	bot.add_child(_map_foot)
 	vb.add_child(bot)
 
@@ -2592,8 +2609,8 @@ class EmptySlotOutline extends Control:
 		set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 		resized.connect(queue_redraw)
 	func _draw() -> void:
-		var rect := Rect2(Vector2(5, 5), size - Vector2(10, 10))
-		var color := Color("a18c6b")
+		var rect := Rect2(Vector2(10, 10), size - Vector2(20, 20))
+		var color := Color(UISkin.LACQUER_GOLD, 0.55)
 		for pair in [[rect.position, Vector2(rect.end.x, rect.position.y)],
 			[Vector2(rect.end.x, rect.position.y), rect.end],
 			[rect.end, Vector2(rect.position.x, rect.end.y)],

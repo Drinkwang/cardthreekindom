@@ -2,17 +2,23 @@ extends Control
 ## 纸纹和边缘装饰位于父背景上方、内容节点下方，不接收输入。
 const Art = preload("res://scripts/ui/print_art.gd")
 const GRAIN_PATH := "res://assets/art_v3/ui/paper_grain.svg"
+const CLOUD_SCROLL = preload("res://assets/ui/lacquer_v28/auspicious-cloud.svg")
+const LACQUER_GOLD := Color("c59c58")
+const LACQUER_RULE := Color("765735")
+const LACQUER_TEXT := Color("f4e7c8")
 
 var variant: String = "paper"
 var emblem_kind: String = "coin"
+var lacquer_emblem: bool = false
 static var _grain: Texture2D
+static var _lacquer_sheen: GradientTexture2D
 
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	focus_mode = Control.FOCUS_NONE
 	resized.connect(queue_redraw)
-	if variant == "emblem":
+	if variant == "emblem" or variant == "lacquer_seal":
 		return
 	custom_minimum_size = Vector2.ZERO
 	var host: Control = get_parent() as Control
@@ -35,7 +41,7 @@ func _ready() -> void:
 
 func _fit_parent() -> void:
 	var host: Control = get_parent() as Control
-	if host == null or variant == "emblem":
+	if host == null or variant == "emblem" or variant == "lacquer_seal":
 		return
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	queue_redraw()
@@ -46,6 +52,9 @@ func _draw() -> void:
 		return
 	if variant == "emblem":
 		_draw_emblem()
+		return
+	if variant.begins_with("lacquer"):
+		_draw_lacquer()
 		return
 	var is_button: bool = variant == "button" or variant == "primary_button"
 	var inner: Rect2 = Rect2(Vector2.ZERO, size).grow(-4.5)
@@ -74,6 +83,67 @@ func _draw() -> void:
 		draw_line(Vector2(0, 3.5), Vector2(size.x, 3.5), Color(Art.GOLD, 0.65), 1.0)
 	elif variant == "card":
 		draw_line(Vector2(7, 7), Vector2(size.x - 7, 7), Color(Art.GOLD, 0.78), 1.0)
+
+
+func _draw_lacquer() -> void:
+	var is_button := variant == "lacquer_button" or variant == "lacquer_primary_button"
+	var is_seal := variant == "lacquer_seal"
+	var inner := Rect2(Vector2.ZERO, size).grow(-4.5)
+	if inner.size.x < 1.0 or inner.size.y < 1.0:
+		return
+	if is_seal:
+		draw_rect(Rect2(Vector2.ZERO, size), Color("552316"))
+	_draw_lacquer_finish()
+	var ink := Color(LACQUER_GOLD, 0.94)
+	if get_parent() is Button and (get_parent() as Button).disabled:
+		ink.a *= 0.30
+	var outer := Rect2(Vector2(1.5, 1.5), size - Vector2(3, 3))
+	draw_rect(outer, Color("100c09"), false, 3.0)
+	draw_rect(outer, ink, false, 1.0)
+	var highlight := Color("edce92", ink.a * 0.80)
+	draw_line(outer.position, Vector2(outer.end.x, outer.position.y), highlight, 1.0)
+	if variant != "lacquer_card":
+		draw_rect(inner, Color(LACQUER_RULE, ink.a * 0.65), false, 1.0)
+	if is_button or is_seal:
+		draw_line(inner.position, Vector2(inner.end.x, inner.position.y), Color(LACQUER_GOLD, ink.a * 0.45), 1.0)
+		return
+	_draw_lacquer_corners(inner, highlight, 8.0 if variant == "lacquer_card" else 11.0)
+	if variant == "lacquer_header" or variant == "lacquer_footer":
+		var edge_y := size.y - 1.5 if variant == "lacquer_header" else 1.5
+		draw_line(Vector2(0, edge_y), Vector2(size.x, edge_y), LACQUER_GOLD, 1.0)
+		if size.x >= 600.0:
+			draw_texture_rect(CLOUD_SCROLL, Rect2(Vector2(size.x - 355, size.y - 74), Vector2(194, 70)), false, Color(1, 1, 1, 0.8))
+
+
+func _draw_lacquer_finish() -> void:
+	if _lacquer_sheen == null:
+		var gradient := Gradient.new()
+		gradient.offsets = PackedFloat32Array([0.0, 0.26, 0.72, 1.0])
+		gradient.colors = PackedColorArray([
+			Color(0.65, 0.43, 0.23, 0.035), Color(0.45, 0.30, 0.17, 0.012),
+			Color(0.0, 0.0, 0.0, 0.10), Color(0.48, 0.32, 0.18, 0.018)])
+		_lacquer_sheen = GradientTexture2D.new()
+		_lacquer_sheen.gradient = gradient
+		_lacquer_sheen.width = 4
+		_lacquer_sheen.height = 256
+		_lacquer_sheen.use_hdr = true
+		_lacquer_sheen.fill_from = Vector2(0.5, 0)
+		_lacquer_sheen.fill_to = Vector2(0.5, 1)
+	draw_texture_rect(_lacquer_sheen, Rect2(Vector2.ONE, size - Vector2(2, 2)), false)
+
+
+func _draw_lacquer_corners(rect: Rect2, tint: Color, arm: float) -> void:
+	var directions: Array[Vector2] = [Vector2.ONE, Vector2(-1, 1), Vector2(1, -1), Vector2(-1, -1)]
+	for direction: Vector2 in directions:
+		var at := Vector2(rect.position.x if direction.x > 0.0 else rect.end.x,
+			rect.position.y if direction.y > 0.0 else rect.end.y)
+		var points := PackedVector2Array([
+			at + Vector2(0, arm * direction.y), at,
+			at + Vector2(arm * direction.x, 0),
+			at + Vector2(arm * direction.x, 3.0 * direction.y),
+			at + Vector2(3.0 * direction.x, 3.0 * direction.y),
+			at + Vector2(3.0 * direction.x, arm * direction.y)])
+		draw_polyline(points, tint, 1.0, true)
 
 
 func _draw_corners(rect: Rect2, tint: Color, arm: float) -> void:
@@ -127,9 +197,11 @@ func _draw_coin() -> void:
 
 
 func _draw_clock() -> void:
-	var ink: Color = Art.INK
+	var ink: Color = LACQUER_TEXT if lacquer_emblem else Art.INK
+	var gold: Color = LACQUER_GOLD if lacquer_emblem else Art.GOLD
+	var red: Color = Color("e49a7e") if lacquer_emblem else Art.RED
 	draw_arc(Vector2(0, 1), 11.5, 0.0, TAU, 48, ink, 1.7, true)
-	draw_arc(Vector2(0, 1), 9.1, 0.0, TAU, 48, Color(Art.GOLD, 0.50), 1.0, true)
+	draw_arc(Vector2(0, 1), 9.1, 0.0, TAU, 48, Color(gold, 0.50), 1.0, true)
 	draw_line(Vector2(0, -10.5), Vector2(0, -14), ink, 2.0, true)
 	draw_line(Vector2(-3.5, -14), Vector2(3.5, -14), ink, 2.0, true)
 	draw_line(Vector2(7.8, -8), Vector2(10, -10.2), ink, 2.0, true)
@@ -137,9 +209,9 @@ func _draw_clock() -> void:
 		var angle: float = i * TAU / 12.0 - PI * 0.5
 		var along: Vector2 = Vector2.from_angle(angle)
 		draw_line(Vector2(0, 1) + along * 7.6, Vector2(0, 1) + along * 9.0,
-			Color(Art.INK, 0.7), 1.0, true)
+			Color(ink, 0.7), 1.0, true)
 	draw_line(Vector2(0, 1), Vector2(0, -5), ink, 1.8, true)
-	draw_line(Vector2(0, 1), Vector2(5.2, 3.5), Art.RED, 1.8, true)
+	draw_line(Vector2(0, 1), Vector2(5.2, 3.5), red, 1.8, true)
 	draw_circle(Vector2(0, 1), 1.6, ink)
 
 

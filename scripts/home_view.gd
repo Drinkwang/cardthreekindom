@@ -23,8 +23,6 @@ signal request_city()
 # 深色主题是给屏幕的，这套是给纸的：所有文字都是「纸上的墨」。
 # 底色与 ui/panel.png 的主色对齐 —— 拿不到纹理时回退成纯色也不会跳色。
 const BG_DIR := "res://assets/art_v2/backgrounds/"
-const UI_DIR := "res://assets/ui/"
-const PANEL_MARGIN := 14.0                       # ui/panel.png（源 112×112，边框 14px）
 const PAPER := Color(0.933, 0.894, 0.796)        # 中性新闻纸（= ui/panel.png 主色）
 const PAPER_ROW := Color(0.973, 0.945, 0.874)    # 行卡：纸上更亮的一小片
 const PAPER_RULE := Color(0.580, 0.440, 0.240)   # 纸上墨线（赭墨）
@@ -134,15 +132,19 @@ func _build() -> void:
 	for side in ["left", "right", "top", "bottom"]:
 		outer.add_theme_constant_override("margin_" + side, 22 if side in ["left", "right"] else 20)
 	add_child(outer)
-	var paper_frame := PanelContainer.new()
-	paper_frame.add_theme_stylebox_override("panel", UISkin.panel(Art.PAPER, 12, Art.INK, 1))
-	UISkin.chrome(paper_frame, "paper")
-	outer.add_child(paper_frame)
+	var shell_frame := PanelContainer.new()
+	shell_frame.name = "RestShellFrame"
+	shell_frame.add_theme_stylebox_override("panel", UISkin.lacquer_panel(12))
+	UISkin.chrome(shell_frame, "lacquer")
+	outer.add_child(shell_frame)
 	var page := VBoxContainer.new()
 	page.add_theme_constant_override("separation", 14)
-	paper_frame.add_child(page)
+	shell_frame.add_child(page)
 	page.add_child(_build_top())
-	var body := Control.new()
+	var body := Panel.new()
+	body.name = "RestShellPaperBody"
+	body.add_theme_stylebox_override("panel", UISkin.panel(Art.PAPER, 0, Art.RULE, 1))
+	UISkin.chrome(body, "paper")
 	body.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	page.add_child(body)
 	_hub_page = GridContainer.new()
@@ -195,8 +197,8 @@ func _build() -> void:
 	var outcome := PanelContainer.new()
 	outcome.name = "CampOutcome"
 	outcome.custom_minimum_size.y = 108
-	outcome.add_theme_stylebox_override("panel", UISkin.panel(Art.PAPER_LIGHT, 20, Art.GOLD, 1))
-	UISkin.chrome(outcome, "footer")
+	outcome.add_theme_stylebox_override("panel", UISkin.lacquer_panel(20))
+	UISkin.chrome(outcome, "lacquer_footer")
 	page.add_child(outcome)
 	_outcome_box = HBoxContainer.new()
 	_outcome_box.add_theme_constant_override("separation", 20)
@@ -206,19 +208,23 @@ func _build() -> void:
 
 func _build_top() -> Control:
 	var top := PanelContainer.new()
+	top.name = "RestShellHeader"
 	top.custom_minimum_size = Vector2(0, 80)
-	top.add_theme_stylebox_override("panel", _paper_panel())
-	UISkin.chrome(top, "header")
+	var header_style := UISkin.lacquer_panel(12)
+	header_style.content_margin_top = 10
+	header_style.content_margin_bottom = 10
+	top.add_theme_stylebox_override("panel", header_style)
+	UISkin.chrome(top, "lacquer")
 	var th := HBoxContainer.new()
 	th.add_theme_constant_override("separation", 16)
 	top.add_child(th)
-	th.add_child(Art.stamp("营", Vector2(45, 46)))
-	_title = _mk_label("大本营", 42, INK)
+	th.add_child(UISkin.lacquer_stamp("营", Vector2(45, 46)))
+	_title = _mk_label("大本营", 42, UISkin.LACQUER_TEXT)
 	_title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_title.clip_text = true
 	_title.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	th.add_child(_title)
-	_stats = _mk_label("", 15, INK2)
+	_stats = _mk_label("", 15, UISkin.LACQUER_MUTED)
 	_stats.custom_minimum_size.x = 300
 	_stats.clip_text = true
 	_stats.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
@@ -227,7 +233,7 @@ func _build_top() -> Control:
 	_back_button.name = "ReturnToCamp"
 	_back_button.text = "返回大本营"
 	_back_button.custom_minimum_size = Vector2(138, 46)
-	UISkin.button(_back_button)
+	UISkin.lacquer_button(_back_button)
 	_back_button.pressed.connect(return_to_hub)
 	th.add_child(_back_button)
 	return top
@@ -483,17 +489,17 @@ func _fill_outcome() -> void:
 			headline = "%s · 每轮 %.0f 秒" % [region.get("name", "?"), GameState.round_duration_value()]
 			detail = "%.2f 拍 / 秒　·　征服进度永久保留" % (1.0 / GameState.slap_interval())
 			primary = _on_deploy.bind(idx)
-	_outcome_box.add_child(Art.stamp(mark, Vector2(45, 54)))
+	_outcome_box.add_child(UISkin.lacquer_stamp(mark, Vector2(45, 54)))
 	var words := VBoxContainer.new()
 	words.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	words.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	words.add_theme_constant_override("separation", 5)
-	var headline_label := _mk_label(headline, 32, INK)
+	var headline_label := _mk_label(headline, 32, UISkin.LACQUER_TEXT)
 	headline_label.clip_text = true
 	headline_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	headline_label.tooltip_text = headline
 	words.add_child(headline_label)
-	_foot = _mk_label(detail, 14, INK2)
+	_foot = _mk_label(detail, 14, UISkin.LACQUER_MUTED)
 	_foot.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_foot.custom_minimum_size.x = 300
 	words.add_child(_foot)
@@ -517,7 +523,7 @@ func _fill_outcome() -> void:
 		_secondary_action.add_theme_font_override("font", Art.title_font())
 		_secondary_action.add_theme_font_size_override("font_size", 22)
 		_secondary_action.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-		UISkin.button(_secondary_action)
+		UISkin.lacquer_button(_secondary_action)
 		_secondary_action.pressed.connect(secondary)
 		_outcome_box.add_child(_secondary_action)
 
@@ -863,7 +869,7 @@ func _section_heading(mark: String, title: String, note: String) -> Control:
 func _style_primary(button: Button) -> void:
 	button.add_theme_font_override("font", Art.title_font())
 	button.add_theme_font_size_override("font_size", 26)
-	UISkin.button(button, true)
+	UISkin.lacquer_button(button, true)
 
 
 func _flat(bg: Color, border: Color, w: int, radius: int) -> StyleBoxFlat:
@@ -899,24 +905,6 @@ func _tex(path: String) -> Texture2D:
 		t = load(path) as Texture2D
 	_tex_cache[path] = t
 	return t
-
-
-## 纸九宫格。margin 必须**等于源纹理上的真实边框宽度** ——
-## ⚠️ Godot 4 的 StyleBoxTexture 没有 texture_scale，九宫格的角是按源纹理 1:1 画的，
-##    想改边框粗细只能重新生成对应尺寸的纹理，不能在运行时缩放。
-func _paper(_path: String, _margin: float, _scale: float = 1.0) -> StyleBox:
-	return Art.panel(Art.PAPER, 8)
-
-
-func _paper_panel() -> StyleBox:
-	var sb := _paper(UI_DIR + "panel.png", PANEL_MARGIN)
-	if sb != null:
-		sb.content_margin_left = 12
-		sb.content_margin_right = 12
-		sb.content_margin_top = 10
-		sb.content_margin_bottom = 10
-		return sb
-	return _flat(PAPER, PAPER_RULE, 1, 0)
 
 
 ## 全幅背景贴图（旧屋书桌 / 古城图）

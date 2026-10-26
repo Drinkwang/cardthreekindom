@@ -226,6 +226,7 @@ func _test_camera_and_area() -> void:
 	add_child(main)
 	await frames()
 	check(main._cards.size() == GameState.battle.size(), "实际城池场景显示完整牌堆")
+	check(is_equal_approx(main._camera_zoom, 6.0) and main._zoom_label.text == "0%", "实际城池开局使用倍率6并显示默认0%")
 	check(main._table.clip_contents, "镜头世界按牌堆视口裁切")
 	check(main._slap_cursor != null and main._slap_cursor.mouse_filter == Control.MOUSE_FILTER_IGNORE, "范围光标不挡单击输入")
 	main._reset_camera()
@@ -278,13 +279,16 @@ func _test_camera_and_area() -> void:
 	check(main._world_to_screen(original_world).distance_to(after_pan) < 0.01, "释放后的鼠标运动不再平移世界")
 	check(GameState.round_slaps == pan_slaps and GameState.gold == pan_gold, "平移镜头不拍卡不发金币")
 	main._set_camera_zoom(100.0, anchor)
-	check(is_equal_approx(main._camera_zoom, 8.0) and main._zoom_label.text == "+100%", "镜头放大限制在默认视野的+100%")
+	check(is_equal_approx(main._camera_zoom, 8.0) and main._zoom_label.text == "+33%", "镜头实际放大上限保持8，相对新默认显示+33%")
 	main._set_camera_zoom(0.01, anchor)
 	check(is_equal_approx(main._camera_zoom, 0.65), "镜头缩小限制在实际倍率0.65")
+	var reset: Button
 	for button in main._camera_toolbar.find_children("*", "Button", true, false):
-		if button is Button and button.text == "默认":
-			button.pressed.emit()
-	check(is_equal_approx(main._camera_zoom, 4.0) and main._camera_pan.is_equal_approx(default_pan) and main._zoom_label.text == "0%", "实际默认按钮恢复开局倍率和城区平移")
+		if button is Button and button.text == "回目标区":
+			reset = button
+	check(reset != null, "实际镜头工具栏生成回目标区按钮")
+	if reset != null: reset.pressed.emit()
+	check(is_equal_approx(main._camera_zoom, 6.0) and main._camera_pan.is_equal_approx(default_pan) and main._zoom_label.text == "0%", "实际回目标区按钮恢复开局倍率6和城区平移")
 	check(main._world_to_screen(default_world).distance_to(anchor) < 0.01 and main._screen_to_world(anchor).distance_to(default_world) < 0.01, "默认城区和视口中心仍可双向对应")
 	main._navigate_minimap(main._world_size * 0.5)
 	# 将一张真牌摆在控制区后面，保证输入阻挡验证不是拍空的偶然结果。

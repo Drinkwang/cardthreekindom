@@ -1,6 +1,7 @@
 extends Control
 class_name PaanShop
 const Art = preload("res://scripts/ui/print_art.gd")
+const UISkin = preload("res://scripts/ui/ui_skin.gd")
 
 signal closed()
 
@@ -24,18 +25,26 @@ func _ready() -> void:
 		margin.add_theme_constant_override("margin_" + side, 26)
 	add_child(margin)
 	var paper := PanelContainer.new()
-	paper.add_theme_stylebox_override("panel", Art.panel(Art.PAPER, 18, Art.RULE, 0))
+	paper.name = "ShopShellFrame"
+	paper.add_theme_stylebox_override("panel", UISkin.lacquer_panel(18))
 	margin.add_child(paper)
+	UISkin.chrome(paper, "lacquer")
 	var page := VBoxContainer.new()
 	page.add_theme_constant_override("separation", 16)
 	paper.add_child(page)
+	var header := PanelContainer.new()
+	header.name = "ShopShellHeader"
+	header.add_theme_stylebox_override("panel", UISkin.lacquer_panel(0, 0))
+	page.add_child(header)
+	UISkin.chrome(header, "lacquer")
 	var head := HBoxContainer.new()
 	head.add_theme_constant_override("separation", 16)
-	head.add_child(Art.stamp("铺", Vector2(54, 58)))
-	var title := Art.label("商店", 38)
+	header.add_child(head)
+	head.add_child(UISkin.lacquer_stamp("铺", Vector2(54, 58)))
+	var title := Art.label("商店", 38, UISkin.LACQUER_TEXT)
 	title.add_theme_font_override("font", Art.title_font())
 	head.add_child(title)
-	_stats = Art.label("", 17, Art.DIM)
+	_stats = Art.label("", 17, UISkin.LACQUER_MUTED)
 	_stats.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	head.add_child(_stats)
 	var back := Button.new()
@@ -44,14 +53,19 @@ func _ready() -> void:
 	back.custom_minimum_size = Vector2(176, 48)
 	back.add_theme_font_override("font", Art.title_font())
 	back.add_theme_font_size_override("font_size", 23)
+	UISkin.lacquer_button(back)
 	back.pressed.connect(func(): closed.emit())
 	head.add_child(back)
-	page.add_child(head)
 	page.add_child(Art.divider())
+	var body := PanelContainer.new()
+	body.name = "ShopPaperContent"
+	body.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	body.add_theme_stylebox_override("panel", Art.panel(Art.PAPER, 0, Art.RULE, 0))
+	page.add_child(body)
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 22)
 	row.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	page.add_child(row)
+	body.add_child(row)
 	var shopfront := VBoxContainer.new()
 	shopfront.custom_minimum_size.x = 340
 	shopfront.add_theme_constant_override("separation", 14)

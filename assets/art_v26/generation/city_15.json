@@ -1,0 +1,11 @@
+{
+  "name": "city_15",
+  "city": 15,
+  "kind": "scene",
+  "replace_intermediate": false,
+  "prompt": "Create ONE square finished terrain background for a premium AA-quality Three Kingdoms card-strategy game. Exceptionally crisp refined semi-realistic hand-painted 2.5D art, coherent material scale and believable matte stone/soil/wood/foliage, controlled contact shadows and soft sunlight; no watercolor blur, plastic toy look, haze, bloom, or depth of field. True steep overhead ORTHOGRAPHIC map view, no sky or horizon. Central 80% of the whole canvas is OPEN, EMPTY, CONTINUOUS FLAT GROUND traversable in all four directions. All scenic elements frame only the narrow outer 10% fringe; do not place obstacles or shadows across the center. Ground is detailed but calm and low-contrast for readable foreground cards, not giant repeated diamonds or a checkerboard. No bridge, river, pond, waterway, staircases, elevation change, central monument, dividing wall, people, cards, UI, text, icons, logo or watermark. This is ONE continuous city ground, not districts, panels or a collection of tiles.\nUnique city art direction: 攸县, 麦色土坪. Ground: smooth wheat-colored compacted earth, fine dry mineral grains, tiny embedded flat stones and restrained natural wear, no tracks. Peripheral framing: dry wheat grasses, small shrubs and cropped warm-timber farmstead corners strictly at the perimeter. Refined palette compatible with cream parchment, aged gold and vermilion UI.",
+  "generated_with": "built-in image_gen",
+  "created": "2026-10-23",
+  "original": "/Users/arthurwang/.codex/generated_images/01a148ad-f3ee-7241-b34a-f88e50a4b09d/exec-f88409fb-adce-4782-815e-783692b5611f.png",
+  "file": "assets/art_v26/city_15.png"
+}

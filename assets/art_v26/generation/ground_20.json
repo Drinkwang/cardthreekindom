@@ -1,0 +1,11 @@
+{
+  "name": "ground_20",
+  "city": 20,
+  "kind": "detail",
+  "replace_intermediate": false,
+  "prompt": "Create ONE square native-resolution seamless REPEATABLE CLOSE-UP GROUND MATERIAL for a premium AA-quality Three Kingdoms card-strategy game. True vertical overhead orthographic view of ONLY the ground itself, no scene framing. Finely resolved natural micro-grain, restrained wear and very delicate material contrast; beautiful semi-realistic hand-painted material with physically convincing matte roughness, not watercolor blur or photographic dirt noise. Uniform diffuse lighting across every edge, no light gradient or cast shadows. Modest small-to-medium features, no enormous paving slabs. Design horizontal and vertical edges to join seamlessly: paving courses and stone joints must continue through opposite edges. No buildings, roofs, foliage, props, footsteps, deep cracks, channels, borders, labels, UI, cards, people, symbols, watermark, perspective, lens blur or central motifs. It must read as an unobstructed flat walkable surface.\nUnique material for 泉陵, 蕨影青石: subdued jade-gray fine stone paving, smaller offset fitted flagstones with restrained soft wear and tiny joint moss, dry matte finish. No peripheral scenery at all. Use a distinctive natural material layout that feels different from other city textures, with excellent close-up clarity and minimal repetitive motifs.",
+  "generated_with": "built-in image_gen",
+  "created": "2026-10-23",
+  "original": "/Users/arthurwang/.codex/generated_images/01a148ad-f3ee-7241-b34a-f88e50a4b09d/exec-82862d89-3acf-4b36-84f2-bb0dafdecbc9.png",
+  "file": "assets/art_v26/ground_20.png"
+}

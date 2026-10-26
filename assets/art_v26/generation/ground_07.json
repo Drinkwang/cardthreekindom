@@ -1,0 +1,8 @@
+{
+  "name": "ground_07",
+  "date": "2026-10-23",
+  "tool": "builtin image_gen",
+  "source": "/Users/arthurwang/.codex/generated_images/01a16459-cadd-71d2-be67-5147226c730f/exec-7b8d1930-cffd-4025-b50c-ba8027a638fc.png",
+  "output": "assets/art_v26/ground_07.png",
+  "prompt": "Use case: stylized-concept. Asset type: production square seamless ground texture for a refined Three Kingdoms strategy game. Strict direct 90-degree overhead view of ONLY the ground material itself, uniform soft ambient illumination, NO perspective, vignette, directional or cast shadows. Polished AA-oriented semi-realistic hand-painted texture with crisp material edges, nuanced natural microdetail, clean readable small-scale pattern and low overall contrast. Warm ivory parchment-compatible palette. Full bleed texture with stone seams and material patterns continuing across all edges; make opposing edges as seamless/tileable as possible. No border, people, buildings, props, grass, leaves, plants, water, interface, text or watermark. Avoid huge slabs, giant diamond shapes, large checkerboards and overly sharp dark cracks. This is an original pattern, not a recolor of another city texture. Square image. Material: 当阳 Dangyang: dry ochre-brown compacted earth, refined tiny sand and sparse small rounded pebbles, softly pressed natural earth grain, completely even open terrain without paths or cracks."
+}

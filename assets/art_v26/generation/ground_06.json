@@ -1,0 +1,8 @@
+{
+  "name": "ground_06",
+  "date": "2026-10-23",
+  "tool": "builtin image_gen",
+  "source": "/Users/arthurwang/.codex/generated_images/01a16459-cadd-71d2-be67-5147226c730f/exec-03b719c1-ee61-4a32-827f-f6dd9659013a.png",
+  "output": "assets/art_v26/ground_06.png",
+  "prompt": "Use case: stylized-concept. Asset type: production square seamless ground texture for a refined Three Kingdoms strategy game. Strict direct 90-degree overhead view of ONLY the ground material itself, uniform soft ambient illumination, NO perspective, vignette, directional or cast shadows. Polished AA-oriented semi-realistic hand-painted texture with crisp material edges, nuanced natural microdetail, clean readable small-scale pattern and low overall contrast. Warm ivory parchment-compatible palette. Full bleed texture with stone seams and material patterns continuing across all edges; make opposing edges as seamless/tileable as possible. No border, people, buildings, props, grass, leaves, plants, water, interface, text or watermark. Avoid huge slabs, giant diamond shapes, large checkerboards and overly sharp dark cracks. This is an original pattern, not a recolor of another city texture. Square image. Material: 襄阳 Xiangyang: pale celadon small narrow stone slabs in fine offset rows, subtly varied cool-grey mineral surfaces and fine soft joints."
+}

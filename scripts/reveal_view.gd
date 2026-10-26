@@ -1,6 +1,7 @@
 class_name PaanReveal
 extends Control
 const Art = preload("res://scripts/ui/print_art.gd")
+const UISkin = preload("res://scripts/ui/ui_skin.gd")
 ## 翻牌揭示覆盖层 —— 开卡包 / 合成 / 招降 共用同一套特效。
 ##
 ## 流程：卡背朝上摆一排 → 逐张翻转揭示（稀有度越高，光效越亮）→
@@ -132,25 +133,41 @@ func _build() -> void:
 	_dim.set_anchors_preset(Control.PRESET_FULL_RECT)
 	_dim.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(_dim)
+	var frame := PanelContainer.new()
+	frame.name = "RevealShellFrame"
+	frame.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	frame.add_theme_stylebox_override("panel", UISkin.lacquer_panel(12))
+	frame.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	frame.offset_left = 22
+	frame.offset_right = -22
+	frame.offset_top = 20
+	frame.offset_bottom = -20
+	add_child(frame)
+	UISkin.chrome(frame, "lacquer")
+	var paper := PanelContainer.new()
+	paper.name = "RevealPaperContent"
+	paper.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	paper.add_theme_stylebox_override("panel", UISkin.panel(Art.PAPER_LIGHT, 0, Art.RULE, 0))
+	frame.add_child(paper)
 
 	_root_box = VBoxContainer.new()
 	_root_box.set_anchors_preset(Control.PRESET_FULL_RECT)
 	_root_box.alignment = BoxContainer.ALIGNMENT_CENTER
 	_root_box.add_theme_constant_override("separation", 20)
 	_root_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(_root_box)
+	paper.add_child(_root_box)
 
 	var heading := HBoxContainer.new()
 	heading.alignment = BoxContainer.ALIGNMENT_CENTER
 	heading.add_theme_constant_override("separation", 14)
 	_root_box.add_child(heading)
-	heading.add_child(Art.stamp("开", Vector2(40, 44)))
+	heading.add_child(UISkin.lacquer_stamp("开", Vector2(40, 44)))
 	var t := Label.new()
 	t.text = _title
 	t.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	t.add_theme_font_size_override("font_size", 34)
 	t.add_theme_font_override("font", Art.title_font())
-	t.add_theme_color_override("font_color", Color(0.97, 0.95, 0.88))
+	t.add_theme_color_override("font_color", Art.INK)
 	t.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	heading.add_child(t)
 
@@ -159,7 +176,7 @@ func _build() -> void:
 		s.text = _sub
 		s.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		s.add_theme_font_size_override("font_size", 14)
-		s.add_theme_color_override("font_color", Color(0.87, 0.78, 0.61))
+		s.add_theme_color_override("font_color", Art.DIM)
 		s.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		_root_box.add_child(s)
 
@@ -180,7 +197,7 @@ func _build() -> void:
 	_hint.text = "卡牌将逐张翻开　·　点击翻开下一张"
 	_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_hint.add_theme_font_size_override("font_size", 14)
-	_hint.add_theme_color_override("font_color", Color(0.91, 0.84, 0.70))
+	_hint.add_theme_color_override("font_color", Art.DIM)
 	_hint.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_root_box.add_child(_hint)
 
@@ -191,15 +208,13 @@ func _build() -> void:
 	_btn_all = Button.new()
 	_btn_all.text = "全部翻开"
 	_btn_all.custom_minimum_size = Vector2(150, 44)
-	for state in ["normal", "hover", "pressed"]:
-		_btn_all.add_theme_stylebox_override(state, Art.panel(Art.RED, 12, Art.RED, 1))
-	for state in ["font_color", "font_hover_color", "font_pressed_color"]:
-		_btn_all.add_theme_color_override(state, Art.PAPER_LIGHT)
+	UISkin.lacquer_button(_btn_all, true)
 	_btn_all.pressed.connect(_reveal_all)
 	btns.add_child(_btn_all)
 	var bskip := Button.new()
 	bskip.text = "收好卡牌"
 	bskip.custom_minimum_size = Vector2(130, 44)
+	UISkin.lacquer_button(bskip)
 	bskip.pressed.connect(_close)
 	btns.add_child(bskip)
 
